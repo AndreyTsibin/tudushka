@@ -82,6 +82,36 @@ pids
 *.swo
 *~
 
+# Claude Code configuration (SECURITY SENSITIVE)
+.claude/
+.claude.md
+
+# Environment examples (should not be tracked)
+.env.example
+
+# Security sensitive files
+*.key
+*.pem
+*.p12
+*.pfx
+config/secrets.js
+config/production.js
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Build outputs
+dist/
+build/
+public/build/
+
 # OS generated files
 .DS_Store
 .DS_Store?
