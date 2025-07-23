@@ -2,18 +2,19 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Language Settings
+
+**ВАЖНО**: Всегда отвечай на русском языке в чате с пользователем. Все объяснения, комментарии и взаимодействие с пользователем должны происходить исключительно на русском языке. Все комментарии в коде должны быть на Английском языке.
+
 ## Project Overview
 
-**Тудушка** is a Telegram Mini App with ToDo functionality and AI assistant for task planning. This is a greenfield project currently in the planning/documentation stage with comprehensive architecture documentation but no implementation code yet.
+**Тудушка** is a Telegram Mini App with ToDo functionality and AI assistant for task planning. The project has backend and frontend implementation with modular architecture.
 
-## Development Workflow
-
-This project follows a **10-stage iterative development approach** as outlined in `docs/PLANNING.md`. Each stage must be completed with working functionality before proceeding to the next.
-
-### Current Status: Pre-Implementation
-- Only documentation exists (`docs/ARCHITECTURE.md`, `docs/PLANNING.md`)
-- No package.json, dependencies, or code implementation yet
-- Next step: Begin Stage 1 (Project Foundation Setup)
+## Current Development Status
+- Backend API structure implemented with Express.js
+- Frontend modular JavaScript architecture in place
+- Database models and middleware configured
+- Package.json with dependencies available
 
 ## Architecture & Tech Stack
 
@@ -37,7 +38,7 @@ This project follows a **10-stage iterative development approach** as outlined i
 - **Let's Encrypt** SSL certificates
 - **Docker** containerization support
 
-## Project Structure (Planned)
+## Project Structure
 
 ```
 tudushka/
@@ -48,43 +49,34 @@ tudushka/
 │   │   ├── app.js              # Main application logic
 │   │   ├── router.js           # Client-side routing
 │   │   ├── api.js              # Backend communication
-│   │   └── modules/            # Feature modules (tasks, calendar, ai-chat, etc.)
-│   └── assets/                 # Static assets
+│   │   ├── onboarding.js       # User onboarding flow
+│   │   ├── telegram-sdk.js     # Telegram Web Apps integration
+│   │   ├── translations.js     # Localization support
+│   │   └── modules/            # Feature modules (tasks, ai-chat, calendar, etc.)
+│   └── assets/                 # Static assets (icons, images)
 ├── backend/                     # Server-side application
 │   ├── server.js               # Express server entry point
-│   ├── config/                 # Configuration files
-│   ├── routes/                 # API route handlers
+│   ├── config/                 # Configuration (database.js, telegram.js)
+│   ├── routes/                 # API route handlers (auth, tasks, ai, files, users)
 │   ├── models/                 # Data models (User, Task, Attachment, Chat)
-│   ├── services/               # Business logic services
-│   ├── middleware/             # Express middleware
-│   ├── utils/                  # Utility functions
-│   └── database/               # Migrations and seeds
-├── .env.example                # Environment variables template
-└── docs/                       # Documentation
+│   ├── services/               # Business logic (telegram-auth, perplexity-api, subscription)
+│   ├── middleware/             # Express middleware (auth, rateLimit, validation)
+│   └── database/               # Migrations directory
+├── docs/                       # Architecture and planning documentation
+└── package.json               # Dependencies and scripts
 ```
 
-## Key Development Commands
+## Development Commands
 
-**Note: No development commands are available yet** - the project needs initial setup. Based on the architecture, the following commands should be implemented during Stage 1:
-
-### Planned Commands (to be implemented):
 ```bash
 # Development
-npm start                       # Start development server
-npm run dev                     # Development mode with hot reload
-npm run build                   # Build for production
-npm test                        # Run tests
-npm run lint                    # Lint code
-npm run typecheck              # Type checking (if TypeScript added)
+npm start                       # Start production server
+npm run dev                     # Start development server with nodemon
+npm run migrate                 # Run database migrations
 
-# Database
-npm run db:migrate             # Run database migrations
-npm run db:seed                # Seed database with initial data
-npm run db:reset               # Reset database
-
-# Docker (planned)
-docker-compose up              # Start local development environment
-docker-compose down            # Stop local environment
+# Environment Setup
+cp .env.example .env           # Copy environment template
+npm install                    # Install dependencies
 ```
 
 ## Database Schema
@@ -96,27 +88,30 @@ PostgreSQL database with the following core tables:
 - **ai_chats** & **ai_messages** - AI assistant conversation history
 - **usage_stats** - Subscription usage tracking for rate limiting
 
-## API Structure (Planned)
+## API Structure
 
-### Authentication
+API routes are organized in separate files:
+
+### Authentication (routes/auth.js)
 - `POST /api/auth/telegram` - Telegram Web Apps authentication
 - `GET /api/auth/user` - Get current user info
 - `PUT /api/auth/user` - Update user profile
 
-### Tasks
+### Tasks (routes/tasks.js)
 - `GET /api/tasks` - Get user tasks with date filters
 - `POST /api/tasks` - Create new task
 - `PUT /api/tasks/:id` - Update task
 - `DELETE /api/tasks/:id` - Delete task
 - `PUT /api/tasks/:id/complete` - Mark task as completed
 
-### AI Chat
-- `GET /api/ai/chats` - Get user's chat list
-- `POST /api/ai/chats/:id/messages` - Send message to AI assistant
+### AI Chat (routes/ai.js)
+- AI assistant functionality with Perplexity API integration
 
-### File Attachments
-- `POST /api/tasks/:id/attachments` - Upload file via Telegram Bot API
-- `GET /api/tasks/:id/attachments` - Get task attachments
+### File Attachments (routes/files.js)
+- File upload/download via Telegram Bot API
+
+### Users (routes/users.js)
+- User management endpoints
 
 ## Subscription Model
 
@@ -141,19 +136,29 @@ Apple-inspired UI with:
 5. **Mobile-First**: Designed specifically for Telegram Web Apps on mobile devices
 6. **Rate Limiting**: Built-in usage tracking and subscription-based limits
 
+## Architecture Notes
+
+### Frontend Architecture
+- **Modular Design**: Feature-based modules in `js/modules/` directory
+- **Router**: Client-side routing with `router.js`
+- **API Layer**: Centralized backend communication via `api.js`
+- **Telegram Integration**: `telegram-sdk.js` handles Web Apps API integration
+- **Localization**: `translations.js` supports Russian/English languages
+
+### Backend Architecture
+- **Express.js**: RESTful API with middleware for auth, validation, and rate limiting
+- **Services Layer**: Business logic separated into services (telegram-auth, perplexity-api, subscription)
+- **Models**: Database models for User, Task, Attachment, Chat entities
+- **Configuration**: Modular config files for database and Telegram settings
+
+### Key Integrations
+- **Telegram Bot API**: File storage and user authentication
+- **Perplexity API**: AI assistant functionality
+- **PostgreSQL**: Primary data storage with planned Redis caching
+
 ## Development Principles
 
-- **Iterative development** with working functionality at each stage
-- **Test locally** before proceeding to next development stage
-- **Apple-inspired design** - prioritize functionality first, then aesthetics
-- **Security-first** approach with proper validation and error handling
-- **Performance optimization** with Redis caching and database indexing
-
-## Next Steps
-
-To begin development, start with Stage 1 tasks from `docs/PLANNING.md`:
-1. Create `package.json` with dependencies
-2. Set up Git repository and `.gitignore`
-3. Create `.env` files based on architecture specifications
-4. Initialize basic Express server
-5. Set up PostgreSQL database connection
+- **Apple-inspired design** - clean, minimal UI with smooth transitions
+- **Security-first** - proper validation, authentication, and error handling
+- **Mobile-first** - optimized for Telegram Web Apps on mobile devices
+- **Subscription-based rate limiting** - usage tracking and tier restrictions
