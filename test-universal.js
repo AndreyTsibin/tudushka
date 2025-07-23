@@ -571,8 +571,8 @@ class UniversalTudushkaTest {
       const issues = [];
       
       // Check for common security files
-      if (!this.checkFileExists('.env') && !this.checkFileExists('.env.example')) {
-        issues.push('Нет файлов конфигурации окружения');
+      if (!this.checkFileExists('.env')) {
+        issues.push('Отсутствует .env файл с конфигурацией');
       }
       
       // Check if JWT_SECRET is strong

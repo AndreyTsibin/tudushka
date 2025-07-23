@@ -115,7 +115,6 @@ tudushka/
 │   └── database/
 │       ├── migrations/         # Database schema changes
 │       └── seeds/              # Initial data
-├── .env.example                # Environment variables template
 ├── .env                        # Environment variables (git ignored)
 ├── .gitignore                  # Git ignore rules
 ├── .dockerignore               # Docker ignore rules
@@ -399,7 +398,7 @@ const upload = multer({
 
 ### Environment Variables:
 ```bash
-# .env.example
+# .env (создайте этот файл локально)
 NODE_ENV=development
 PORT=3001
 HOST=localhost

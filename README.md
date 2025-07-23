@@ -22,9 +22,10 @@ Telegram Mini App - Todo with AI Assistant
 
 ## Getting Started
 
-1. Copy environment variables:
+1. Create environment file:
    ```bash
-   cp .env.example .env
+   # Создайте .env файл с необходимыми переменными (см. CLAUDE.md)
+   touch .env
    ```
 
 2. Install dependencies:

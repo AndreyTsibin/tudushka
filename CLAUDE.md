@@ -75,7 +75,7 @@ npm run dev                     # Start development server with nodemon
 npm run migrate                 # Run database migrations
 
 # Environment Setup
-cp .env.example .env           # Copy environment template
+# Создайте .env файл с переменными из списка ниже
 npm install                    # Install dependencies
 
 # Health Check
