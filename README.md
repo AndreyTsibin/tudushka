@@ -63,6 +63,11 @@ Telegram Mini App - Todo with AI Assistant
 - **Plus**: 30 AI messages/day, 10 files per task (20MB each) - 149₽/month
 - **Pro**: Unlimited usage, files up to 50MB - 299₽/month
 
+## Contributors
+
+- **Developer**: Andrew T. ([@AndreyTsibin](https://github.com/AndreyTsibin))
+- **AI Assistant**: Claude Code
+
 ## Development Commands
 
 - `npm start` - Start production server
