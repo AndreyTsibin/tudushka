@@ -77,6 +77,9 @@ npm run migrate                 # Run database migrations
 # Environment Setup
 cp .env.example .env           # Copy environment template
 npm install                    # Install dependencies
+
+# Health Check
+curl http://localhost:3001/api/health    # Check server status
 ```
 
 ## Database Schema
@@ -162,3 +165,23 @@ Apple-inspired UI with:
 - **Security-first** - proper validation, authentication, and error handling
 - **Mobile-first** - optimized for Telegram Web Apps on mobile devices
 - **Subscription-based rate limiting** - usage tracking and tier restrictions
+
+## Environment Variables Required
+
+Key environment variables needed in `.env` file:
+- `PORT` - Server port (default: 3001)
+- `FRONTEND_PORT` - Frontend port (default: 3000)  
+- `FRONTEND_URL` - Frontend URL for CORS
+- `DATABASE_URL` - PostgreSQL connection string
+- `TELEGRAM_BOT_TOKEN` - Telegram Bot API token
+- `PERPLEXITY_API_KEY` - Perplexity API key for AI assistant
+- `JWT_SECRET` - JWT signing secret
+- `NODE_ENV` - Environment (development/production)
+
+## Server Configuration
+
+- **Default Ports**: Backend on 3001, Frontend on 3000
+- **CORS**: Configured for localhost development with credentials support
+- **Request Limits**: 50MB for JSON/form data to support file uploads
+- **Logging**: Automatic request logging with timestamps and IP addresses
+- **Health Check**: Available at `/api/health` endpoint

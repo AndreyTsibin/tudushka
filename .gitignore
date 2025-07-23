@@ -28,12 +28,6 @@ coverage/
 logs
 *.log
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
 # Optional npm cache directory
 .npm
 
@@ -45,10 +39,6 @@ pids
 
 # Yarn Integrity file
 .yarn-integrity
-
-# dotenv environment variables file
-.env
-.env.test
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -86,8 +76,6 @@ pids
 .claude/
 .claude.md
 
-# Environment examples (should not be tracked)
-.env.example
 
 # Security sensitive files
 *.key
@@ -119,4 +107,5 @@ public/build/
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.dbpackage-lock.json
+Thumbs.db
+package-lock.json

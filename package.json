@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
-    "migrate": "node backend/database/migrate.js"
+    "migrate": "node backend/database/migrate.js",
+    "test": "node test-universal.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

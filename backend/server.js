@@ -90,11 +90,11 @@ app.use('/api/*', (req, res) => {
 
 // Start backend server
 app.listen(PORT, () => {
-  console.log('=€ Tudushka Backend Server started successfully!');
-  console.log(`=á API Server running on http://localhost:${PORT}`);
+  console.log('=ï¿½ Tudushka Backend Server started successfully!');
+  console.log(`=ï¿½ API Server running on http://localhost:${PORT}`);
   console.log(`< Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`=Ë Health check: http://localhost:${PORT}/api/health`);
-  console.log('ð Started at:', new Date().toISOString());
+  console.log(`=ï¿½ Health check: http://localhost:${PORT}/api/health`);
+  console.log('ï¿½ Started at:', new Date().toISOString());
 });
 
 // Simple static file server for frontend
@@ -103,7 +103,7 @@ function startFrontendServer() {
   
   // Check if frontend directory exists
   if (!fs.existsSync(frontendPath)) {
-    console.warn(`   Frontend directory not found at ${frontendPath}`);
+    console.warn(`ï¿½  Frontend directory not found at ${frontendPath}`);
     return;
   }
 
@@ -149,6 +149,13 @@ function startFrontendServer() {
       return;
     }
     
+    // Security: Block access to sensitive files
+    if (url.includes('.env') || url.startsWith('/.') || url.includes('/config/')) {
+      res.writeHead(403);
+      res.end('Forbidden');
+      return;
+    }
+    
     fs.readFile(filePath, (error, content) => {
       if (error) {
         if (error.code === 'ENOENT') {
@@ -186,7 +193,7 @@ function startFrontendServer() {
 
   frontendServer.listen(FRONTEND_PORT, () => {
     console.log('< Frontend Server started successfully!');
-    console.log(`=Á Static files serving from: ${frontendPath}`);
+    console.log(`=ï¿½ Static files serving from: ${frontendPath}`);
     console.log(`= Frontend available at: http://localhost:${FRONTEND_PORT}`);
   });
 
@@ -204,22 +211,22 @@ startFrontendServer();
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('=Ñ SIGTERM received, shutting down gracefully...');
+  console.log('=ï¿½ SIGTERM received, shutting down gracefully...');
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('=Ñ SIGINT received, shutting down gracefully...');
+  console.log('=ï¿½ SIGINT received, shutting down gracefully...');
   process.exit(0);
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-  console.error('=¥ Uncaught Exception:', err);
+  console.error('=ï¿½ Uncaught Exception:', err);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('=¥ Unhandled Rejection at:', promise, 'reason:', reason);
+  console.error('=ï¿½ Unhandled Rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });
