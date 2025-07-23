@@ -70,16 +70,18 @@ tudushka/
 
 ```bash
 # Development
-npm start                       # Start production server
-npm run dev                     # Start development server with nodemon
+npm start                       # Start production server (unified server on ports 3001 API + 3000 static)
+npm run dev                     # Start development server with nodemon auto-restart
 npm run migrate                 # Run database migrations
+npm test                        # Run comprehensive universal testing system
 
 # Environment Setup
+npm install                     # Install dependencies
 # Создайте .env файл с переменными из списка ниже
-npm install                    # Install dependencies
 
-# Health Check
+# Health Check & Testing
 curl http://localhost:3001/api/health    # Check server status
+npm test                                 # Run full test suite with infrastructure, functionality, and production readiness checks
 ```
 
 ## Database Schema
@@ -180,8 +182,61 @@ Key environment variables needed in `.env` file:
 
 ## Server Configuration
 
-- **Default Ports**: Backend on 3001, Frontend on 3000
+- **Unified Server Architecture**: Single server.js handles both API (port 3001) and static files (port 3000)
 - **CORS**: Configured for localhost development with credentials support
 - **Request Limits**: 50MB for JSON/form data to support file uploads
 - **Logging**: Automatic request logging with timestamps and IP addresses
 - **Health Check**: Available at `/api/health` endpoint
+
+## Testing System
+
+Comprehensive universal testing system (`test-universal.js`) with three stages:
+- **Early Stage (Stages 1-3)**: Infrastructure setup, basic functionality
+- **Feature Stage (Stages 4-6)**: Core features, API endpoints, database integration
+- **Production Stage (Stages 7-9)**: Performance, security, deployment readiness
+
+Current project status: **Feature Stage** - focusing on API implementation and database setup.
+
+### Testing Features
+- **Auto-detection** of project stage based on available files and configurations
+- **Smart recommendations** for next development steps
+- **Performance metrics** tracking (server start time, DB response time, API response time)
+- **Security checks** including CORS configuration and sensitive file protection
+- **Load testing** for production readiness
+- **Progress tracking** with visual indicators in Russian
+
+## Critical Architectural Details
+
+### Unified Server Architecture
+The project uses a single `backend/server.js` file that serves both:
+- **API endpoints** on port 3001 (Express.js routes with middleware)
+- **Static files** on port 3000 (custom HTTP server with security features)
+
+This approach eliminates the need for separate frontend/backend servers during development.
+
+### Database Migrations
+Migrations are located in `backend/database/migrations/` and include:
+- `001_create_users_table.sql` - User management
+- `002_create_tasks_table.sql` - Task management  
+- `003_create_task_attachments_table.sql` - File attachments
+- `004_create_ai_chats_table.sql` & `005_create_ai_messages_table.sql` - AI chat
+- `006_create_usage_stats_table.sql` - Subscription tracking
+- `007_create_user_sessions_table.sql` - Session management
+- `008_add_missing_fields.sql` & `009_update_field_sizes.sql` - Schema updates
+
+Run migrations with: `npm run migrate` (executes `backend/database/migrate.js`)
+
+### Security Features
+- **Directory traversal protection** in static file server
+- **Sensitive file blocking** (.env, config files, dotfiles)
+- **CORS configuration** for cross-origin requests with credentials support
+- **Request size limits** (50MB JSON/form data for file uploads)
+- **Error handling middleware** with environment-aware error disclosure
+- **Request logging** with timestamps and IP addresses
+- **Graceful shutdown** handling (SIGTERM, SIGINT)
+
+## Critical Development Issues
+
+**Database Connection**: PostgreSQL connection requires proper setup - DATABASE_URL needs valid credentials.
+**Authentication**: Telegram Web Apps integration partially implemented but needs completion.
+**File Storage**: Telegram Bot API integration for file storage needs implementation.
