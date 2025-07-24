@@ -8,13 +8,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Тудушка** is a Telegram Mini App with ToDo functionality and AI assistant for task planning. The project has backend and frontend implementation with modular architecture.
+**Тудушка** is a Telegram Mini App with ToDo functionality and AI assistant for task planning. The project uses unified server architecture with Express.js backend and vanilla JavaScript frontend.
 
 ## Current Development Status
-- Backend API structure implemented with Express.js
-- Frontend modular JavaScript architecture in place
-- Database models and middleware configured
-- Package.json with dependencies available
+- **Unified Server Architecture**: Single server.js serves both API (port 3001) and static files (port 3000)
+- **Backend API**: Complete Express.js structure with routes, middleware, models, and services
+- **Frontend**: Modular JavaScript architecture with feature-based modules
+- **Database**: PostgreSQL with 9 migration files for complete schema
+- **Testing**: Universal testing system with stage-based approach
+- **Documentation**: Comprehensive architecture documentation in docs/
 
 ## Architecture & Tech Stack
 
@@ -69,20 +71,24 @@ tudushka/
 ## Development Commands
 
 ```bash
-# Development
-npm start                       # Start production server (unified server on ports 3001 API + 3000 static)
+# Core Development Commands
+npm install                     # Install all dependencies
+npm start                       # Start production server (unified server - API on 3001, static on 3000)
 npm run dev                     # Start development server with nodemon auto-restart
-npm run migrate                 # Run database migrations
-npm test                        # Run comprehensive universal testing system
+npm run migrate                 # Run database migrations (executes backend/database/migrate.js)
+npm test                        # Run universal testing system (test-universal.js)
 
-# Environment Setup
-npm install                     # Install dependencies
-# Создайте .env файл с переменными из списка ниже
+# Server & Health Checks
+curl http://localhost:3001/api/health    # Check API server status
+curl http://localhost:3000                # Check static file server
 
-# Health Check & Testing
-curl http://localhost:3001/api/health    # Check server status
-npm test                                 # Run full test suite with infrastructure, functionality, and production readiness checks
-claude-mon                               # Monitor remaining tokens in Claude Code
+# Database Operations
+node backend/database/migrate.js         # Manual migration execution
+psql $DATABASE_URL                       # Connect to PostgreSQL directly
+
+# Development Workflow
+npm run dev                              # Primary development command
+npm test                                 # Verify setup and run tests
 ```
 
 ## Database Schema
@@ -213,31 +219,64 @@ The project uses a single `backend/server.js` file that serves both:
 - **API endpoints** on port 3001 (Express.js routes with middleware)
 - **Static files** on port 3000 (custom HTTP server with security features)
 
-This approach eliminates the need for separate frontend/backend servers during development.
+Key features:
+- **CORS support** with credentials for localhost development
+- **Request logging** with timestamps and IP addresses
+- **Error handling** middleware with environment-aware disclosure
+- **Security headers** and directory traversal protection
+- **Graceful shutdown** handling (SIGTERM, SIGINT)
 
 ### Database Migrations
-Migrations are located in `backend/database/migrations/` and include:
-- `001_create_users_table.sql` - User management
-- `002_create_tasks_table.sql` - Task management  
-- `003_create_task_attachments_table.sql` - File attachments
-- `004_create_ai_chats_table.sql` & `005_create_ai_messages_table.sql` - AI chat
-- `006_create_usage_stats_table.sql` - Subscription tracking
+Complete PostgreSQL schema with 9 migration files in `backend/database/migrations/`:
+- `001_create_users_table.sql` - User profiles and Telegram auth
+- `002_create_tasks_table.sql` - Todo items with due dates and repeat
+- `003_create_task_attachments_table.sql` - File attachments via Telegram Bot API
+- `004_create_ai_chats_table.sql` & `005_create_ai_messages_table.sql` - AI assistant
+- `006_create_usage_stats_table.sql` - Subscription usage tracking
 - `007_create_user_sessions_table.sql` - Session management
 - `008_add_missing_fields.sql` & `009_update_field_sizes.sql` - Schema updates
 
-Run migrations with: `npm run migrate` (executes `backend/database/migrate.js`)
+**Migration System**: Automated via `backend/database/migrate.js` with execution tracking.
 
-### Security Features
-- **Directory traversal protection** in static file server
-- **Sensitive file blocking** (.env, config files, dotfiles)
-- **CORS configuration** for cross-origin requests with credentials support
-- **Request size limits** (50MB JSON/form data for file uploads)
-- **Error handling middleware** with environment-aware error disclosure
-- **Request logging** with timestamps and IP addresses
-- **Graceful shutdown** handling (SIGTERM, SIGINT)
+### Security & Performance Features
+- **File Upload Limits**: 50MB JSON/form data support
+- **Static File Caching**: Proper cache headers by file type
+- **SPA Routing Support**: Fallback to index.html for client-side routes
+- **Sensitive File Protection**: Blocks .env, config files, dotfiles
+- **Health Check Endpoint**: `/api/health` with server status and uptime
+- **Request Rate Logging**: All API requests logged with method, path, IP
 
-## Critical Development Issues
+## Critical Development Notes
 
-**Database Connection**: PostgreSQL connection requires proper setup - DATABASE_URL needs valid credentials.
-**Authentication**: Telegram Web Apps integration partially implemented but needs completion.
-**File Storage**: Telegram Bot API integration for file storage needs implementation.
+### Server Architecture Insights
+- **Single Entry Point**: `backend/server.js` handles both API and static file serving
+- **Port Configuration**: API on 3001, static files on 3000 (configurable via env vars)
+- **Development Flow**: Use `npm run dev` for auto-restart during development
+- **Production Ready**: Includes error handling, logging, and graceful shutdown
+
+### Database Requirements
+- **PostgreSQL 14+** required with proper DATABASE_URL configuration
+- **Migration System**: Tracks executed migrations to prevent duplicates
+- **Schema Complete**: All 9 migrations create full application schema
+
+### API Structure
+Routes organized by feature in `backend/routes/`:
+- `auth.js` - Telegram Web Apps authentication
+- `tasks.js` - CRUD operations for todo items
+- `ai.js` - AI assistant integration (Perplexity API)
+- `files.js` - File upload/download via Telegram Bot API
+- `users.js` - User profile management
+
+### Frontend Architecture
+Modular JavaScript in `frontend/js/modules/`:
+- `tasks.js` - Task management interface
+- `ai-chat.js` - AI assistant chat interface
+- `calendar.js` - Calendar view for tasks
+- `settings.js` - User settings and preferences
+- `file-upload.js` - File attachment functionality
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
