@@ -11,12 +11,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Тудушка** is a Telegram Mini App with ToDo functionality and AI assistant for task planning. The project uses unified server architecture with Express.js backend and vanilla JavaScript frontend.
 
 ## Current Development Status
-- **Unified Server Architecture**: Single server.js serves both API (port 3001) and static files (port 3000)
-- **Backend API**: Complete Express.js structure with routes, middleware, models, and services
-- **Frontend**: Modular JavaScript architecture with feature-based modules
-- **Database**: PostgreSQL with 9 migration files for complete schema
-- **Testing**: Universal testing system with stage-based approach
-- **Documentation**: Comprehensive architecture documentation in docs/
+- **Development Stage**: Feature Stage (4-6 out of 9 stages) - Core infrastructure ready, API implementation in progress
+- **Unified Server Architecture**: Single server.js serves both API (port 3001) and static files (port 3000) - FULLY IMPLEMENTED
+- **Authentication System**: Complete Telegram Web Apps authentication with JWT tokens - PRODUCTION READY
+- **Database Schema**: Complete PostgreSQL schema with 9 migrations and advanced triggers - FULLY IMPLEMENTED
+- **API Structure**: Auth routes fully implemented (15 endpoints), Tasks/AI routes are stubs (501 status)
+- **Frontend Core**: Router and app.js fully functional, but feature modules need implementation
+- **Testing System**: Universal testing with auto-detection and smart recommendations - FULLY IMPLEMENTED
 
 ## Architecture & Tech Stack
 
@@ -272,21 +273,40 @@ Complete PostgreSQL schema with 9 migration files in `backend/database/migration
 - **Migration System**: Tracks executed migrations to prevent duplicates
 - **Schema Complete**: All 9 migrations create full application schema
 
-### API Structure
-Routes organized by feature in `backend/routes/`:
-- `auth.js` - Telegram Web Apps authentication
-- `tasks.js` - CRUD operations for todo items
-- `ai.js` - AI assistant integration (Perplexity API)
-- `files.js` - File upload/download via Telegram Bot API
-- `users.js` - User profile management
+### API Implementation Status
 
-### Frontend Architecture
-Modular JavaScript in `frontend/js/modules/`:
-- `tasks.js` - Task management interface
-- `ai-chat.js` - AI assistant chat interface
-- `calendar.js` - Calendar view for tasks
-- `settings.js` - User settings and preferences
-- `file-upload.js` - File attachment functionality
+Routes in `backend/routes/` with current status:
+- **auth.js** - ✅ FULLY IMPLEMENTED (15 endpoints with JWT, refresh tokens, subscription management)
+- **tasks.js** - ⚠️ STUBS ONLY (5 endpoints return 501 status - NEEDS IMPLEMENTATION)
+- **ai.js** - ⚠️ STUBS ONLY (2 endpoints return 501 status - NEEDS IMPLEMENTATION)  
+- **files.js** - ❓ STATUS UNKNOWN (requires investigation)
+- **users.js** - ❓ STATUS UNKNOWN (requires investigation)
+
+### Middleware System (FULLY IMPLEMENTED)
+Complete middleware stack in `backend/middleware/`:
+- `authenticateToken` - JWT verification with automatic refresh
+- `requireSubscription` - Subscription tier validation  
+- `checkRateLimit` - Usage limits by subscription plan
+- `validateRequest` - Input validation and sanitization
+- `checkFileUploadLimits` - File size/count limits by plan
+- `securityHeaders` - Security headers injection
+- `errorHandler` - Centralized error handling
+
+### Frontend Implementation Status
+
+Core files status:
+- **app.js** - ✅ FULLY IMPLEMENTED (570+ lines, Telegram WebApp integration, theme handling)
+- **router.js** - ✅ FULLY IMPLEMENTED (370+ lines, hash-based routing with params, history support)
+- **api.js** - ✅ READY FOR BACKEND INTEGRATION (centralized API communication layer)
+- **telegram-sdk.js** - ✅ FULLY IMPLEMENTED (WebApp API integration)
+- **translations.js** - ✅ READY (Russian/English localization support)
+
+Feature modules in `frontend/js/modules/`:
+- **tasks.js** - ⚠️ CRITICAL: Almost empty (1 line) - MAIN FUNCTIONALITY MISSING
+- **ai-chat.js** - ❓ STATUS UNKNOWN (requires investigation)
+- **calendar.js** - ❓ STATUS UNKNOWN (requires investigation)  
+- **settings.js** - ❓ STATUS UNKNOWN (requires investigation)
+- **file-upload.js** - ❓ STATUS UNKNOWN (requires investigation)
 
 ### Security Architecture
 - **Telegram WebApp Authentication**: HMAC-SHA256 validation of initData
@@ -296,6 +316,39 @@ Modular JavaScript in `frontend/js/modules/`:
 - **SQL Injection Protection**: Parameterized queries in all models
 - **CORS Configuration**: Restricted origins with credentials support
 - **Input Sanitization**: Comprehensive validation in all API endpoints
+
+## Critical Development Issues & Next Steps
+
+### 🚨 CRITICAL GAPS (Must fix for MVP)
+1. **Tasks API Implementation**: Core todo functionality missing - tasks.js routes return 501
+2. **Tasks Frontend Module**: Main feature UI missing - tasks.js module is practically empty
+3. **AI Chat Integration**: AI assistant not implemented - ai.js routes return 501
+
+### ⚠️ HIGH PRIORITY (Investigate & Implement)
+1. **Frontend-Backend Integration**: API ready but UI modules need connection
+2. **Files Upload System**: Status unknown - requires investigation
+3. **User Management**: User routes status unknown
+
+### 📋 RECOMMENDED DEVELOPMENT SEQUENCE
+1. **Implement Tasks CRUD API** - Replace 501 stubs with actual functionality
+2. **Build Tasks Frontend Module** - Connect UI to API endpoints
+3. **Implement AI Chat API** - Integrate with Perplexity API
+4. **Build AI Chat Frontend** - Create chat interface
+5. **Test Complete Integration** - Ensure frontend-backend communication works
+6. **Investigate Files & Users APIs** - Determine implementation status
+
+### 🔧 DEVELOPMENT WORKFLOW TIPS
+- **Primary Command**: `npm run dev` - Auto-restart server during development
+- **Testing**: `npm test` - Universal testing with stage detection and recommendations
+- **Database**: `npm run migrate` - Run migrations (tracks execution automatically)
+- **Health Check**: `curl http://localhost:3001/api/health` - Verify server status
+- **Frontend**: `curl http://localhost:3000` - Verify static file serving
+
+### 📊 PROJECT STRENGTHS
+- ✅ **Solid Foundation**: Authentication, database, server architecture are production-ready
+- ✅ **Advanced Testing**: Universal testing system with smart recommendations
+- ✅ **Security**: Comprehensive middleware and validation systems
+- ✅ **Scalability**: Well-organized modular architecture
 
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.
