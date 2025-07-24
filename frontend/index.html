@@ -2,363 +2,98 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>"C4CH:0 - ToDo A  ?><>I=8:><</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#007AFF">
+    <title>Тудушка - ToDo с AI помощником</title>
     
-    <!-- Telegram Web App CSS -->
-    <style>
-        :root {
-            --tg-bg-color: #ffffff;
-            --tg-text-color: #000000;
-            --tg-hint-color: #999999;
-            --tg-link-color: #007AFF;
-            --tg-button-color: #007AFF;
-            --tg-button-text-color: #ffffff;
-            --tg-secondary-bg-color: #f1f1f1;
-            --vh: 1vh;
-        }
-        
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background-color: var(--tg-bg-color);
-            color: var(--tg-text-color);
-            height: 100vh;
-            height: calc(var(--vh, 1vh) * 100);
-            overflow-x: hidden;
-        }
-        
-        .dark-theme {
-            --tg-bg-color: #212121;
-            --tg-text-color: #ffffff;
-            --tg-hint-color: #999999;
-            --tg-secondary-bg-color: #2c2c2c;
-        }
-        
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 16px;
-            min-height: 100vh;
-        }
-        
-        .loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-        
-        .loading-spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid var(--tg-secondary-bg-color);
-            border-top: 3px solid var(--tg-button-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .auth-status {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 14px;
-        }
-        
-        .auth-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .auth-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .user-info {
-            background-color: var(--tg-secondary-bg-color);
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .user-name {
-            font-weight: 600;
-            font-size: 18px;
-            margin-bottom: 4px;
-        }
-        
-        .user-details {
-            font-size: 14px;
-            color: var(--tg-hint-color);
-            margin-bottom: 8px;
-        }
-        
-        .subscription-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-        
-        .subscription-free {
-            background-color: #e3f2fd;
-            color: #1976d2;
-        }
-        
-        .subscription-plus {
-            background-color: #fff3e0;
-            color: #f57c00;
-        }
-        
-        .subscription-pro {
-            background-color: #fce4ec;
-            color: #c2185b;
-        }
-        
-        .debug-info {
-            background-color: var(--tg-secondary-bg-color);
-            padding: 12px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 12px;
-            margin-top: 16px;
-            white-space: pre-wrap;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        button {
-            background-color: var(--tg-button-color);
-            color: var(--tg-button-text-color);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            margin: 8px 4px;
-        }
-        
-        button:hover {
-            opacity: 0.8;
-        }
-        
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-    </style>
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <!-- Telegram Web Apps SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div id="loading" class="loading">
-            <div class="loading-spinner"></div>
-            <p>=8F80;870F8O ?@8;>65=8O...</p>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Загрузка...</p>
+            </div>
         </div>
         
-        <div id="app" class="hidden">
-            <div id="auth-status" class="auth-status hidden"></div>
-            
-            <div id="user-info" class="user-info hidden">
-                <div class="user-name" id="user-name"></div>
-                <div class="user-details" id="user-details"></div>
-                <div id="subscription-info"></div>
+        <!-- Header -->
+        <header class="header">
+            <button class="header__date" id="dateButton" type="button">
+                <span id="currentDate">Сегодня</span>
+                <svg class="header__date-icon" width="16" height="16" viewBox="0 0 16 16">
+                    <path d="M8 11L4 7h8L8 11z" fill="currentColor"/>
+                </svg>
+            </button>
+            <button class="header__profile" id="profileButton" type="button">
+                <svg class="header__profile-icon" width="24" height="24" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <path d="M6.2 19c1.1-2.3 3.5-4 6.8-4s5.7 1.7 6.8 4" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main" id="mainContent">
+            <!-- Pages will be rendered here -->
+            <div class="page-placeholder">
+                <p>Выберите страницу в навигации</p>
             </div>
-            
-            <div id="controls">
-                <button id="refresh-btn">1=>28BL B>:5=</button>
-                <button id="logout-btn">K9B8</button>
-                <button id="debug-btn">>:070BL >B;04:C</button>
-            </div>
-            
-            <div id="debug-info" class="debug-info hidden"></div>
-        </div>
+        </main>
+
+        <!-- Footer Navigation -->
+        <footer class="footer">
+            <nav class="footer__nav">
+                <a href="#/" class="footer__nav-item" data-page="home">
+                    <svg class="footer__nav-icon" width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                    <span>Главная</span>
+                </a>
+                <a href="#/ai" class="footer__nav-item" data-page="ai">
+                    <svg class="footer__nav-icon" width="24" height="24" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M12 1V3" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 21V23" stroke="currentColor" stroke-width="2"/>
+                        <path d="M4.22 4.22L5.64 5.64" stroke="currentColor" stroke-width="2"/>
+                        <path d="M18.36 18.36L19.78 19.78" stroke="currentColor" stroke-width="2"/>
+                        <path d="M1 12H3" stroke="currentColor" stroke-width="2"/>
+                        <path d="M21 12H23" stroke="currentColor" stroke-width="2"/>
+                        <path d="M4.22 19.78L5.64 18.36" stroke="currentColor" stroke-width="2"/>
+                        <path d="M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span>AI Ассистент</span>
+                </a>
+                <a href="#/archive" class="footer__nav-item" data-page="archive">
+                    <svg class="footer__nav-icon" width="24" height="24" viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
+                        <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
+                        <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
+                        <path d="M8 14L12 18L16 14" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                    <span>Архив</span>
+                </a>
+            </nav>
+        </footer>
     </div>
 
-    <!-- Telegram Web App Script -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Our Scripts -->
+    <!-- Modal container -->
+    <div id="modal-container" class="modal-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/translations.js"></script>
     <script src="js/telegram-sdk.js"></script>
-    <script src="js/auth.js"></script>
-    
-    <script>
-        // Main application logic
-        document.addEventListener('DOMContentLoaded', function() {
-            const elements = {
-                loading: document.getElementById('loading'),
-                app: document.getElementById('app'),
-                authStatus: document.getElementById('auth-status'),
-                userInfo: document.getElementById('user-info'),
-                userName: document.getElementById('user-name'),
-                userDetails: document.getElementById('user-details'),
-                subscriptionInfo: document.getElementById('subscription-info'),
-                debugInfo: document.getElementById('debug-info'),
-                refreshBtn: document.getElementById('refresh-btn'),
-                logoutBtn: document.getElementById('logout-btn'),
-                debugBtn: document.getElementById('debug-btn')
-            };
-            
-            let debugVisible = false;
-            
-            // Show auth status
-            function showAuthStatus(message, isError = false) {
-                elements.authStatus.textContent = message;
-                elements.authStatus.className = `auth-status ${isError ? 'auth-error' : 'auth-success'}`;
-                elements.authStatus.classList.remove('hidden');
-                
-                setTimeout(() => {
-                    elements.authStatus.classList.add('hidden');
-                }, 5000);
-            }
-            
-            // Show user info
-            function showUserInfo(user) {
-                const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
-                elements.userName.textContent = fullName || user.username || '>;L7>20B5;L';
-                
-                const details = [];
-                if (user.username) details.push(`@${user.username}`);
-                if (user.telegram_id) details.push(`ID: ${user.telegram_id}`);
-                if (user.language_code) details.push(`/7K:: ${user.language_code}`);
-                
-                elements.userDetails.textContent = details.join(' " ');
-                
-                // Subscription info
-                const subscription = user.subscription || { plan: 'free' };
-                const subscriptionClass = `subscription-${subscription.plan}`;
-                const planNames = { free: '5A?;0B=K9', plus: ';NA', pro: '@>' };
-                
-                elements.subscriptionInfo.innerHTML = `
-                    <span class="subscription-badge ${subscriptionClass}">
-                        ${planNames[subscription.plan] || subscription.plan}
-                    </span>
-                `;
-                
-                if (subscription.ai_messages_used !== undefined) {
-                    elements.subscriptionInfo.innerHTML += `
-                        <div style="margin-top: 8px; font-size: 12px; color: var(--tg-hint-color);">
-                             A>>1I5=89: ${subscription.ai_messages_used} / 45=L
-                        </div>
-                    `;
-                }
-                
-                elements.userInfo.classList.remove('hidden');
-            }
-            
-            // Update debug info
-            function updateDebugInfo() {
-                const debugData = {
-                    telegramAvailable: !!window.Telegram?.WebApp,
-                    telegramInitialized: window.telegramSDK?.isInitialized,
-                    authenticated: window.authManager?.isAuthenticated(),
-                    user: window.authManager?.getUser(),
-                    initData: window.telegramSDK?.getInitData(),
-                    telegramPlatform: window.telegramSDK?.getPlatform(),
-                    telegramVersion: window.telegramSDK?.getVersion()
-                };
-                
-                elements.debugInfo.textContent = JSON.stringify(debugData, null, 2);
-            }
-            
-            // Event listeners for Telegram SDK
-            window.addEventListener('telegramReady', function(event) {
-                console.log('Telegram ready:', event.detail);
-                updateDebugInfo();
-            });
-            
-            window.addEventListener('authSuccess', function(event) {
-                console.log('Auth success:', event.detail);
-                showAuthStatus('2B>@870F8O CA?5H=0!');
-                showUserInfo(event.detail.user);
-                updateDebugInfo();
-                
-                // Hide loading, show app
-                elements.loading.classList.add('hidden');
-                elements.app.classList.remove('hidden');
-            });
-            
-            window.addEventListener('authError', function(event) {
-                console.error('Auth error:', event.detail);
-                showAuthStatus(`H81:0 02B>@870F88: ${event.detail.error}`, true);
-                updateDebugInfo();
-                
-                // Hide loading, show app
-                elements.loading.classList.add('hidden');
-                elements.app.classList.remove('hidden');
-            });
-            
-            window.addEventListener('authLogout', function(event) {
-                console.log('User logged out');
-                showAuthStatus('K 2KH;8 87 A8AB5<K');
-                elements.userInfo.classList.add('hidden');
-                updateDebugInfo();
-            });
-            
-            // Button event listeners
-            elements.refreshBtn.addEventListener('click', async function() {
-                this.disabled = true;
-                try {
-                    await window.authManager.refreshToken();
-                    showAuthStatus('">:5= >1=>2;5=');
-                    if (window.authManager.isAuthenticated()) {
-                        showUserInfo(window.authManager.getUser());
-                    }
-                } catch (error) {
-                    showAuthStatus(`H81:0 >1=>2;5=8O B>:5=0: ${error.message}`, true);
-                } finally {
-                    this.disabled = false;
-                }
-                updateDebugInfo();
-            });
-            
-            elements.logoutBtn.addEventListener('click', async function() {
-                this.disabled = true;
-                try {
-                    await window.authManager.logout();
-                } catch (error) {
-                    console.error('Logout error:', error);
-                } finally {
-                    this.disabled = false;
-                }
-            });
-            
-            elements.debugBtn.addEventListener('click', function() {
-                debugVisible = !debugVisible;
-                elements.debugInfo.classList.toggle('hidden', !debugVisible);
-                this.textContent = debugVisible ? '!:@KBL >B;04:C' : '>:070BL >B;04:C';
-                if (debugVisible) {
-                    updateDebugInfo();
-                }
-            });
-            
-            // Initial setup
-            updateDebugInfo();
-            
-            // Auto-hide loading after 10 seconds if nothing happens
-            setTimeout(() => {
-                if (!elements.loading.classList.contains('hidden')) {
-                    elements.loading.classList.add('hidden');
-                    elements.app.classList.remove('hidden');
-                    showAuthStatus('"09<0CB 8=8F80;870F88', true);
-                }
-            }, 10000);
-        });
-    </script>
+    <script src="js/router.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
