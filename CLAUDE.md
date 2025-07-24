@@ -82,6 +82,7 @@ npm install                     # Install dependencies
 # Health Check & Testing
 curl http://localhost:3001/api/health    # Check server status
 npm test                                 # Run full test suite with infrastructure, functionality, and production readiness checks
+claude-mon                               # Monitor remaining tokens in Claude Code
 ```
 
 ## Database Schema
