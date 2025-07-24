@@ -89,6 +89,10 @@ psql $DATABASE_URL                       # Connect to PostgreSQL directly
 # Development Workflow
 npm run dev                              # Primary development command
 npm test                                 # Verify setup and run tests
+
+# Debugging Commands
+NODE_ENV=development DEBUG=* npm run dev # Run with debug logging
+tail -f logs/app.log                     # Monitor application logs
 ```
 
 ## Database Schema
@@ -212,6 +216,15 @@ Current project status: **Feature Stage** - focusing on API implementation and d
 - **Load testing** for production readiness
 - **Progress tracking** with visual indicators in Russian
 
+### Model Testing
+All models follow strict testing criteria:
+- **Database record creation** with proper validation
+- **CRUD operations** working correctly
+- **Input validation** preventing invalid data
+- **Error handling** with consistent format `{success, data, error}`
+- **SQL injection protection** via parameterized queries
+- Models: User, Task, Attachment, Chat with full CRUD support
+
 ## Critical Architectural Details
 
 ### Unified Server Architecture
@@ -274,6 +287,15 @@ Modular JavaScript in `frontend/js/modules/`:
 - `calendar.js` - Calendar view for tasks
 - `settings.js` - User settings and preferences
 - `file-upload.js` - File attachment functionality
+
+### Security Architecture
+- **Telegram WebApp Authentication**: HMAC-SHA256 validation of initData
+- **JWT Token System**: Access and refresh tokens with proper expiration
+- **Rate Limiting**: Subscription-based limits (Free: 3 AI messages/day)
+- **File Validation**: MIME type checking and file size limits
+- **SQL Injection Protection**: Parameterized queries in all models
+- **CORS Configuration**: Restricted origins with credentials support
+- **Input Sanitization**: Comprehensive validation in all API endpoints
 
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.
