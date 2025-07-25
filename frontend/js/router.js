@@ -203,10 +203,10 @@ class Router {
             mainContent.innerHTML = `
                 <div class="page page--error">
                     <div class="error-content">
-                        <h2>!B@0=8F0 =5 =0945=0</h2>
-                        <p>0?@0H8205<0O AB@0=8F0 =5 ACI5AB2C5B</p>
+                        <h2>Страница не найдена</h2>
+                        <p>Запрашиваемая страница не существует</p>
                         <button onclick="router.navigate('/')" class="btn btn--primary">
-                            0 3;02=CN
+                            На главную
                         </button>
                     </div>
                 </div>
@@ -274,7 +274,7 @@ class Router {
         const currentDateElement = document.getElementById('currentDate');
         if (!currentDateElement) return;
 
-        let title = '!53>4=O';
+        let title = 'Сегодня';
         
         if (route.startsWith('/day/')) {
             const dateParam = this.currentParams.date;
@@ -288,9 +288,9 @@ class Router {
                     yesterday.setDate(yesterday.getDate() - 1);
 
                     if (this.isSameDay(date, today)) {
-                        title = '!53>4=O';
+                        title = 'Сегодня';
                     } else if (this.isSameDay(date, tomorrow)) {
-                        title = '02B@0';
+                        title = 'Завтра';
                     } else if (this.isSameDay(date, yesterday)) {
                         title = 'G5@0';
                     } else {
@@ -302,11 +302,11 @@ class Router {
                 }
             }
         } else if (route === '/ai') {
-            title = 'AI AA8AB5=B';
+            title = 'AI Ассистент';
         } else if (route === '/archive') {
             title = '@E82';
         } else if (route === '/settings') {
-            title = '0AB@>9:8';
+            title = 'Настройки';
         }
 
         currentDateElement.textContent = title;

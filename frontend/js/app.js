@@ -50,7 +50,7 @@ class TudushkaApp {
             
         } catch (error) {
             console.error('Failed to initialize app:', error);
-            this.showError('H81:0 8=8F80;870F88 ?@8;>65=8O');
+            this.showError('Ошибка инициализации приложения');
         }
     }
 
@@ -199,7 +199,7 @@ class TudushkaApp {
     handleAuthError(event) {
         console.error('Authentication failed:', event.detail);
         this.hideLoadingScreen();
-        this.showError(`H81:0 02B>@870F88: ${event.detail.error}`);
+        this.showError(`Ошибка авторизации: ${event.detail.error}`);
     }
 
     /**
@@ -230,7 +230,7 @@ class TudushkaApp {
                         <div class="loading-spinner">
                             <div class="spinner"></div>
                         </div>
-                        <p>03@C7:0 7040G...</p>
+                        <p>Загрузка задач...</p>
                     </div>
                 </div>
             </div>
@@ -255,7 +255,7 @@ class TudushkaApp {
                         <div class="loading-spinner">
                             <div class="spinner"></div>
                         </div>
-                        <p>03@C7:0 AI ?><>I=8:0...</p>
+                        <p>Загрузка AI помощника...</p>
                     </div>
                 </div>
             </div>
@@ -280,7 +280,7 @@ class TudushkaApp {
                         <div class="loading-spinner">
                             <div class="spinner"></div>
                         </div>
-                        <p>03@C7:0 0@E820...</p>
+                        <p>Загрузка архива...</p>
                     </div>
                 </div>
             </div>
@@ -305,7 +305,7 @@ class TudushkaApp {
                         <div class="loading-spinner">
                             <div class="spinner"></div>
                         </div>
-                        <p>03@C7:0 =0AB@>5:...</p>
+                        <p>Загрузка настроек...</p>
                     </div>
                 </div>
             </div>
@@ -330,7 +330,7 @@ class TudushkaApp {
                         <div class="loading-spinner">
                             <div class="spinner"></div>
                         </div>
-                        <p>03@C7:0 7040G =0 ${date}...</p>
+                        <p>Загрузка задач на ${date}...</p>
                     </div>
                 </div>
             </div>
@@ -427,19 +427,19 @@ class TudushkaApp {
      */
     showModulePlaceholder(moduleType) {
         const placeholders = {
-            'tasks': '>4C;L 7040G 1C45B 4>ABC?5= A:>@>',
-            'ai-chat': 'AI ?><>I=8: 1C45B 4>ABC?5= A:>@>',
-            'archive': '@E82 1C45B 4>ABC?5= A:>@>',
-            'settings': '0AB@>9:8 1C4CB 4>ABC?=K A:>@>',
-            'day-tasks': '@>A<>B@ 7040G ?> 4=O< 1C45B 4>ABC?5= A:>@>'
+            'tasks': 'Модуль задач будет доступен скоро',
+            'ai-chat': 'AI помощник будет доступен скоро',
+            'archive': 'Архив будет доступен скоро',
+            'settings': 'Настройки будут доступны скоро',
+            'day-tasks': 'Просмотр задач по дням будет доступен скоро'
         };
         
         const placeholder = document.querySelector('.page-loading-placeholder');
         if (placeholder) {
             placeholder.innerHTML = `
                 <div class="module-placeholder">
-                    <h3>${placeholders[moduleType] || '>4C;L =54>ABC?5='}</h3>
-                    <p>$C=:F8>=0;L=>ABL =0E>48BAO 2 @07@01>B:5</p>
+                    <h3>${placeholders[moduleType] || 'Модуль недоступен'}</h3>
+                    <p>Функциональность находится в разработке</p>
                 </div>
             `;
         }
@@ -478,10 +478,10 @@ class TudushkaApp {
                         </div>
                         <div class="profile-menu__actions">
                             <button onclick="router.navigate('/settings')" class="profile-menu__item">
-                                0AB@>9:8
+                                Настройки
                             </button>
                             <button onclick="app.handleLogout()" class="profile-menu__item profile-menu__item--danger">
-                                K9B8
+                                Выйти
                             </button>
                         </div>
                     </div>
@@ -556,10 +556,10 @@ class TudushkaApp {
             mainContent.innerHTML = `
                 <div class="page page--error">
                     <div class="error-content">
-                        <h2>@>87>H;0 >H81:0</h2>
+                        <h2>Произошла ошибка</h2>
                         <p>${message}</p>
                         <button onclick="location.reload()" class="btn btn--primary">
-                            5@5703@C78BL
+                            Перезагрузить
                         </button>
                     </div>
                 </div>

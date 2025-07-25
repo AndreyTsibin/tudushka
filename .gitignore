@@ -76,6 +76,9 @@ logs
 .claude/
 .claude.md
 
+# MCP configuration (LOCAL SETTINGS)
+.mcp.json
+
 
 # Security sensitive files
 *.key
