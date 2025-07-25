@@ -1,328 +1,295 @@
 /**
  * Calendar module for Tudushka
- * Handles calendar display, date selection and month navigation
+ * Handles calendar display and month view functionality
  */
 
 class CalendarModule {
     constructor() {
         this.currentDate = new Date();
         this.selectedDate = null;
-        this.onDateSelect = null;
-        this.months = [
-            'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
-        ];
-        this.weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+        this.tasksModule = null;
+        this.isInitialized = false;
     }
 
     /**
-     * Show date picker modal
-     * @param {Function} callback - Function to call when date is selected
+     * Initialize the calendar module
      */
-    showDatePicker(callback) {
-        this.onDateSelect = callback;
-        this.selectedDate = new Date();
+    async init() {
+        console.log('Initializing Calendar module...');
         
-        const modalContainer = document.getElementById('modal-container');
-        if (!modalContainer) return;
-
-        modalContainer.innerHTML = `
-            <div class="modal modal--calendar">
-                <div class="modal__backdrop"></div>
-                <div class="modal__content">
-                    <div class="modal__header">
-                        <h3>Выберите дату</h3>
-                        <button class="modal__close" aria-label="Закрыть">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                        </button>
-                    </div>
-                    
-                    <div class="calendar-container">
-                        <div class="calendar-header">
-                            <button class="calendar-nav-btn" id="prevMonth" aria-label="Предыдущий месяц">
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                    <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                            
-                            <div class="calendar-title" id="calendarTitle">
-                                ${this.months[this.currentDate.getMonth()]} ${this.currentDate.getFullYear()}
-                            </div>
-                            
-                            <button class="calendar-nav-btn" id="nextMonth" aria-label="Следующий месяц">
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                    <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </button>
-                        </div>
-                        
-                        <div class="calendar-grid">
-                            <div class="calendar-weekdays">
-                                ${this.weekDays.map(day => `<div class="calendar-weekday">${day}</div>`).join('')}
-                            </div>
-                            
-                            <div class="calendar-days" id="calendarDays">
-                                ${this.renderCalendarDays()}
-                            </div>
-                        </div>
-                        
-                        <div class="calendar-actions">
-                            <button class="btn btn--secondary" id="cancelCalendar">Отмена</button>
-                            <button class="btn btn--primary" id="selectToday">Сегодня</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        this.setupCalendarEventListeners();
-    }
-
-    /**
-     * Render calendar days for current month
-     */
-    renderCalendarDays() {
-        const year = this.currentDate.getFullYear();
-        const month = this.currentDate.getMonth();
-        
-        // First day of the month
-        const firstDay = new Date(year, month, 1);
-        // Last day of the month
-        const lastDay = new Date(year, month + 1, 0);
-        
-        // Get first Monday before or on the first day
-        const startDate = new Date(firstDay);
-        const dayOfWeek = firstDay.getDay();
-        const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-        startDate.setDate(firstDay.getDate() - mondayOffset);
-        
-        const days = [];
-        const today = new Date();
-        const currentDate = new Date(startDate);
-        
-        // Generate 6 weeks (42 days) to fill the calendar grid
-        for (let i = 0; i < 42; i++) {
-            const isCurrentMonth = currentDate.getMonth() === month;
-            const isToday = currentDate.toDateString() === today.toDateString();
-            const isSelected = this.selectedDate && currentDate.toDateString() === this.selectedDate.toDateString();
+        try {
+            this.currentDate = new Date();
+            this.setupEventListeners();
+            this.renderCalendar();
+            this.isInitialized = true;
             
-            let classes = ['calendar-day'];
-            if (!isCurrentMonth) classes.push('calendar-day--other-month');
-            if (isToday) classes.push('calendar-day--today');
-            if (isSelected) classes.push('calendar-day--selected');
-            
-            const dateStr = currentDate.toISOString().split('T')[0];
-            
-            days.push(`
-                <button class="${classes.join(' ')}" data-date="${dateStr}" type="button">
-                    ${currentDate.getDate()}
-                </button>
-            `);
-            
-            currentDate.setDate(currentDate.getDate() + 1);
+            console.log('Calendar module initialized successfully');
+        } catch (error) {
+            console.error('Failed to initialize calendar module:', error);
         }
-        
-        return days.join('');
     }
 
     /**
-     * Setup calendar event listeners
+     * Set tasks module reference for data integration
      */
-    setupCalendarEventListeners() {
-        const modalContainer = document.getElementById('modal-container');
-        if (!modalContainer) return;
+    setTasksModule(tasksModule) {
+        this.tasksModule = tasksModule;
+    }
 
-        // Close modal handlers
-        const closeBtn = modalContainer.querySelector('.modal__close');
-        const cancelBtn = modalContainer.querySelector('#cancelCalendar');
-        const backdrop = modalContainer.querySelector('.modal__backdrop');
+    /**
+     * Setup event listeners for calendar navigation
+     */
+    setupEventListeners() {
+        const prevBtn = document.getElementById('prevMonth');
+        const nextBtn = document.getElementById('nextMonth');
 
-        [closeBtn, cancelBtn, backdrop].forEach(element => {
-            if (element) {
-                element.addEventListener('click', () => {
-                    modalContainer.innerHTML = '';
-                });
-            }
-        });
-
-        // Month navigation
-        const prevBtn = modalContainer.querySelector('#prevMonth');
-        const nextBtn = modalContainer.querySelector('#nextMonth');
-        
         if (prevBtn) {
             prevBtn.addEventListener('click', () => {
                 this.currentDate.setMonth(this.currentDate.getMonth() - 1);
-                this.updateCalendar();
+                this.renderCalendar();
             });
         }
-        
+
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
                 this.currentDate.setMonth(this.currentDate.getMonth() + 1);
-                this.updateCalendar();
+                this.renderCalendar();
             });
         }
-
-        // Today button
-        const todayBtn = modalContainer.querySelector('#selectToday');
-        if (todayBtn) {
-            todayBtn.addEventListener('click', () => {
-                const today = new Date();
-                this.selectDate(today.toISOString().split('T')[0]);
-            });
-        }
-
-        // Date selection
-        this.setupDayClickListeners();
     }
 
     /**
-     * Setup click listeners for calendar days
+     * Render the calendar grid
      */
-    setupDayClickListeners() {
-        const dayButtons = document.querySelectorAll('.calendar-day');
-        dayButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const dateStr = button.getAttribute('data-date');
-                this.selectDate(dateStr);
-            });
-        });
-    }
+    renderCalendar() {
+        const monthYearEl = document.getElementById('calendarMonthYear');
+        const calendarDaysEl = document.getElementById('calendarDays');
 
-    /**
-     * Update calendar display after month change
-     */
-    updateCalendar() {
-        const titleElement = document.getElementById('calendarTitle');
-        const daysElement = document.getElementById('calendarDays');
-        
-        if (titleElement) {
-            titleElement.textContent = `${this.months[this.currentDate.getMonth()]} ${this.currentDate.getFullYear()}`;
-        }
-        
-        if (daysElement) {
-            daysElement.innerHTML = this.renderCalendarDays();
-            this.setupDayClickListeners();
-        }
-    }
+        if (!monthYearEl || !calendarDaysEl) return;
 
-    /**
-     * Select a date and close the calendar
-     */
-    selectDate(dateStr) {
-        this.selectedDate = new Date(dateStr);
-        
-        // Update visual selection
-        const dayButtons = document.querySelectorAll('.calendar-day');
-        dayButtons.forEach(button => {
-            button.classList.remove('calendar-day--selected');
-            if (button.getAttribute('data-date') === dateStr) {
-                button.classList.add('calendar-day--selected');
-            }
-        });
+        // Update month/year header
+        const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+        monthYearEl.textContent = `${monthNames[this.currentDate.getMonth()]} ${this.currentDate.getFullYear()}`;
 
-        // Call the callback with the selected date
-        if (this.onDateSelect) {
-            this.onDateSelect(dateStr);
-        }
+        // Generate calendar days
+        const firstDay = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
+        const lastDay = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 0);
+        const startDate = new Date(firstDay);
+        startDate.setDate(startDate.getDate() - firstDay.getDay());
 
-        // Close modal
-        const modalContainer = document.getElementById('modal-container');
-        if (modalContainer) {
-            modalContainer.innerHTML = '';
-        }
-    }
-
-    /**
-     * Get current month name
-     */
-    getCurrentMonthName() {
-        return this.months[this.currentDate.getMonth()];
-    }
-
-    /**
-     * Get current year
-     */
-    getCurrentYear() {
-        return this.currentDate.getFullYear();
-    }
-
-    /**
-     * Format date for display
-     */
-    formatDate(date) {
-        if (typeof date === 'string') {
-            date = new Date(date);
-        }
-        
+        let daysHTML = '';
         const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
 
-        if (date.toDateString() === today.toDateString()) {
-            return 'Сегодня';
-        } else if (date.toDateString() === tomorrow.toDateString()) {
-            return 'Завтра';
-        } else if (date.toDateString() === yesterday.toDateString()) {
-            return 'Вчера';
+        for (let i = 0; i < 42; i++) { // 6 weeks * 7 days
+            const currentDay = new Date(startDate);
+            currentDay.setDate(startDate.getDate() + i);
+
+            const isCurrentMonth = currentDay.getMonth() === this.currentDate.getMonth();
+            const isToday = currentDay.toDateString() === today.toDateString();
+            
+            // Format date correctly to avoid timezone issues
+            const year = currentDay.getFullYear();
+            const month = String(currentDay.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDay.getDate()).padStart(2, '0');
+            const dateKey = `${year}-${month}-${day}`;
+            
+            const hasTasks = this.hasTasksForDate(dateKey);
+
+            let classes = ['calendar-day'];
+            if (!isCurrentMonth) classes.push('calendar-day--other-month');
+            if (isToday) classes.push('calendar-day--today');
+            if (hasTasks) classes.push('calendar-day--has-tasks');
+
+            daysHTML += `
+                <div class="${classes.join(' ')}" data-date="${dateKey}">
+                    ${currentDay.getDate()}
+                </div>
+            `;
+        }
+
+        calendarDaysEl.innerHTML = daysHTML;
+
+        // Add click listeners to calendar days
+        const dayElements = calendarDaysEl.querySelectorAll('.calendar-day');
+        dayElements.forEach(dayEl => {
+            dayEl.addEventListener('click', (e) => {
+                const dateAttr = e.target.getAttribute('data-date');
+                if (dateAttr) {
+                    this.selectDate(dateAttr);
+                }
+            });
+        });
+    }
+
+    /**
+     * Select a date and show tasks for that date
+     */
+    selectDate(dateString) {
+        // Remove previous selection
+        const prevSelected = document.querySelector('.calendar-day--selected');
+        if (prevSelected) {
+            prevSelected.classList.remove('calendar-day--selected');
+        }
+
+        // Add selection to clicked day
+        const selectedEl = document.querySelector(`[data-date="${dateString}"]`);
+        if (selectedEl) {
+            selectedEl.classList.add('calendar-day--selected');
+        }
+
+        this.selectedDate = dateString;
+        this.showTasksForDate(dateString);
+    }
+
+    /**
+     * Show tasks for selected date
+     */
+    showTasksForDate(dateString) {
+        const selectedDayInfo = document.getElementById('selectedDayInfo');
+        const selectedDayTasks = document.getElementById('selectedDayTasks');
+
+        if (!selectedDayInfo || !selectedDayTasks) return;
+
+        // Get tasks for this date
+        const tasks = this.getTasksForDate(dateString);
+
+        if (tasks.length === 0) {
+            selectedDayTasks.innerHTML = `
+                <div class="no-tasks-message">
+                    На этот день задач нет
+                </div>
+            `;
         } else {
-            return date.toLocaleDateString('ru-RU', {
-                day: 'numeric',
-                month: 'long'
-            });
+            const tasksHTML = tasks.map(task => this.renderTaskItem(task, dateString)).join('');
+            selectedDayTasks.innerHTML = tasksHTML;
         }
+
+        selectedDayInfo.style.display = 'block';
     }
 
     /**
-     * Check if date is today
+     * Check if date has tasks
      */
-    isToday(date) {
-        if (typeof date === 'string') {
-            date = new Date(date);
-        }
-        const today = new Date();
-        return date.toDateString() === today.toDateString();
+    hasTasksForDate(dateString) {
+        if (!this.tasksModule || !this.tasksModule.allTasks) return false;
+        
+        const tasks = this.getTasksForDate(dateString);
+        return tasks.length > 0;
     }
 
     /**
-     * Check if date is in current month
+     * Get tasks for specific date
      */
-    isCurrentMonth(date) {
-        if (typeof date === 'string') {
-            date = new Date(date);
-        }
-        const current = new Date();
-        return date.getMonth() === current.getMonth() && 
-               date.getFullYear() === current.getFullYear();
-    }
-
-    /**
-     * Get days in month
-     */
-    getDaysInMonth(year, month) {
-        return new Date(year, month + 1, 0).getDate();
-    }
-
-    /**
-     * Get week number
-     */
-    getWeekNumber(date) {
-        if (typeof date === 'string') {
-            date = new Date(date);
+    getTasksForDate(dateString) {
+        if (!this.tasksModule || !this.tasksModule.allTasks) {
+            // Fallback to mock data if tasks module not available
+            const mockTasks = {
+                '2025-07-25': [
+                    {
+                        id: 1,
+                        title: 'Заголовок задачи которую нужно выполнить',
+                        description: 'Описание задачи если есть, Описание задачи если есть, Описание задачи если есть.....',
+                        time: '14:30',
+                        priority: 'urgent'
+                    }
+                ],
+                '2025-07-26': [
+                    {
+                        id: 2,
+                        title: 'Вторая задача',
+                        description: 'Описание второй задачи',
+                        time: '10:00',
+                        priority: 'medium'
+                    }
+                ]
+            };
+            return mockTasks[dateString] || [];
         }
         
-        const target = new Date(date.valueOf());
-        const dayNr = (date.getDay() + 6) % 7;
-        target.setDate(target.getDate() - dayNr + 3);
-        const jan4 = new Date(target.getFullYear(), 0, 4);
-        const dayDiff = (target - jan4) / 86400000;
-        return 1 + Math.ceil(dayDiff / 7);
+        return this.tasksModule.getTasksForDate(dateString);
+    }
+
+    /**
+     * Render individual task item for calendar
+     */
+    renderTaskItem(task, dateString) {
+        // Parse date correctly - add timezone offset to avoid date shift
+        const date = new Date(dateString + 'T12:00:00');
+        const monthNames = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+            'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+
+        const priorityText = this.getPriorityText(task.priority);
+        const priorityClass = `task-priority--${task.priority}`;
+        
+        return `
+            <div class="task-item" data-task-id="${task.id}">
+                <div class="task-header">
+                    ${task.priority === 'urgent' ? `<div class="task-priority ${priorityClass}">${priorityText}</div>` : ''}
+                    <div class="task-time">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M7 3V7L9.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        ${task.time || task.due_date ? this.formatTime(task.due_date || task.time) : ''}
+                    </div>
+                    <div class="task-date">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <rect x="2" y="3" width="10" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M5 1V3M9 1V3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M2 6H12" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        ${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}
+                    </div>
+                </div>
+                
+                <div class="task-content">
+                    <h3 class="task-title">${task.title}</h3>
+                    ${task.description ? `<p class="task-description">${task.description}</p>` : ''}
+                </div>
+                
+                <div class="task-footer">
+                    <button class="task-complete-btn">
+                        Завершить
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Get priority text in Russian
+     */
+    getPriorityText(priority) {
+        const priorityMap = {
+            'urgent': 'Срочно',
+            'high': 'Высокий',
+            'medium': 'Средний',
+            'low': 'Низкий'
+        };
+        return priorityMap[priority] || 'Средний';
+    }
+
+    /**
+     * Format time for display
+     */
+    formatTime(timeString) {
+        if (!timeString) return '';
+        
+        if (timeString.includes(':') && timeString.length <= 5) {
+            return timeString; // Already formatted as HH:MM
+        }
+        
+        const date = new Date(timeString);
+        return date.toLocaleTimeString('ru-RU', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
     }
 }
+
+// Create global CalendarManager for compatibility
+window.CalendarManager = new CalendarModule();
 
 // Export the module
 if (typeof window !== 'undefined') {

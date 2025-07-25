@@ -41,6 +41,10 @@ class TasksModule {
      */
     setupTabSwitching() {
         const tabs = document.querySelectorAll('.date-tab');
+        const todayView = document.getElementById('todayView');
+        const weekView = document.getElementById('weekView');
+        const monthView = document.getElementById('monthView');
+        
         tabs.forEach(tab => {
             tab.addEventListener('click', (e) => {
                 // Remove active class from all tabs
@@ -52,10 +56,29 @@ class TasksModule {
                 // Update current period
                 this.currentPeriod = e.target.getAttribute('data-period');
                 
-                // Reload tasks for selected period
-                this.loadTasks();
+                // Hide all views
+                if (todayView) todayView.style.display = 'none';
+                if (weekView) weekView.style.display = 'none';
+                if (monthView) monthView.style.display = 'none';
+                
+                // Show appropriate view
+                if (this.currentPeriod === 'today' && todayView) {
+                    todayView.style.display = 'block';
+                    this.loadTasks('today');
+                } else if (this.currentPeriod === 'week' && weekView) {
+                    weekView.style.display = 'block';
+                    this.loadWeekTasks();
+                } else if (this.currentPeriod === 'month' && monthView) {
+                    monthView.style.display = 'block';
+                    this.initializeCalendar();
+                }
             });
         });
+        
+        // Initialize with today view
+        if (todayView) {
+            todayView.style.display = 'block';
+        }
     }
 
     /**
@@ -88,13 +111,13 @@ class TasksModule {
     /**
      * Load tasks from API
      */
-    async loadTasks() {
+    async loadTasks(period = 'today') {
         this.isLoading = true;
-        this.showLoading();
+        this.showLoading(period);
         
         try {
             // Mock data for now since API returns 501
-            this.tasks = [
+            this.allTasks = [
                 {
                     id: 1,
                     title: 'Заголовок задачи которую нужно выполнить',
@@ -112,10 +135,20 @@ class TasksModule {
                     due_date: '2025-07-26T10:00:00.000Z',
                     priority: 'medium',
                     created_at: new Date().toISOString()
+                },
+                {
+                    id: 3,
+                    title: 'Задача на следующую неделю',
+                    description: 'Долгосрочная задача',
+                    completed: false,
+                    due_date: '2025-08-01T09:00:00.000Z',
+                    priority: 'low',
+                    created_at: new Date().toISOString()
                 }
             ];
             
-            this.renderTasks();
+            this.tasks = this.filterTasksByPeriod(this.allTasks, period);
+            this.renderTasks(period);
             
         } catch (error) {
             console.error('Failed to load tasks:', error);
@@ -128,8 +161,9 @@ class TasksModule {
     /**
      * Show loading state
      */
-    showLoading() {
-        const container = document.getElementById('tasksContainer');
+    showLoading(period = 'today') {
+        const containerId = period === 'week' ? 'weekTasksContainer' : 'tasksContainer';
+        const container = document.getElementById(containerId);
         if (container) {
             container.innerHTML = `
                 <div class="tasks-loading">
@@ -145,8 +179,9 @@ class TasksModule {
     /**
      * Render tasks list
      */
-    renderTasks() {
-        const container = document.getElementById('tasksContainer');
+    renderTasks(period = 'today') {
+        const containerId = period === 'week' ? 'weekTasksContainer' : 'tasksContainer';
+        const container = document.getElementById(containerId);
         if (!container) return;
 
         if (this.tasks.length === 0) {
@@ -165,8 +200,12 @@ class TasksModule {
             return;
         }
 
-        const tasksHTML = this.tasks.map(task => this.renderTaskItem(task)).join('');
-        container.innerHTML = tasksHTML;
+        if (period === 'week') {
+            this.renderWeekTasks();
+        } else {
+            const tasksHTML = this.tasks.map(task => this.renderTaskItem(task)).join('');
+            container.innerHTML = tasksHTML;
+        }
     }
 
     /**
@@ -401,7 +440,7 @@ class TasksModule {
             created_at: new Date().toISOString()
         };
 
-        this.tasks.unshift(newTask);
+        if (!this.allTasks) this.allTasks = [];\n        this.allTasks.unshift(newTask);\n        this.tasks.unshift(newTask);
         this.renderTasks();
 
         // Close modal
