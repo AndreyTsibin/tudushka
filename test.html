@@ -6,13 +6,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#007AFF">
-    <title>Тудушка - ToDo с AI помощником</title>
+    <title>Тудушка - Test</title>
     
     <!-- Styles -->
-    <link rel="stylesheet" href="css/main.css">
-    
-    <!-- Telegram Web Apps SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="frontend/css/main.css">
 </head>
 <body style="background-color: #F2F2F7;">
     <div id="app">
@@ -307,6 +304,7 @@
     <div id="modal-container" class="modal-container"></div>
 
     <!-- Scripts -->
+    <script src="frontend/js/modules/tasks.js"></script>
     <script>
         // Calendar functionality
         const CalendarManager = {
@@ -516,16 +514,16 @@
                     const period = e.target.getAttribute('data-period');
                     
                     // Hide all views first
-                    if (todayView) todayView.style.display = 'none';
-                    if (weekView) weekView.style.display = 'none';
-                    if (monthView) monthView.style.display = 'none';
+                    todayView.style.display = 'none';
+                    weekView.style.display = 'none';
+                    monthView.style.display = 'none';
                     
                     // Show appropriate view
-                    if (period === 'today' && todayView) {
+                    if (period === 'today') {
                         todayView.style.display = 'block';
-                    } else if (period === 'week' && weekView) {
+                    } else if (period === 'week') {
                         weekView.style.display = 'block';
-                    } else if (period === 'month' && monthView) {
+                    } else if (period === 'month') {
                         monthView.style.display = 'block';
                         // Initialize calendar if not already done
                         if (!CalendarManager.isInitialized) {
@@ -541,6 +539,12 @@
         document.addEventListener('DOMContentLoaded', async () => {
             // Setup tab switching
             setupTabSwitching();
+            
+            // Initialize tasks module
+            if (window.TasksModule) {
+                const tasksModule = new window.TasksModule();
+                await tasksModule.init();
+            }
         });
     </script>
 </body>

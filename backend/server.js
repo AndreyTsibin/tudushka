@@ -168,7 +168,9 @@ function startFrontendServer() {
               } else {
                 res.writeHead(200, { 
                   'Content-Type': 'text/html',
-                  'Cache-Control': 'no-cache'
+                  'Cache-Control': 'no-cache, no-store, must-revalidate',
+                  'Pragma': 'no-cache',
+                  'Expires': '0'
                 });
                 res.end(indexContent, 'utf-8');
               }
@@ -182,9 +184,25 @@ function startFrontendServer() {
           res.end('Server Error: ' + error.code);
         }
       } else {
+        // Set cache control based on environment and file type
+        let cacheControl;
+        if (process.env.NODE_ENV === 'development') {
+          // In development, disable caching for JS, CSS, and HTML files
+          if (['.html', '.js', '.css'].includes(extname)) {
+            cacheControl = 'no-cache, no-store, must-revalidate';
+          } else {
+            cacheControl = 'no-cache';
+          }
+        } else {
+          // In production, cache static assets but not HTML
+          cacheControl = extname === '.html' ? 'no-cache' : 'public, max-age=86400';
+        }
+        
         res.writeHead(200, { 
           'Content-Type': contentType,
-          'Cache-Control': extname === '.html' ? 'no-cache' : 'public, max-age=86400'
+          'Cache-Control': cacheControl,
+          'Pragma': 'no-cache',
+          'Expires': '0'
         });
         res.end(content, 'utf-8');
       }

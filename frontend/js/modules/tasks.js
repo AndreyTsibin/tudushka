@@ -159,6 +159,212 @@ class TasksModule {
     }
 
     /**
+     * Filter tasks by period
+     */
+    filterTasksByPeriod(tasks, period) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        switch (period) {
+            case 'today':
+                return tasks.filter(task => {
+                    if (!task.due_date) return true;
+                    const dueDate = new Date(task.due_date);
+                    dueDate.setHours(0, 0, 0, 0);
+                    return dueDate.getTime() === today.getTime();
+                });
+            case 'week':
+                const weekStart = new Date(today);
+                weekStart.setDate(today.getDate() - today.getDay());
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekStart.getDate() + 6);
+                weekEnd.setHours(23, 59, 59, 999);
+                
+                return tasks.filter(task => {
+                    if (!task.due_date) return true;
+                    const dueDate = new Date(task.due_date);
+                    return dueDate >= weekStart && dueDate <= weekEnd;
+                });
+            case 'month':
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                monthEnd.setHours(23, 59, 59, 999);
+                
+                return tasks.filter(task => {
+                    if (!task.due_date) return true;
+                    const dueDate = new Date(task.due_date);
+                    return dueDate >= monthStart && dueDate <= monthEnd;
+                });
+            default:
+                return tasks;
+        }
+    }
+
+    /**
+     * Load week tasks
+     */
+    async loadWeekTasks() {
+        this.isLoading = true;
+        this.showLoading('week');
+        
+        try {
+            // Use existing tasks data
+            if (!this.allTasks) {
+                await this.loadTasks();
+            }
+            
+            this.tasks = this.filterTasksByPeriod(this.allTasks, 'week');
+            this.renderWeekTasks();
+            
+        } catch (error) {
+            console.error('Failed to load week tasks:', error);
+            this.showError('Ошибка загрузки задач на неделю');
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    /**
+     * Render week tasks grouped by days
+     */
+    renderWeekTasks() {
+        const container = document.getElementById('weekTasksContainer');
+        if (!container) return;
+
+        if (this.tasks.length === 0) {
+            container.innerHTML = `
+                <div class="tasks-empty">
+                    <div class="tasks-empty__icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4C35.046 4 44 12.954 44 24C44 35.046 35.046 44 24 44C12.954 44 4 35.046 4 24C4 12.954 12.954 4 24 4Z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M16 24L22 30L32 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Нет задач на эту неделю</h3>
+                    <p>Добавьте задачи на текущую неделю</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Group tasks by date
+        const tasksByDate = {};
+        const today = new Date();
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay());
+        
+        // Create all 7 days of the week
+        for (let i = 0; i < 7; i++) {
+            const day = new Date(weekStart);
+            day.setDate(weekStart.getDate() + i);
+            const dateKey = day.toISOString().split('T')[0];
+            tasksByDate[dateKey] = [];
+        }
+        
+        // Add tasks to appropriate dates
+        this.tasks.forEach(task => {
+            if (task.due_date) {
+                const taskDate = new Date(task.due_date);
+                const dateKey = taskDate.toISOString().split('T')[0];
+                if (tasksByDate[dateKey]) {
+                    tasksByDate[dateKey].push(task);
+                }
+            }
+        });
+
+        // Render days with tasks
+        const dayNames = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+        let weekHTML = '';
+        
+        Object.keys(tasksByDate).sort().forEach(dateKey => {
+            const date = new Date(dateKey + 'T12:00:00');
+            const dayName = dayNames[date.getDay()];
+            const dateText = date.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            
+            const dayTasks = tasksByDate[dateKey];
+            
+            weekHTML += `
+                <div class="day-section">
+                    <h3 class="day-header">${dayName}: ${dateText}</h3>
+                    <div class="day-tasks">
+            `;
+            
+            if (dayTasks.length === 0) {
+                weekHTML += '<div class="no-tasks-message">На этот день задач нет</div>';
+            } else {
+                dayTasks.forEach(task => {
+                    weekHTML += this.renderTaskItem(task);
+                });
+            }
+            
+            weekHTML += `
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = weekHTML;
+    }
+
+    /**
+     * Initialize calendar functionality
+     */
+    initializeCalendar() {
+        // This will be handled by the CalendarModule
+        // For now, just ensure the calendar is visible and working
+        if (window.CalendarModule && typeof window.CalendarModule.init === 'function') {
+            window.CalendarModule.init();
+        } else {
+            console.warn('CalendarModule not found, using basic calendar functionality');
+            this.initBasicCalendar();
+        }
+    }
+
+    /**
+     * Initialize basic calendar if CalendarModule is not available
+     */
+    initBasicCalendar() {
+        const calendarDays = document.getElementById('calendarDays');
+        if (!calendarDays) return;
+        
+        // Basic calendar implementation
+        const today = new Date();
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+        
+        const firstDay = new Date(currentYear, currentMonth, 1);
+        const lastDay = new Date(currentYear, currentMonth + 1, 0);
+        const startDate = new Date(firstDay);
+        startDate.setDate(startDate.getDate() - firstDay.getDay());
+        
+        let daysHTML = '';
+        
+        for (let i = 0; i < 42; i++) {
+            const currentDay = new Date(startDate);
+            currentDay.setDate(startDate.getDate() + i);
+            
+            const isCurrentMonth = currentDay.getMonth() === currentMonth;
+            const isToday = currentDay.toDateString() === today.toDateString();
+            
+            let classes = ['calendar-day'];
+            if (!isCurrentMonth) classes.push('calendar-day--other-month');
+            if (isToday) classes.push('calendar-day--today');
+            
+            daysHTML += `
+                <div class="${classes.join(' ')}" data-date="${currentDay.toISOString().split('T')[0]}">
+                    ${currentDay.getDate()}
+                </div>
+            `;
+        }
+        
+        calendarDays.innerHTML = daysHTML;
+    }
+
+    /**
      * Show loading state
      */
     showLoading(period = 'today') {
@@ -440,7 +646,9 @@ class TasksModule {
             created_at: new Date().toISOString()
         };
 
-        if (!this.allTasks) this.allTasks = [];\n        this.allTasks.unshift(newTask);\n        this.tasks.unshift(newTask);
+        if (!this.allTasks) this.allTasks = [];
+        this.allTasks.unshift(newTask);
+        this.tasks.unshift(newTask);
         this.renderTasks();
 
         // Close modal
