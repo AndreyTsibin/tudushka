@@ -6,7 +6,7 @@
 class TasksModule {
     constructor() {
         this.tasks = [];
-        this.container = null;
+        this.currentPeriod = 'today';
         this.isLoading = false;
     }
 
@@ -17,62 +17,51 @@ class TasksModule {
         console.log('Initializing Tasks module...');
         
         try {
-            this.container = document.querySelector('.tasks-container');
-            if (!this.container) {
-                console.error('Tasks container not found');
-                return;
-            }
-
-            // Render initial UI
-            this.renderTasksInterface();
+            // Setup tab switching
+            this.setupTabSwitching();
             
             // Load tasks from API
             await this.loadTasks();
             
+            // Setup add task button
+            this.setupAddTaskButton();
+            
+            // Setup task interactions
+            this.setupTaskInteractions();
+            
             console.log('Tasks module initialized successfully');
         } catch (error) {
             console.error('Failed to initialize tasks module:', error);
-            this.showError('Ошибка загрузки модуля задач');
+            this.showError('Ошибка загрузки модуля задач');
         }
     }
 
     /**
-     * Render the main tasks interface
+     * Setup tab switching functionality
      */
-    renderTasksInterface() {
-        if (!this.container) return;
-
-        this.container.innerHTML = `
-            <div class="tasks-view">
-                <div class="tasks-header">
-                    <div class="tasks-header__actions">
-                        <button class="btn btn--primary" id="addTaskBtn">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                            Добавить задачу
-                        </button>
-                    </div>
-                </div>
+    setupTabSwitching() {
+        const tabs = document.querySelectorAll('.date-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('date-tab--active'));
                 
-                <div class="tasks-list" id="tasksList">
-                    <div class="tasks-loading">
-                        <div class="loading-spinner">
-                            <div class="spinner"></div>
-                        </div>
-                        <p>03@C7:0 7040G...</p>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        this.setupEventListeners();
+                // Add active class to clicked tab
+                e.target.classList.add('date-tab--active');
+                
+                // Update current period
+                this.currentPeriod = e.target.getAttribute('data-period');
+                
+                // Reload tasks for selected period
+                this.loadTasks();
+            });
+        });
     }
 
     /**
-     * Setup event listeners for tasks interface
+     * Setup add task button
      */
-    setupEventListeners() {
+    setupAddTaskButton() {
         const addTaskBtn = document.getElementById('addTaskBtn');
         if (addTaskBtn) {
             addTaskBtn.addEventListener('click', () => {
@@ -82,29 +71,47 @@ class TasksModule {
     }
 
     /**
+     * Setup task interactions (complete buttons, etc.)
+     */
+    setupTaskInteractions() {
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('task-complete-btn')) {
+                const taskItem = e.target.closest('.task-item');
+                const taskId = taskItem.getAttribute('data-task-id');
+                if (taskId) {
+                    this.completeTask(parseInt(taskId));
+                }
+            }
+        });
+    }
+
+    /**
      * Load tasks from API
      */
     async loadTasks() {
         this.isLoading = true;
+        this.showLoading();
         
         try {
-            // For now, show mock data since API returns 501
+            // Mock data for now since API returns 501
             this.tasks = [
                 {
                     id: 1,
-                    title: '@8<5@ 7040G8',
-                    description: '-B> 45<>=AB@0F8>==0O 7040G0',
+                    title: 'Заголовок задачи которую нужно выполнить',
+                    description: 'Описание задачи если есть, Описание задачи если есть, Описание задачи если есть.....',
                     completed: false,
-                    due_date: new Date().toISOString(),
-                    priority: 'medium'
+                    due_date: '2025-07-25T14:30:00.000Z',
+                    priority: 'urgent',
+                    created_at: new Date().toISOString()
                 },
                 {
                     id: 2,
-                    title: '025@H5==0O 7040G0',
-                    description: '-B0 7040G0 C65 2K?>;=5=0',
-                    completed: true,
-                    due_date: new Date().toISOString(),
-                    priority: 'low'
+                    title: 'Вторая задача на завтра',
+                    description: 'Описание второй задачи',
+                    completed: false,
+                    due_date: '2025-07-26T10:00:00.000Z',
+                    priority: 'medium',
+                    created_at: new Date().toISOString()
                 }
             ];
             
@@ -112,9 +119,26 @@ class TasksModule {
             
         } catch (error) {
             console.error('Failed to load tasks:', error);
-            this.showError('H81:0 703@C7:8 7040G');
+            this.showError('Ошибка загрузки задач');
         } finally {
             this.isLoading = false;
+        }
+    }
+
+    /**
+     * Show loading state
+     */
+    showLoading() {
+        const container = document.getElementById('tasksContainer');
+        if (container) {
+            container.innerHTML = `
+                <div class="tasks-loading">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                    </div>
+                    <p>Загрузка задач...</p>
+                </div>
+            `;
         }
     }
 
@@ -122,11 +146,11 @@ class TasksModule {
      * Render tasks list
      */
     renderTasks() {
-        const tasksList = document.getElementById('tasksList');
-        if (!tasksList) return;
+        const container = document.getElementById('tasksContainer');
+        if (!container) return;
 
         if (this.tasks.length === 0) {
-            tasksList.innerHTML = `
+            container.innerHTML = `
                 <div class="tasks-empty">
                     <div class="tasks-empty__icon">
                         <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -134,67 +158,57 @@ class TasksModule {
                             <path d="M16 24L22 30L32 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
-                    <h3>Нет задач</h3>
-                    <p>Добавьте первую задачу, чтобы начать работу</p>
+                    <h3>Нет задач</h3>
+                    <p>Добавьте первую задачу, чтобы начать работу</p>
                 </div>
             `;
             return;
         }
 
         const tasksHTML = this.tasks.map(task => this.renderTaskItem(task)).join('');
-        tasksList.innerHTML = `
-            <div class="tasks-items">
-                ${tasksHTML}
-            </div>
-        `;
-
-        this.setupTaskEventListeners();
+        container.innerHTML = tasksHTML;
     }
 
     /**
      * Render individual task item
      */
     renderTaskItem(task) {
+        const priorityText = this.getPriorityText(task.priority);
         const priorityClass = `task-priority--${task.priority}`;
-        const completedClass = task.completed ? 'task-item--completed' : '';
+        const timeText = this.formatTime(task.due_date);
+        const dateText = this.formatDate(task.due_date);
         
         return `
-            <div class="task-item ${completedClass}" data-task-id="${task.id}">
-                <div class="task-item__checkbox">
-                    <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''}>
-                    <label for="task-${task.id}"></label>
-                </div>
-                
-                <div class="task-item__content">
-                    <div class="task-item__header">
-                        <h4 class="task-item__title">${task.title}</h4>
-                        <div class="task-item__priority ${priorityClass}"></div>
+            <div class="task-item" data-task-id="${task.id}">
+                <div class="task-header">
+                    <div class="task-priority ${priorityClass}">
+                        ${priorityText}
                     </div>
-                    
-                    ${task.description ? `<p class="task-item__description">${task.description}</p>` : ''}
-                    
-                    ${task.due_date ? `
-                        <div class="task-item__meta">
-                            <span class="task-item__date">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                    <path d="M2 6H14M2 8V12C2 12.5304 2.21071 13.0391 2.58579 13.4142C2.96086 13.7893 3.46957 14 4 14H12C12.5304 14 13.0391 13.7893 13.4142 13.4142C13.7893 13.0391 14 12.5304 14 12V8M2 8V6C2 5.46957 2.21071 4.96086 2.58579 4.58579C2.96086 4.21071 3.46957 4 4 4H12C12.5304 4 13.0391 4.21071 13.4142 4.58579C13.7893 4.96086 14 5.46957 14 6V8" stroke="currentColor" stroke-width="1.5"/>
-                                </svg>
-                                ${this.formatDate(task.due_date)}
-                            </span>
-                        </div>
-                    ` : ''}
+                    <div class="task-time">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M7 3V7L9.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        ${timeText}
+                    </div>
+                    <div class="task-date">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <rect x="2" y="3" width="10" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M5 1V3M9 1V3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M2 6H12" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        ${dateText}
+                    </div>
                 </div>
                 
-                <div class="task-item__actions">
-                    <button class="task-action-btn" data-action="edit" title=" 540:B8@>20BL">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M8 2L14 8L8 14L2 8L8 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                    <button class="task-action-btn task-action-btn--danger" data-action="delete" title="#40;8BL">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M2 4H14M6 4V2C6 1.46957 6.21071 0.960859 6.58579 0.585786C6.96086 0.210714 7.46957 0 8 0C8.53043 0 9.03914 0.210714 9.41421 0.585786C9.78929 0.960859 10 1.46957 10 2V4M12 4V12C12 12.5304 11.7893 13.0391 11.4142 13.4142C11.0391 13.7893 10.5304 14 10 14H6C5.46957 14 4.96086 13.7893 4.58579 13.4142C4.21071 13.0391 4 12.5304 4 12V4H12Z" stroke="currentColor" stroke-width="1.5"/>
-                        </svg>
+                <div class="task-content">
+                    <h3 class="task-title">${task.title}</h3>
+                    ${task.description ? `<p class="task-description">${task.description}</p>` : ''}
+                </div>
+                
+                <div class="task-footer">
+                    <button class="task-complete-btn">
+                        Завершить
                     </button>
                 </div>
             </div>
@@ -202,34 +216,75 @@ class TasksModule {
     }
 
     /**
-     * Setup event listeners for task items
+     * Get priority text in Russian
      */
-    setupTaskEventListeners() {
-        // Checkbox change handlers
-        const checkboxes = document.querySelectorAll('.task-item__checkbox input');
-        checkboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', (e) => {
-                const taskId = parseInt(e.target.id.replace('task-', ''));
-                this.toggleTaskCompletion(taskId, e.target.checked);
-            });
-        });
+    getPriorityText(priority) {
+        const priorityMap = {
+            'urgent': 'Срочно',
+            'high': 'Высокий',
+            'medium': 'Средний',
+            'low': 'Низкий'
+        };
+        return priorityMap[priority] || 'Средний';
+    }
 
-        // Action button handlers
-        const actionBtns = document.querySelectorAll('.task-action-btn');
-        actionBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const action = btn.getAttribute('data-action');
-                const taskItem = btn.closest('.task-item');
-                const taskId = parseInt(taskItem.getAttribute('data-task-id'));
-                
-                if (action === 'edit') {
-                    this.editTask(taskId);
-                } else if (action === 'delete') {
-                    this.deleteTask(taskId);
-                }
-            });
+    /**
+     * Format time for display
+     */
+    formatTime(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleTimeString('ru-RU', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
         });
+    }
+
+    /**
+     * Format date for display
+     */
+    formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        if (date.toDateString() === today.toDateString()) {
+            return 'Сегодня';
+        } else if (date.toDateString() === tomorrow.toDateString()) {
+            return 'Завтра';
+        } else {
+            return date.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+    }
+
+    /**
+     * Complete task
+     */
+    completeTask(taskId) {
+        const task = this.tasks.find(t => t.id === taskId);
+        if (task) {
+            task.completed = true;
+            // Remove completed task from view with animation
+            const taskItem = document.querySelector(`[data-task-id="${taskId}"]`);
+            if (taskItem) {
+                taskItem.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+                taskItem.style.opacity = '0';
+                taskItem.style.transform = 'translateX(100%)';
+                
+                setTimeout(() => {
+                    this.tasks = this.tasks.filter(t => t.id !== taskId);
+                    this.renderTasks();
+                }, 300);
+            }
+            
+            console.log('Task completed:', taskId);
+        }
     }
 
     /**
@@ -244,8 +299,8 @@ class TasksModule {
                 <div class="modal__backdrop"></div>
                 <div class="modal__content">
                     <div class="modal__header">
-                        <h3>>20O 7040G0</h3>
-                        <button class="modal__close" aria-label="0:@KBL">
+                        <h3>Новая задача</h3>
+                        <button class="modal__close" aria-label="Закрыть">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                                 <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
@@ -254,34 +309,35 @@ class TasksModule {
                     
                     <form class="task-form" id="taskForm">
                         <div class="form-group">
-                            <label for="taskTitle" class="form-label">0720=85 7040G8</label>
-                            <input type="text" id="taskTitle" class="form-input" placeholder="2548B5 =0720=85 7040G8" required>
+                            <label for="taskTitle" class="form-label">Название задачи</label>
+                            <input type="text" id="taskTitle" class="form-input" placeholder="Введите название задачи" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="taskDescription" class="form-label">?8A0=85 (=5>1O70B5;L=>)</label>
-                            <textarea id="taskDescription" class="form-input" rows="3" placeholder=">102LB5 >?8A0=85"></textarea>
+                            <label for="taskDescription" class="form-label">Описание (необязательно)</label>
+                            <textarea id="taskDescription" class="form-input" rows="3" placeholder="Добавьте описание"></textarea>
                         </div>
                         
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="taskPriority" class="form-label">@8>@8B5B</label>
+                                <label for="taskPriority" class="form-label">Приоритет</label>
                                 <select id="taskPriority" class="form-select">
-                                    <option value="low">87:89</option>
-                                    <option value="medium" selected>!@54=89</option>
-                                    <option value="high">KA>:89</option>
+                                    <option value="low">Низкий</option>
+                                    <option value="medium" selected>Средний</option>
+                                    <option value="high">Высокий</option>
+                                    <option value="urgent">Срочно</option>
                                 </select>
                             </div>
                             
                             <div class="form-group">
-                                <label for="taskDueDate" class="form-label">0B0 2K?>;=5=8O</label>
-                                <input type="date" id="taskDueDate" class="form-input">
+                                <label for="taskDueDate" class="form-label">Дата выполнения</label>
+                                <input type="datetime-local" id="taskDueDate" class="form-input">
                             </div>
                         </div>
                         
                         <div class="form-actions">
-                            <button type="button" class="btn btn--secondary" id="cancelTask">B<5=0</button>
-                            <button type="submit" class="btn btn--primary">!>740BL 7040GC</button>
+                            <button type="button" class="btn btn--secondary" id="cancelTask">Отмена</button>
+                            <button type="submit" class="btn btn--primary">Создать задачу</button>
                         </div>
                     </form>
                 </div>
@@ -331,7 +387,7 @@ class TasksModule {
         const dueDate = document.getElementById('taskDueDate').value;
 
         if (!title) {
-            this.showError('0720=85 7040G8 >1O70B5;L=>');
+            this.showError('Название задачи обязательно');
             return;
         }
 
@@ -341,7 +397,8 @@ class TasksModule {
             description,
             priority,
             due_date: dueDate ? new Date(dueDate).toISOString() : null,
-            completed: false
+            completed: false,
+            created_at: new Date().toISOString()
         };
 
         this.tasks.unshift(newTask);
@@ -357,66 +414,14 @@ class TasksModule {
     }
 
     /**
-     * Toggle task completion status
-     */
-    toggleTaskCompletion(taskId, completed) {
-        const task = this.tasks.find(t => t.id === taskId);
-        if (task) {
-            task.completed = completed;
-            this.renderTasks();
-            console.log('Task completion toggled:', taskId, completed);
-        }
-    }
-
-    /**
-     * Edit task
-     */
-    editTask(taskId) {
-        console.log('Edit task:', taskId);
-        // Implementation would show edit modal similar to add task modal
-    }
-
-    /**
-     * Delete task
-     */
-    deleteTask(taskId) {
-        if (confirm('#40;8BL MBC 7040GC?')) {
-            this.tasks = this.tasks.filter(t => t.id !== taskId);
-            this.renderTasks();
-            console.log('Task deleted:', taskId);
-        }
-    }
-
-    /**
-     * Format date for display
-     */
-    formatDate(dateString) {
-        const date = new Date(dateString);
-        const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
-        if (date.toDateString() === today.toDateString()) {
-            return 'Сегодня';
-        } else if (date.toDateString() === tomorrow.toDateString()) {
-            return 'Завтра';
-        } else {
-            return date.toLocaleDateString('ru-RU', {
-                day: 'numeric',
-                month: 'short'
-            });
-        }
-    }
-
-    /**
      * Show error message
      */
     showError(message) {
         console.error('Tasks module error:', message);
         
-        const tasksList = document.getElementById('tasksList');
-        if (tasksList) {
-            tasksList.innerHTML = `
+        const container = document.getElementById('tasksContainer');
+        if (container) {
+            container.innerHTML = `
                 <div class="tasks-error">
                     <div class="error-icon">
                         <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -425,9 +430,9 @@ class TasksModule {
                             <line x1="24" y1="32" x2="24.01" y2="32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                         </svg>
                     </div>
-                    <h3>H81:0 703@C7:8</h3>
+                    <h3>Ошибка загрузки</h3>
                     <p>${message}</p>
-                    <button class="btn btn--primary" onclick="window.location.reload()">1=>28BL</button>
+                    <button class="btn btn--primary" onclick="window.location.reload()">Обновить</button>
                 </div>
             `;
         }

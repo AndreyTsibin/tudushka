@@ -26,26 +26,75 @@
         
         <!-- Header -->
         <header class="header">
-            <button class="header__date" id="dateButton" type="button">
-                <span id="currentDate">Сегодня</span>
-                <svg class="header__date-icon" width="16" height="16" viewBox="0 0 16 16">
-                    <path d="M8 11L4 7h8L8 11z" fill="currentColor"/>
-                </svg>
-            </button>
+            <div class="header__title">
+                <h1>TUDUSHKA</h1>
+            </div>
             <button class="header__profile" id="profileButton" type="button">
-                <svg class="header__profile-icon" width="24" height="24" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
-                    <circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
-                    <path d="M6.2 19c1.1-2.3 3.5-4 6.8-4s5.7 1.7 6.8 4" stroke="currentColor" stroke-width="2" fill="none"/>
-                </svg>
+                <div class="profile-avatar">
+                    <svg class="header__profile-icon" width="24" height="24" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M6.2 19c1.1-2.3 3.5-4 6.8-4s5.7 1.7 6.8 4" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
             </button>
         </header>
 
+        <!-- Date Tabs -->
+        <div class="date-tabs">
+            <button class="date-tab date-tab--active" data-period="today">
+                Сегодня
+            </button>
+            <button class="date-tab" data-period="week">
+                Неделя
+            </button>
+            <button class="date-tab" data-period="month">
+                Месяц
+            </button>
+        </div>
+
         <!-- Main Content -->
         <main class="main" id="mainContent">
-            <!-- Pages will be rendered here -->
-            <div class="page-placeholder">
-                <p>Выберите страницу в навигации</p>
+            <!-- Home Page - Tasks List -->
+            <div class="page" id="homePage">
+                <div class="tasks-container" id="tasksContainer">
+                    <!-- Tasks will be rendered here -->
+                    <div class="task-item">
+                        <div class="task-priority task-priority--urgent">
+                            Срочно
+                        </div>
+                        <div class="task-time">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M7 3V7L9.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                            14:30
+                        </div>
+                        <div class="task-date">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                <rect x="2" y="3" width="10" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M5 1V3M9 1V3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M2 6H12" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            25 июля 2025
+                        </div>
+                        <div class="task-content">
+                            <h3 class="task-title">Заголовок задачи которую нужно выполнить</h3>
+                            <p class="task-description">Описание задачи если есть, Описание задачи если есть, Описание задачи если есть.....</p>
+                        </div>
+                        <button class="task-complete-btn">
+                            Завершить
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Add Task Button -->
+                <button class="add-task-btn" id="addTaskBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Добавить
+                </button>
             </div>
         </main>
 

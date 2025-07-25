@@ -9,10 +9,10 @@ class CalendarModule {
         this.selectedDate = null;
         this.onDateSelect = null;
         this.months = [
-            '/=20@L', '$52@0;L', '0@B', '?@5;L', '09', 'N=L',
-            'N;L', '23CAB', '!5=BO1@L', ':BO1@L', '>O1@L', '5:01@L'
+            'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
         ];
-        this.weekDays = ['=', 'B', '!@', ''B', 'B', '!1', 'A'];
+        this.weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
     }
 
     /**
@@ -31,8 +31,8 @@ class CalendarModule {
                 <div class="modal__backdrop"></div>
                 <div class="modal__content">
                     <div class="modal__header">
-                        <h3>K15@8B5 40BC</h3>
-                        <button class="modal__close" aria-label="0:@KBL">
+                        <h3>Выберите дату</h3>
+                        <button class="modal__close" aria-label="Закрыть">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                                 <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                             </svg>
@@ -41,7 +41,7 @@ class CalendarModule {
                     
                     <div class="calendar-container">
                         <div class="calendar-header">
-                            <button class="calendar-nav-btn" id="prevMonth" aria-label="@54K4CI89 <5AOF">
+                            <button class="calendar-nav-btn" id="prevMonth" aria-label="Предыдущий месяц">
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                                     <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
@@ -51,7 +51,7 @@ class CalendarModule {
                                 ${this.months[this.currentDate.getMonth()]} ${this.currentDate.getFullYear()}
                             </div>
                             
-                            <button class="calendar-nav-btn" id="nextMonth" aria-label="!;54CNI89 <5AOF">
+                            <button class="calendar-nav-btn" id="nextMonth" aria-label="Следующий месяц">
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                                     <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
@@ -69,8 +69,8 @@ class CalendarModule {
                         </div>
                         
                         <div class="calendar-actions">
-                            <button class="btn btn--secondary" id="cancelCalendar">B<5=0</button>
-                            <button class="btn btn--primary" id="selectToday">!53>4=O</button>
+                            <button class="btn btn--secondary" id="cancelCalendar">Отмена</button>
+                            <button class="btn btn--primary" id="selectToday">Сегодня</button>
                         </div>
                     </div>
                 </div>
@@ -264,11 +264,11 @@ class CalendarModule {
         yesterday.setDate(yesterday.getDate() - 1);
 
         if (date.toDateString() === today.toDateString()) {
-            return '!53>4=O';
+            return 'Сегодня';
         } else if (date.toDateString() === tomorrow.toDateString()) {
-            return '02B@0';
+            return 'Завтра';
         } else if (date.toDateString() === yesterday.toDateString()) {
-            return 'G5@0';
+            return 'Вчера';
         } else {
             return date.toLocaleDateString('ru-RU', {
                 day: 'numeric',

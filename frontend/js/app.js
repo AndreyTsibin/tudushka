@@ -40,9 +40,15 @@ class TudushkaApp {
             // Initialize Telegram Web App if available
             if (window.Telegram?.WebApp) {
                 this.initializeTelegramWebApp();
+                // Try to authenticate with Telegram
+                this.authenticateWithTelegram();
             } else {
-                console.warn('Telegram Web App not available');
-                this.hideLoadingScreen();
+                console.warn('Telegram Web App not available - running in demo mode');
+                // Hide loading screen and continue without authentication
+                setTimeout(() => {
+                    this.hideLoadingScreen();
+                    this.handleDemoMode();
+                }, 1000); // Small delay to show loading screen briefly
             }
             
             this.isInitialized = true;
@@ -76,6 +82,56 @@ class TudushkaApp {
         this.handleViewportHeight();
         
         console.log('Telegram Web App initialized');
+    }
+
+    /**
+     * Authenticate with Telegram Web App
+     */
+    async authenticateWithTelegram() {
+        try {
+            if (window.authManager) {
+                // Try to authenticate using Telegram Web App data
+                await window.authManager.authenticateWithTelegram();
+            } else {
+                console.warn('Auth manager not available');
+                // Fallback: hide loading screen after timeout
+                setTimeout(() => {
+                    this.hideLoadingScreen();
+                    this.handleDemoMode();
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('Telegram authentication failed:', error);
+            // Hide loading screen and continue in demo mode
+            setTimeout(() => {
+                this.hideLoadingScreen();
+                this.handleDemoMode();
+            }, 1000);
+        }
+    }
+
+    /**
+     * Handle demo mode when Telegram Web App is not available
+     */
+    handleDemoMode() {
+        console.log('Running in demo mode');
+        
+        // Set demo user for testing
+        this.user = {
+            id: 'demo',
+            first_name: 'Demo',
+            last_name: 'User',
+            username: 'demo_user'
+        };
+        
+        // Update UI
+        this.updateUserInterface();
+        
+        // Navigate to home page
+        const currentRoute = router.getCurrentRoute();
+        if (!currentRoute || currentRoute === '/404') {
+            router.navigate('/', true);
+        }
     }
 
     /**
@@ -220,8 +276,9 @@ class TudushkaApp {
      * Render home page
      */
     renderHomePage() {
-        const mainContent = document.getElementById('mainContent');
-        if (!mainContent) return;
+        // Don't replace content, just show existing home page
+        const homePage = document.getElementById('homePage');
+        if (!homePage) return;
         
         mainContent.innerHTML = `
             <div class="page page--home">
