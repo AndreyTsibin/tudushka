@@ -28,12 +28,6 @@ coverage/
 logs
 *.log
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
 # Optional npm cache directory
 .npm
 
@@ -45,10 +39,6 @@ pids
 
 # Yarn Integrity file
 .yarn-integrity
-
-# dotenv environment variables file
-.env
-.env.test
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -86,8 +76,14 @@ pids
 .claude/
 .claude.md
 
+<<<<<<< HEAD
 # Environment examples (should not be tracked)
 .env.example
+=======
+# MCP configuration (LOCAL SETTINGS)
+.mcp.json
+
+>>>>>>> develop
 
 # Security sensitive files
 *.key
@@ -120,3 +116,4 @@ public/build/
 .Trashes
 ehthumbs.db
 Thumbs.db
+package-lock.json
