@@ -4,12 +4,17 @@
   "description": "Todo приложение с AI ассистентом",
   "scripts": {
     "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "backend": "cd backend && source ../venv/bin/activate && python manage.py runserver",
+    "backend": "./venv/bin/python manage.py runserver",
     "frontend": "cd frontend && npm run dev",
     "install": "pip install -r requirements.txt && cd frontend && npm install",
-    "test": "cd backend && source ../venv/bin/activate && python manage.py test"
+    "test": "./venv/bin/python manage.py test"
   },
-  "keywords": ["react", "django", "todo", "ai"],
+  "keywords": [
+    "react",
+    "django",
+    "todo",
+    "ai"
+  ],
   "author": "Andrew T.",
   "license": "MIT",
   "devDependencies": {

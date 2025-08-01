@@ -48,9 +48,20 @@ npm run preview      # Preview production build
 
 ### Backend Commands (from root directory)
 ```bash
-python manage.py runserver    # Start Django development server
-python manage.py migrate      # Apply database migrations
-python manage.py test         # Run Django tests
+python manage.py runserver       # Start Django development server
+python manage.py migrate         # Apply database migrations
+python manage.py makemigrations  # Generate database migrations
+python manage.py test            # Run Django tests
+python manage.py createsuperuser # Create Django admin user
+python manage.py shell           # Django interactive shell
+python manage.py startapp <name> # Create new Django application
+npm run test                     # Run Django tests (with venv activation)
+```
+
+### Virtual Environment
+```bash
+source venv/bin/activate  # Activate virtual environment (required for Django commands)
+deactivate               # Deactivate virtual environment
 ```
 
 ## Environment Setup
@@ -65,18 +76,32 @@ DB_USER=your-db-user
 DB_PASSWORD=your-db-password
 DB_HOST=localhost
 DB_PORT=5432
+ALLOWED_HOSTS=localhost,127.0.0.1
 ```
+
+**Note**: Missing DB_NAME, DB_USER, and DB_PASSWORD will cause Django to fail. SECRET_KEY and DEBUG have defaults in settings.py.
 
 ### PostgreSQL Setup
 The application is configured to use PostgreSQL with connection parameters from environment variables.
 
 ## Tech Stack Details
 
-- **Frontend**: React 19.1.0, TypeScript 5.8.3, Vite 7.0.4, ESLint
-- **Backend**: Django 5.2.4, Django REST Framework 3.16.0, django-cors-headers
-- **Database**: PostgreSQL (psycopg2-binary)
-- **Development Tools**: Concurrently for running multiple processes, python-decouple for environment management
+- **Frontend**: React 19.1.0, TypeScript 5.8.3, Vite 7.0.4, ESLint 9.x (flat config)
+- **Backend**: Django 5.2.4, Django REST Framework 3.16.0, django-cors-headers, python-decouple
+- **Database**: PostgreSQL (psycopg2-binary) 
+- **Development Tools**: Concurrently for running multiple processes
+- **Localization**: Russian language (ru-ru), Europe/Moscow timezone
 
 ## CORS Configuration
 
 Frontend development server (localhost:5173) is configured in Django CORS settings. Additional allowed origins include localhost:3000 for compatibility.
+
+## Project Status
+
+**Current State**: This is a freshly initialized full-stack project with basic setup completed but no application-specific functionality implemented yet. The project is ready for feature development.
+
+**Git Branch**: Development occurs on `develop` branch, not main.
+
+## Important Work Rules
+
+**ОБЯЗАТЕЛЬНОЕ ПРАВИЛО**: После выполнения каждой задачи Claude Code должен делать коммит в git с осмысленным сообщением, описывающим выполненную работу.
