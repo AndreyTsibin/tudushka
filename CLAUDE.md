@@ -25,15 +25,15 @@ This is a full-stack application with separated frontend and backend:
 - Theme switching (light/dark mode)
 - Subscription tiers (Free, Plus, Pro)
 - Calendar integration and task scheduling
-- Fully responsive UI with Tailwind CSS and Radix UI components
+- Fully responsive UI with custom CSS and Radix UI components
 
 ### Key Architecture Files
 
 **Frontend Core:**
 - `frontend/src/App.tsx`: Main application component with state management for tasks, chat sessions, user settings, and page routing
-- `frontend/src/components/ui/`: Complete Radix UI component library with Tailwind styling
+- `frontend/src/components/ui/`: Complete Radix UI component library with custom CSS styling
 - `frontend/src/index.css`: CSS custom properties for light/dark themes using HSL color format
-- `frontend/tailwind.config.js`: Tailwind configuration with custom color palette and dark mode support
+- `frontend/src/index.css`: Custom CSS with color palette and dark mode support
 
 **Configuration Files:**
 - `backend/settings.py`: Django settings with PostgreSQL, CORS, and REST Framework configuration
@@ -123,9 +123,9 @@ The application is configured to use PostgreSQL with connection parameters from 
 
 ## Tech Stack Details
 
-- **Frontend**: React 19.1.0, TypeScript 5.8.3, Vite 7.0.4, Tailwind CSS 4.1.11, ESLint 9.x (flat config)
+- **Frontend**: React 19.1.0, TypeScript 5.8.3, Vite 7.0.4, custom CSS system, ESLint 9.x (flat config)
 - **UI Components**: Complete Radix UI library (@radix-ui/react-*), Lucide React icons, Sonner for toasts
-- **Styling**: Tailwind CSS with custom design system, class-variance-authority for component variants
+- **Styling**: Custom CSS with design system using CSS custom properties
 - **Calendar**: react-day-picker with full Russian localization
 - **Backend**: Django 5.2.4, Django REST Framework 3.16.0, django-cors-headers, python-decouple
 - **Database**: PostgreSQL (psycopg2-binary) 
@@ -233,11 +233,11 @@ The frontend is ready for backend integration. Key areas for API development:
 
 ## Styling Architecture
 
-### Tailwind CSS Configuration
-- **Version**: Tailwind CSS 4.1.11 with PostCSS plugin
-- **Dark Mode**: Class-based dark mode (`darkMode: ["class"]`)
+### Custom CSS Configuration
+- **Approach**: Custom CSS with CSS custom properties
+- **Dark Mode**: Class-based dark mode using CSS custom properties
 - **Color System**: HSL-based custom properties for theme switching
-- **Component Variants**: Uses `class-variance-authority` for component styling
+- **Component Styling**: Direct CSS classes with design system consistency
 
 ### Theme Implementation
 - **CSS Custom Properties**: Defined in `frontend/src/index.css` with HSL values
@@ -246,7 +246,7 @@ The frontend is ready for backend integration. Key areas for API development:
 
 ### UI Component System
 - **Base Library**: Complete Radix UI primitives for accessibility
-- **Styling Approach**: Tailwind classes with design system consistency
+- **Styling Approach**: Custom CSS classes with design system consistency
 - **Component Location**: `frontend/src/components/ui/` - pre-built, styled components
 - **Utility Functions**: `cn()` function in `utils.ts` for conditional class merging
 
@@ -255,17 +255,15 @@ The frontend is ready for backend integration. Key areas for API development:
 // Theme-aware conditional styling
 className={`${
   userSettings.theme === "dark"
-    ? "!bg-[#697282] !text-white !border-[#697282]"
-    : "bg-muted text-muted-foreground border-border"
+    ? "dark-theme-class"
+    : "light-theme-class"
 }`}
 
-// Using design system colors
-className="bg-card text-card-foreground border-border"
+// Using design system colors through CSS custom properties
+className="card-background card-text card-border"
 
-// Component variants with cva
-const buttonVariants = cva("base-classes", {
-  variants: { variant: {...}, size: {...} }
-})
+// Custom CSS classes for component variants
+className="button-primary button-medium"
 ```
 
 ## Development Guidelines
