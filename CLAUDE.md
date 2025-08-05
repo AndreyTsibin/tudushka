@@ -4,23 +4,38 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Тудушка** - Todo приложение с AI ассистентом на основе React + Django архитектуры.
+**Тудушка** - A fully functional Todo application with AI assistant features built on React + Django architecture. The application includes task management, AI-powered task descriptions, chat functionality, themes, and subscription management.
 
 ## Project Architecture
 
 This is a full-stack application with separated frontend and backend:
 
-- **Frontend**: React 19 + TypeScript + Vite development server
-- **Backend**: Django 5.2.4 + Django REST Framework + PostgreSQL
+- **Frontend**: React 19 + TypeScript + Vite with complete UI implementation
+- **Backend**: Django 5.2.4 + Django REST Framework + PostgreSQL (backend ready for API development)
 - **Development**: Concurrently runs both frontend and backend servers
 
 ### Current Architecture State
 
 **Backend**: Minimal Django project setup with no custom apps created yet. Only default Django admin interface exists at `/admin/`. Ready for feature development with DRF configured for JSON-only API responses and CORS enabled for React frontend.
 
-**Frontend**: Fresh Vite + React application with TypeScript, modern ESLint flat config, and dark/light theme CSS. Currently contains only default counter component - ready for todo application development.
+**Frontend**: Complete todo application implementation with:
+- Task management (CRUD operations with local state)
+- AI assistant with chat functionality and usage limits
+- Multi-page navigation (Home, AI Assistant, Archive, Settings)
+- Theme switching (light/dark mode)
+- Subscription tiers (Free, Plus, Pro)
+- Calendar integration and task scheduling
+- Fully responsive UI with Tailwind CSS and Radix UI components
 
-### Key Configuration Files
+### Key Architecture Files
+
+**Frontend Core:**
+- `frontend/src/App.tsx`: Main application component with state management for tasks, chat sessions, user settings, and page routing
+- `frontend/src/components/ui/`: Complete Radix UI component library with Tailwind styling
+- `frontend/src/index.css`: CSS custom properties for light/dark themes using HSL color format
+- `frontend/tailwind.config.js`: Tailwind configuration with custom color palette and dark mode support
+
+**Configuration Files:**
 - `backend/settings.py`: Django settings with PostgreSQL, CORS, and REST Framework configuration
 - `backend/urls.py`: Currently only routes to Django admin (no API endpoints yet)
 - `frontend/vite.config.ts`: Minimal Vite configuration with React plugin
@@ -108,28 +123,64 @@ The application is configured to use PostgreSQL with connection parameters from 
 
 ## Tech Stack Details
 
-- **Frontend**: React 19.1.0, TypeScript 5.8.3, Vite 7.0.4, ESLint 9.x (flat config)
+- **Frontend**: React 19.1.0, TypeScript 5.8.3, Vite 7.0.4, Tailwind CSS 4.1.11, ESLint 9.x (flat config)
+- **UI Components**: Complete Radix UI library (@radix-ui/react-*), Lucide React icons, Sonner for toasts
+- **Styling**: Tailwind CSS with custom design system, class-variance-authority for component variants
+- **Calendar**: react-day-picker with full Russian localization
 - **Backend**: Django 5.2.4, Django REST Framework 3.16.0, django-cors-headers, python-decouple
 - **Database**: PostgreSQL (psycopg2-binary) 
 - **Development Tools**: Concurrently for running multiple processes
 - **Localization**: Russian language (ru-ru), Europe/Moscow timezone
 
-### Architecture Patterns
+### Application State Architecture
 
-**Backend**:
+**Frontend State Management:**
+- Local React state management in App.tsx (no external state library)
+- Task management with local CRUD operations and animations
+- Chat sessions with message history
+- User settings (theme, language, AI model, subscription)
+- AI usage tracking with daily limits per subscription tier
+- Multi-page routing with conditional rendering
+
+**Core Data Models:**
+```typescript
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  time: string;
+  date: string;
+  priority: "urgent" | "normal" | "low";
+  completed: boolean;
+}
+
+interface ChatMessage {
+  id: string;
+  text: string;
+  sender: "user" | "ai";
+  timestamp: string;
+}
+
+interface UserSettings {
+  language: "ru" | "en";
+  theme: "light" | "dark";
+  aiPersonality: string;
+  aiModel: "chatgpt" | "claude" | "perplexity";
+  plan: "free" | "plus" | "pro";
+  aiUsage: {
+    descriptionsUsed: number;  
+    chatRequestsUsed: number;
+    lastResetDate: string;
+  };
+}
+```
+
+**Backend Architecture:**
 - JSON-only API design (DRF configured with JSONRenderer/JSONParser only)
 - Environment-based configuration using python-decouple
 - CORS-enabled for React frontend integration
 - Russian localization and Moscow timezone
-- No custom Django apps yet - ready for feature development
-
-**Frontend**:
-- Modern React with hooks-based architecture
-- TypeScript with strict configuration and project references
-- ESLint flat config (9.x) with React-specific rules
-- CSS custom properties with automatic dark/light theme switching
-- Vite for fast development and HMR
-- No routing or state management libraries yet - ready for implementation
+- No custom Django apps yet - ready for API integration
 
 ## CORS Configuration
 
@@ -137,24 +188,102 @@ Frontend development server (localhost:5173) is configured in Django CORS settin
 
 ## Project Status
 
-**Current State**: This is a freshly initialized full-stack project with basic setup completed but no application-specific functionality implemented yet. The project is ready for feature development.
+**Current State**: The frontend is a complete, fully functional todo application with AI assistant features. All UI components, state management, and user interactions are implemented. The backend remains a minimal Django setup ready for API development to replace current local state with persistent data storage.
 
 **Git Branch**: Development occurs on `develop` branch, not main.
 
-### Next Development Steps
-When implementing features, typical workflow will be:
+### Frontend Implementation Status
+✅ **Complete Features:**
+- Task CRUD operations (create, read, update, delete, complete)
+- Task filtering by time periods (today, week, month)
+- Task priority system (urgent, normal, low) with color coding  
+- AI assistant with chat interface and conversation history
+- AI-powered task description generation with usage limits
+- Multi-page navigation (Home, AI Assistant, Archive, Settings)
+- Theme switching (light/dark mode) with CSS custom properties
+- User settings management (language, AI model, subscription)
+- Subscription tiers with usage limits (Free: 3/3, Plus: 10/20, Pro: 20/100)
+- Calendar integration with task visualization
+- Task completion animations and state transitions
+- Responsive design with mobile-first approach
+- Russian localization throughout the interface
 
-1. **Backend Development**:
-   - `python manage.py startapp <appname>` - Create Django apps (e.g., `todos`, `users`, `ai_assistant`)
-   - Define models in `models.py` and create migrations
-   - Implement DRF viewsets and serializers
-   - Add API URLs to `backend/urls.py`
+### Backend Integration Opportunities
+The frontend is ready for backend integration. Key areas for API development:
 
-2. **Frontend Development**:
-   - Implement routing (consider React Router)
-   - Add state management (Context API, Zustand, or Redux Toolkit)
-   - Create API integration layer for Django backend
-   - Build UI components for todo functionality
+1. **Authentication & User Management**:
+   - User registration, login, profile management
+   - Session management and JWT token handling
+   - Password reset and email verification
+
+2. **Task Management API**:
+   - Replace local task state with persistent database storage
+   - Task CRUD endpoints with filtering, sorting, pagination
+   - Task sharing and collaboration features
+
+3. **AI Integration**:
+   - Real AI model integration (currently simulated)
+   - Usage tracking and subscription enforcement
+   - Chat history persistence and AI conversation management
+
+4. **Subscription & Billing**:
+   - Payment processing integration  
+   - Subscription management and upgrade flows
+   - Usage analytics and reporting
+
+## Styling Architecture
+
+### Tailwind CSS Configuration
+- **Version**: Tailwind CSS 4.1.11 with PostCSS plugin
+- **Dark Mode**: Class-based dark mode (`darkMode: ["class"]`)
+- **Color System**: HSL-based custom properties for theme switching
+- **Component Variants**: Uses `class-variance-authority` for component styling
+
+### Theme Implementation
+- **CSS Custom Properties**: Defined in `frontend/src/index.css` with HSL values
+- **Theme Toggle**: Managed via React state, applies `.dark` class to `document.documentElement`
+- **Color Variables**: All colors use `hsl(var(--variable-name))` format for proper CSS custom property integration
+
+### UI Component System
+- **Base Library**: Complete Radix UI primitives for accessibility
+- **Styling Approach**: Tailwind classes with design system consistency
+- **Component Location**: `frontend/src/components/ui/` - pre-built, styled components
+- **Utility Functions**: `cn()` function in `utils.ts` for conditional class merging
+
+### Common Styling Patterns
+```typescript
+// Theme-aware conditional styling
+className={`${
+  userSettings.theme === "dark"
+    ? "!bg-[#697282] !text-white !border-[#697282]"
+    : "bg-muted text-muted-foreground border-border"
+}`}
+
+// Using design system colors
+className="bg-card text-card-foreground border-border"
+
+// Component variants with cva
+const buttonVariants = cva("base-classes", {
+  variants: { variant: {...}, size: {...} }
+})
+```
+
+## Development Guidelines
+
+### State Management Patterns
+- **No External State Library**: All state managed with React hooks in App.tsx
+- **State Organization**: Separate useState hooks for different domains (tasks, chat, settings)
+- **Data Flow**: Props drilling for component communication (consider Context if complexity grows)
+
+### Animation & UX
+- **Task Completion**: Slide-out animation with opacity/transform transitions
+- **Loading States**: Toast notifications for user feedback (using Sonner)
+- **Form Handling**: Immediate validation with user-friendly error messages
+
+### Russian Localization
+- **Date Formatting**: Uses `Intl.DateTimeFormat` with 'ru-RU' locale
+- **Calendar**: Custom formatters for react-day-picker in Russian
+- **Text Content**: All UI text in Russian, consider i18n for future English support
 
 ## Important Work Rules
 
