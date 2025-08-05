@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
 import { Badge } from "./components/ui/badge";
@@ -25,29 +25,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import {
   Clock,
   Calendar as CalendarIcon,
   Plus,
   User,
   CheckCircle2,
-  Circle,
   Sparkles,
   Home,
   Bot,
   Archive,
   Send,
-  MessageCircle,
-  Edit,
-  Settings,
   Globe,
   Moon,
   Sun,
   Crown,
-  Star,
-  ArrowLeft,
-  Check,
 } from "lucide-react";
 
 interface Task {
@@ -148,7 +141,7 @@ export default function App() {
   const [aiMessage, setAiMessage] = useState("");
   const [archiveTab, setArchiveTab] = useState("chats"); // chats, tasks
   const [settingsTab, setSettingsTab] = useState("general"); // general, ai, subscription
-  const [selectedPlan, setSelectedPlan] = useState<
+  const [selectedPlan] = useState<
     "free" | "plus" | "pro"
   >("free");
   const [isEditingChatTitle, setIsEditingChatTitle] =
@@ -567,16 +560,6 @@ export default function App() {
     }
   };
 
-  const groupTasksByDate = (tasks: Task[]) => {
-    const grouped: { [key: string]: Task[] } = {};
-    tasks.forEach((task) => {
-      if (!grouped[task.date]) {
-        grouped[task.date] = [];
-      }
-      grouped[task.date].push(task);
-    });
-    return grouped;
-  };
 
   const getAllWeekDates = () => {
     const dates = [];
