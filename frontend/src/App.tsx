@@ -1722,22 +1722,18 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="app" data-theme={userSettings.theme}>
       {/* Header */}
-      <div className="bg-card border-b border-border p-4">
-        <div className="flex justify-between items-center max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold text-card-foreground">
+      <div className="header">
+        <div className="header-content">
+          <h1 className="header-title">
             TUDUSHKA
           </h1>
           <button
             onClick={() => setCurrentPage("settings")}
-            className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-              userSettings.theme === "dark"
-                ? "bg-muted hover:bg-accent border border-muted-foreground"
-                : "bg-muted hover:bg-accent"
-            }`}
+            className="btn btn-ghost btn-icon"
           >
-            <User className="w-5 h-5 text-muted-foreground" />
+            <User className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -1746,16 +1742,16 @@ export default function App() {
 
       {/* Floating Add Button - только на главной странице */}
       {currentPage === "home" && (
-        <div className="fixed bottom-22 left-1/2 transform -translate-x-1/2">
+        <div className="floating-btn">
           <Dialog
             open={isAddDialogOpen}
             onOpenChange={setIsAddDialogOpen}
           >
             <DialogTrigger asChild>
-              <Button className="rounded-full px-16 py-3 bg-blue-500 hover:bg-blue-600 text-white">
-                <Plus className="w-5 h-5 mr-1" />
+              <button className="btn btn-primary btn-lg rounded-full">
+                <Plus className="w-5 h-5" />
                 Добавить
-              </Button>
+              </button>
             </DialogTrigger>
             <DialogContent className="bg-popover border-border">
               <DialogHeader>
@@ -2025,45 +2021,39 @@ export default function App() {
       </Dialog>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-10 py-4">
-        <div className="flex justify-between max-w-4xl mx-auto">
+      <div className="bottom-nav">
+        <div className="bottom-nav-content">
           <button
             onClick={() => {
               setCurrentPage("home");
               setActiveView("today");
             }}
-            className={`flex flex-col items-center space-y-1 transition-colors ${
-              currentPage === "home"
-                ? "text-blue-500"
-                : "text-muted-foreground"
+            className={`bottom-nav-item ${
+              currentPage === "home" ? "active" : ""
             }`}
           >
             <Home className="w-6 h-6" />
-            <span className="text-xs">Главная</span>
+            <span className="bottom-nav-text">Главная</span>
           </button>
 
           <button
             onClick={() => setCurrentPage("ai-assistant")}
-            className={`flex flex-col items-center space-y-1 transition-colors ${
-              currentPage === "ai-assistant"
-                ? "text-blue-500"
-                : "text-muted-foreground"
+            className={`bottom-nav-item ${
+              currentPage === "ai-assistant" ? "active" : ""
             }`}
           >
             <Bot className="w-6 h-6" />
-            <span className="text-xs">AI Ассистент</span>
+            <span className="bottom-nav-text">AI Ассистент</span>
           </button>
 
           <button
             onClick={() => setCurrentPage("archive")}
-            className={`flex flex-col items-center space-y-1 transition-colors ${
-              currentPage === "archive"
-                ? "text-blue-500"
-                : "text-muted-foreground"
+            className={`bottom-nav-item ${
+              currentPage === "archive" ? "active" : ""
             }`}
           >
             <Archive className="w-6 h-6" />
-            <span className="text-xs">Архив</span>
+            <span className="bottom-nav-text">Архив</span>
           </button>
         </div>
       </div>
