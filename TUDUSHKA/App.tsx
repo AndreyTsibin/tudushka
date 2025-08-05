@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
 import { Badge } from "./components/ui/badge";
@@ -25,23 +25,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select";
-import { toast } from "sonner";
+import { toast } from "sonner@2.0.3";
 import {
   Clock,
   Calendar as CalendarIcon,
   Plus,
   User,
   CheckCircle2,
+  Circle,
   Sparkles,
   Home,
   Bot,
   Archive,
   Send,
+  MessageCircle,
+  Edit,
+  Settings,
   Globe,
   Moon,
   Sun,
   Crown,
-  BarChart3,
+  Star,
+  ArrowLeft,
+  Check,
 } from "lucide-react";
 
 interface Task {
@@ -142,7 +148,7 @@ export default function App() {
   const [aiMessage, setAiMessage] = useState("");
   const [archiveTab, setArchiveTab] = useState("chats"); // chats, tasks
   const [settingsTab, setSettingsTab] = useState("general"); // general, ai, subscription
-  const [selectedPlan] = useState<
+  const [selectedPlan, setSelectedPlan] = useState<
     "free" | "plus" | "pro"
   >("free");
   const [isEditingChatTitle, setIsEditingChatTitle] =
@@ -198,9 +204,9 @@ export default function App() {
   // Применяем тему
   useEffect(() => {
     if (userSettings.theme === "dark") {
-      document.documentElement.setAttribute("data-theme", "dark");
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.setAttribute("data-theme", "light");
+      document.documentElement.classList.remove("dark");
     }
   }, [userSettings.theme]);
 
@@ -561,16 +567,16 @@ export default function App() {
     }
   };
 
-  // const groupTasksByDate = (tasks: Task[]) => {
-  //   const grouped: { [key: string]: Task[] } = {};
-  //   tasks.forEach((task) => {
-  //     if (!grouped[task.date]) {
-  //       grouped[task.date] = [];
-  //     }
-  //     grouped[task.date].push(task);
-  //   });
-  //   return grouped;
-  // };
+  const groupTasksByDate = (tasks: Task[]) => {
+    const grouped: { [key: string]: Task[] } = {};
+    tasks.forEach((task) => {
+      if (!grouped[task.date]) {
+        grouped[task.date] = [];
+      }
+      grouped[task.date].push(task);
+    });
+    return grouped;
+  };
 
   const getAllWeekDates = () => {
     const dates = [];
@@ -757,19 +763,46 @@ export default function App() {
         <>
           {/* Settings Navigation Tabs */}
           <div className="bg-card border-b border-border">
-            <div className="max-w-container p-4">
+            <div className="max-w-4xl mx-auto p-4">
               <Tabs
                 value={settingsTab}
                 onValueChange={setSettingsTab}
               >
-                <TabsList className="">
-                  <TabsTrigger value="general">
+                <TabsList className="grid w-full grid-cols-3 bg-muted text-muted-foreground">
+                  <TabsTrigger
+                    value="general"
+                    className={`rounded-full transition-all ${
+                      userSettings.theme === "dark"
+                        ? settingsTab === "general"
+                          ? "!bg-[#697282] !text-white !border !border-[#697282]"
+                          : "!bg-transparent !text-muted-foreground !border !border-gray-600"
+                        : "bg-transparent text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-card-foreground data-[state=active]:shadow-sm"
+                    }`}
+                  >
                     Общие
                   </TabsTrigger>
-                  <TabsTrigger value="ai">
+                  <TabsTrigger
+                    value="ai"
+                    className={`rounded-full transition-all ${
+                      userSettings.theme === "dark"
+                        ? settingsTab === "ai"
+                          ? "!bg-[#697282] !text-white !border !border-[#697282]"
+                          : "!bg-transparent !text-muted-foreground !border !border-gray-600"
+                        : "bg-transparent text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-card-foreground data-[state=active]:shadow-sm"
+                    }`}
+                  >
                     AI-ассистент
                   </TabsTrigger>
-                  <TabsTrigger value="subscription">
+                  <TabsTrigger
+                    value="subscription"
+                    className={`rounded-full transition-all ${
+                      userSettings.theme === "dark"
+                        ? settingsTab === "subscription"
+                          ? "!bg-[#697282] !text-white !border !border-[#697282]"
+                          : "!bg-transparent !text-muted-foreground !border !border-gray-600"
+                        : "bg-transparent text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-card-foreground data-[state=active]:shadow-sm"
+                    }`}
+                  >
                     Подписка
                   </TabsTrigger>
                 </TabsList>
@@ -778,7 +811,7 @@ export default function App() {
           </div>
 
           {/* Settings Content */}
-          <div className="max-w-container p-4 pb-bottom-nav">
+          <div className="max-w-4xl mx-auto p-4 pb-20">
             <Tabs
               value={settingsTab}
               onValueChange={setSettingsTab}
@@ -788,15 +821,15 @@ export default function App() {
                 className="space-y-6"
               >
                 {/* Язык интерфейса */}
-                <Card className="settings-card">
-                  <div className="settings-row">
-                    <div className="settings-info">
-                      <Globe className="settings-icon settings-icon-language" />
+                <Card className="p-4 bg-card border-border">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Globe className="w-5 h-5 text-muted-foreground" />
                       <div>
-                        <h3 className="settings-title">
+                        <h3 className="font-medium text-card-foreground">
                           Язык интерфейса
                         </h3>
-                        <p className="settings-description">
+                        <p className="text-sm text-muted-foreground">
                           Выберите язык приложения
                         </p>
                       </div>
@@ -810,7 +843,13 @@ export default function App() {
                         }))
                       }
                     >
-                      <SelectTrigger className="w-32 select-trigger-themed">
+                      <SelectTrigger
+                        className={`w-32 transition-colors ${
+                          userSettings.theme === "dark"
+                            ? "!bg-[#697282] !text-white !border-[#697282] hover:!bg-[#697282]/90 data-[state=open]:!bg-[#697282]/90"
+                            : "bg-muted text-muted-foreground border-border hover:bg-accent data-[state=open]:bg-accent"
+                        }`}
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-popover border-border">
@@ -826,19 +865,19 @@ export default function App() {
                 </Card>
 
                 {/* Тема */}
-                <div className="settings-card">
-                  <div className="settings-row">
-                    <div className="settings-info">
+                <Card className="p-4 bg-card border-border">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
                       {userSettings.theme === "dark" ? (
-                        <Moon className="settings-icon settings-icon-theme-dark" />
+                        <Moon className="w-5 h-5 text-muted-foreground" />
                       ) : (
-                        <Sun className="settings-icon settings-icon-theme-light" />
+                        <Sun className="w-5 h-5 text-muted-foreground" />
                       )}
                       <div>
-                        <h3 className="settings-title">
+                        <h3 className="font-medium text-card-foreground">
                           Тема
                         </h3>
-                        <p className="settings-description">
+                        <p className="text-sm text-muted-foreground">
                           {userSettings.theme === "dark"
                             ? "Темная тема"
                             : "Светлая тема"}
@@ -857,7 +896,11 @@ export default function App() {
                               : "dark",
                         }))
                       }
-                      className="flex items-center gap-2 button-themed"
+                      className={`flex items-center gap-2 transition-colors ${
+                        userSettings.theme === "dark"
+                          ? "!bg-[#697282] !text-white !border-[#697282] hover:!bg-[#697282]/90 hover:!text-white"
+                          : "bg-muted text-muted-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                      }`}
                     >
                       {userSettings.theme === "dark" ? (
                         <>
@@ -872,20 +915,20 @@ export default function App() {
                       )}
                     </Button>
                   </div>
-                </div>
+                </Card>
               </TabsContent>
 
               <TabsContent value="ai" className="space-y-6">
                 {/* Выбор модели AI */}
-                <div className="settings-card">
-                  <div className="settings-row">
-                    <div className="settings-info">
-                      <Sparkles className="settings-icon settings-icon-ai" />
+                <Card className="p-4 bg-card border-border">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Sparkles className="w-5 h-5 text-muted-foreground" />
                       <div>
-                        <h3 className="settings-title">
+                        <h3 className="font-medium text-card-foreground">
                           Модель AI
                         </h3>
-                        <p className="settings-description">
+                        <p className="text-sm text-muted-foreground">
                           Выберите нейросеть для работы
                         </p>
                       </div>
@@ -904,7 +947,13 @@ export default function App() {
                         }))
                       }
                     >
-                      <SelectTrigger className="w-40 select-trigger-themed">
+                      <SelectTrigger
+                        className={`w-40 transition-colors ${
+                          userSettings.theme === "dark"
+                            ? "!bg-[#697282] !text-white !border-[#697282] hover:!bg-[#697282]/90 data-[state=open]:!bg-[#697282]/90"
+                            : "bg-muted text-muted-foreground border-border hover:bg-accent data-[state=open]:bg-accent"
+                        }`}
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-popover border-border">
@@ -920,18 +969,18 @@ export default function App() {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
+                </Card>
 
                 {/* Персонализация AI */}
-                <div className="settings-card">
+                <Card className="p-4 bg-card border-border">
                   <div className="space-y-4">
-                    <div className="settings-info">
-                      <Bot className="settings-icon settings-icon-personality" />
+                    <div className="flex items-center gap-3">
+                      <Bot className="w-5 h-5 text-muted-foreground" />
                       <div>
-                        <h3 className="settings-title">
+                        <h3 className="font-medium text-card-foreground">
                           Персонализация ассистента
                         </h3>
-                        <p className="settings-description">
+                        <p className="text-sm text-muted-foreground">
                           Расскажите о себе или настройте стиль
                           ответов
                         </p>
@@ -947,20 +996,21 @@ export default function App() {
                         }))
                       }
                       rows={4}
-                      className="textarea-themed"
+                      className={`${
+                        userSettings.theme === "dark"
+                          ? "!bg-[#1a1a1a] !border-gray-600 !text-white placeholder:!text-gray-400"
+                          : "bg-background border-border"
+                      }`}
                     />
                   </div>
-                </div>
+                </Card>
 
                 {/* Использование AI */}
-                <div className="settings-card">
+                <Card className="p-4 bg-card border-border">
                   <div className="space-y-4">
-                    <div className="settings-info">
-                      <BarChart3 className="settings-icon settings-icon-usage" />
-                      <h3 className="settings-title">
-                        Использование AI сегодня
-                      </h3>
-                    </div>
+                    <h3 className="font-medium text-card-foreground">
+                      Использование AI сегодня
+                    </h3>
 
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
@@ -975,8 +1025,19 @@ export default function App() {
                           / {limits.descriptions}
                         </span>
                       </div>
-                      <div className="progress-bar">
-                        <div className="progress-fill"
+                      <div
+                        className={`w-full rounded-full h-2 ${
+                          userSettings.theme === "dark"
+                            ? "!bg-gray-700"
+                            : "bg-muted"
+                        }`}
+                      >
+                        <div
+                          className={`h-2 rounded-full transition-all ${
+                            userSettings.theme === "dark"
+                              ? "!bg-[#697282]"
+                              : "bg-blue-500"
+                          }`}
                           style={{
                             width: `${Math.min((userSettings.aiUsage.descriptionsUsed / limits.descriptions) * 100, 100)}%`,
                           }}
@@ -997,8 +1058,19 @@ export default function App() {
                           / {limits.chatRequests}
                         </span>
                       </div>
-                      <div className="progress-bar">
-                        <div className="progress-fill"
+                      <div
+                        className={`w-full rounded-full h-2 ${
+                          userSettings.theme === "dark"
+                            ? "!bg-gray-700"
+                            : "bg-muted"
+                        }`}
+                      >
+                        <div
+                          className={`h-2 rounded-full transition-all ${
+                            userSettings.theme === "dark"
+                              ? "!bg-[#697282]"
+                              : "bg-blue-500"
+                          }`}
                           style={{
                             width: `${Math.min((userSettings.aiUsage.chatRequestsUsed / limits.chatRequests) * 100, 100)}%`,
                           }}
@@ -1006,7 +1078,7 @@ export default function App() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </Card>
               </TabsContent>
 
               <TabsContent
@@ -1014,15 +1086,15 @@ export default function App() {
                 className="space-y-6"
               >
                 {/* Текущий тариф */}
-                <div className="settings-card">
-                  <div className="settings-row">
-                    <div className="settings-info">
-                      <Crown className="settings-icon settings-icon-subscription" />
+                <Card className="p-4 bg-card border-border">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Crown className="w-5 h-5 text-muted-foreground" />
                       <div>
-                        <h3 className="settings-title">
+                        <h3 className="font-medium text-card-foreground">
                           Текущий тариф
                         </h3>
-                        <p className="settings-description">
+                        <p className="text-sm text-muted-foreground">
                           {userSettings.plan === "free"
                             ? "Free"
                             : userSettings.plan === "plus"
@@ -1047,7 +1119,7 @@ export default function App() {
                           : "Pro"}
                     </Badge>
                   </div>
-                </div>
+                </Card>
 
                 {/* Тарифные планы */}
                 <div className="space-y-4">
@@ -1203,7 +1275,7 @@ export default function App() {
         <>
           {/* Chat Header */}
           <div className="bg-card border-b border-border">
-            <div className="max-w-container p-4">
+            <div className="max-w-4xl mx-auto p-4">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   {currentSession ? (
@@ -1248,7 +1320,11 @@ export default function App() {
                   variant="outline"
                   size="sm"
                   onClick={startNewChat}
-                  className="flex items-center gap-2 button-themed"
+                  className={`flex items-center gap-2 transition-colors ${
+                    userSettings.theme === "dark"
+                      ? "!bg-[#697282] !text-white !border-[#697282] hover:!bg-[#697282]/90 hover:!text-white"
+                      : "bg-muted text-muted-foreground border-border hover:bg-accent hover:text-accent-foreground"
+                  }`}
                 >
                   <Plus className="w-4 h-4" />
                   Новый чат
@@ -1258,7 +1334,7 @@ export default function App() {
           </div>
 
           {/* Chat Content */}
-          <div className="max-w-container p-4 pb-bottom-nav-large">
+          <div className="max-w-4xl mx-auto p-4 pb-32">
             {currentSession ? (
               <div className="space-y-4">
                 {currentSession.messages.map((message) => (
@@ -1293,7 +1369,7 @@ export default function App() {
 
           {/* Fixed Input Area */}
           <div className="fixed bottom-20 left-0 right-0 bg-card border-t border-border p-4">
-            <div className="max-w-container">
+            <div className="max-w-4xl mx-auto">
               <div className="flex gap-2">
                 <Input
                   placeholder="Напишите сообщение..."
@@ -1302,11 +1378,19 @@ export default function App() {
                   onKeyPress={(e) =>
                     e.key === "Enter" && sendAiMessage()
                   }
-                  className="flex-1 input-themed"
+                  className={`flex-1 ${
+                    userSettings.theme === "dark"
+                      ? "!bg-[#1a1a1a] !border-gray-600 !text-white placeholder:!text-gray-400"
+                      : "bg-background border-border"
+                  }`}
                 />
                 <Button
                   onClick={sendAiMessage}
-                  className="button-primary-themed"
+                  className={`${
+                    userSettings.theme === "dark"
+                      ? "!bg-[#697282] hover:!bg-[#697282]/90 !text-white"
+                      : "bg-blue-500 hover:bg-blue-600 text-white"
+                  }`}
                 >
                   <Send className="w-4 h-4" />
                 </Button>
@@ -1322,16 +1406,34 @@ export default function App() {
         <>
           {/* Archive Navigation Tabs */}
           <div className="bg-card border-b border-border">
-            <div className="max-w-container p-4">
+            <div className="max-w-4xl mx-auto p-4">
               <Tabs
                 value={archiveTab}
                 onValueChange={setArchiveTab}
               >
-                <TabsList className="">
-                  <TabsTrigger value="chats">
+                <TabsList className="grid w-full grid-cols-2 bg-muted text-muted-foreground">
+                  <TabsTrigger
+                    value="chats"
+                    className={`rounded-full transition-all ${
+                      userSettings.theme === "dark"
+                        ? archiveTab === "chats"
+                          ? "!bg-[#697282] !text-white !border !border-[#697282]"
+                          : "!bg-transparent !text-muted-foreground !border !border-gray-600"
+                        : "bg-transparent text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-card-foreground data-[state=active]:shadow-sm"
+                    }`}
+                  >
                     Чаты
                   </TabsTrigger>
-                  <TabsTrigger value="tasks">
+                  <TabsTrigger
+                    value="tasks"
+                    className={`rounded-full transition-all ${
+                      userSettings.theme === "dark"
+                        ? archiveTab === "tasks"
+                          ? "!bg-[#697282] !text-white !border !border-[#697282]"
+                          : "!bg-transparent !text-muted-foreground !border !border-gray-600"
+                        : "bg-transparent text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-card-foreground data-[state=active]:shadow-sm"
+                    }`}
+                  >
                     Задачи
                   </TabsTrigger>
                 </TabsList>
@@ -1340,7 +1442,7 @@ export default function App() {
           </div>
 
           {/* Archive Content */}
-          <div className="max-w-container p-4 pb-bottom-nav">
+          <div className="max-w-4xl mx-auto p-4 pb-20">
             <Tabs
               value={archiveTab}
               onValueChange={setArchiveTab}
@@ -1400,19 +1502,46 @@ export default function App() {
       <>
         {/* Navigation Tabs */}
         <div className="bg-card border-b border-border">
-          <div className="max-w-container p-4">
+          <div className="max-w-4xl mx-auto p-4">
             <Tabs
               value={activeView}
               onValueChange={setActiveView}
             >
-              <TabsList className="">
-                <TabsTrigger value="today">
+              <TabsList className="grid w-full grid-cols-3 bg-muted text-muted-foreground">
+                <TabsTrigger
+                  value="today"
+                  className={`rounded-full transition-all ${
+                    userSettings.theme === "dark"
+                      ? activeView === "today"
+                        ? "!bg-[#697282] !text-white !border !border-[#697282]"
+                        : "!bg-transparent !text-muted-foreground !border !border-gray-600"
+                      : "bg-transparent text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-card-foreground data-[state=active]:shadow-sm"
+                  }`}
+                >
                   Сегодня
                 </TabsTrigger>
-                <TabsTrigger value="week">
+                <TabsTrigger
+                  value="week"
+                  className={`rounded-full transition-all ${
+                    userSettings.theme === "dark"
+                      ? activeView === "week"
+                        ? "!bg-[#697282] !text-white !border !border-[#697282]"
+                        : "!bg-transparent !text-muted-foreground !border !border-gray-600"
+                      : "bg-transparent text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-card-foreground data-[state=active]:shadow-sm"
+                  }`}
+                >
                   Неделя
                 </TabsTrigger>
-                <TabsTrigger value="month">
+                <TabsTrigger
+                  value="month"
+                  className={`rounded-full transition-all ${
+                    userSettings.theme === "dark"
+                      ? activeView === "month"
+                        ? "!bg-[#697282] !text-white !border !border-[#697282]"
+                        : "!bg-transparent !text-muted-foreground !border !border-gray-600"
+                      : "bg-transparent text-muted-foreground data-[state=active]:bg-card data-[state=active]:text-card-foreground data-[state=active]:shadow-sm"
+                  }`}
+                >
                   Месяц
                 </TabsTrigger>
               </TabsList>
@@ -1421,7 +1550,7 @@ export default function App() {
         </div>
 
         {/* Content */}
-        <div className="max-w-container p-4 pb-bottom-nav">
+        <div className="max-w-4xl mx-auto p-4 pb-20">
           {activeView === "today" && (
             <div>
               {getTasksForView().map((task) => (
@@ -1593,18 +1722,22 @@ export default function App() {
   };
 
   return (
-    <div className="app" data-theme={userSettings.theme}>
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="header">
-        <div className="header-content">
-          <h1 className="header-title">
+      <div className="bg-card border-b border-border p-4">
+        <div className="flex justify-between items-center max-w-4xl mx-auto">
+          <h1 className="text-2xl font-bold text-card-foreground">
             TUDUSHKA
           </h1>
           <button
             onClick={() => setCurrentPage("settings")}
-            className="btn btn-ghost btn-icon"
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
+              userSettings.theme === "dark"
+                ? "bg-muted hover:bg-accent border border-muted-foreground"
+                : "bg-muted hover:bg-accent"
+            }`}
           >
-            <User className="w-5 h-5" />
+            <User className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
       </div>
@@ -1613,16 +1746,16 @@ export default function App() {
 
       {/* Floating Add Button - только на главной странице */}
       {currentPage === "home" && (
-        <div className="floating-btn">
+        <div className="fixed bottom-22 left-1/2 transform -translate-x-1/2">
           <Dialog
             open={isAddDialogOpen}
             onOpenChange={setIsAddDialogOpen}
           >
             <DialogTrigger asChild>
-              <button className="btn btn-primary btn-lg rounded-full">
-                <Plus className="w-5 h-5" />
+              <Button className="rounded-full px-16 py-3 bg-blue-500 hover:bg-blue-600 text-white">
+                <Plus className="w-5 h-5 mr-1" />
                 Добавить
-              </button>
+              </Button>
             </DialogTrigger>
             <DialogContent className="bg-popover border-border">
               <DialogHeader>
@@ -1892,39 +2025,45 @@ export default function App() {
       </Dialog>
 
       {/* Bottom Navigation */}
-      <div className="bottom-nav">
-        <div className="bottom-nav-content">
+      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border px-10 py-4">
+        <div className="flex justify-between max-w-4xl mx-auto">
           <button
             onClick={() => {
               setCurrentPage("home");
               setActiveView("today");
             }}
-            className={`bottom-nav-item ${
-              currentPage === "home" ? "active" : ""
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              currentPage === "home"
+                ? "text-blue-500"
+                : "text-muted-foreground"
             }`}
           >
             <Home className="w-6 h-6" />
-            <span className="bottom-nav-text">Главная</span>
+            <span className="text-xs">Главная</span>
           </button>
 
           <button
             onClick={() => setCurrentPage("ai-assistant")}
-            className={`bottom-nav-item ${
-              currentPage === "ai-assistant" ? "active" : ""
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              currentPage === "ai-assistant"
+                ? "text-blue-500"
+                : "text-muted-foreground"
             }`}
           >
             <Bot className="w-6 h-6" />
-            <span className="bottom-nav-text">AI Ассистент</span>
+            <span className="text-xs">AI Ассистент</span>
           </button>
 
           <button
             onClick={() => setCurrentPage("archive")}
-            className={`bottom-nav-item ${
-              currentPage === "archive" ? "active" : ""
+            className={`flex flex-col items-center space-y-1 transition-colors ${
+              currentPage === "archive"
+                ? "text-blue-500"
+                : "text-muted-foreground"
             }`}
           >
             <Archive className="w-6 h-6" />
-            <span className="bottom-nav-text">Архив</span>
+            <span className="text-xs">Архив</span>
           </button>
         </div>
       </div>

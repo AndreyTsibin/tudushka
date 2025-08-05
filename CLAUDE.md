@@ -62,19 +62,21 @@ npm run backend      # Start Django server on http://localhost:8000
 
 ### Frontend Commands (from frontend/ directory)
 ```bash
-npm run dev          # Start Vite dev server
-npm run build        # TypeScript compilation + Vite build
-npm run lint         # ESLint checking
-npm run preview      # Preview production build
+npm run dev          # Start Vite dev server on http://localhost:5173
+npm run build        # TypeScript compilation + Vite build (critical: run before commits)
+npm run lint         # ESLint checking with modern flat config
+npm run preview      # Preview production build locally
 ```
 
 ### Backend Commands (from root directory)
 ```bash
-python manage.py runserver       # Start Django development server
+# All Django commands require virtual environment activation first
+source venv/bin/activate         # MUST run first
+python manage.py runserver       # Start Django server on http://localhost:8000
 python manage.py migrate         # Apply database migrations  
 python manage.py makemigrations  # Generate database migrations
 python manage.py test            # Run Django tests
-python manage.py createsuperuser # Create Django admin user
+python manage.py createsuperuser # Create Django admin user (for /admin access)
 python manage.py shell           # Django interactive shell
 python manage.py startapp <name> # Create new Django application
 python manage.py check           # Validate Django configuration
@@ -241,14 +243,15 @@ The frontend is ready for backend integration. Key areas for API development:
 
 ### Theme Implementation
 - **CSS Custom Properties**: Defined in `frontend/src/index.css` with HSL values
-- **Theme Toggle**: Managed via React state, applies `.dark` class to `document.documentElement`
-- **Color Variables**: All colors use `hsl(var(--variable-name))` format for proper CSS custom property integration
+- **Theme Toggle**: Managed via React state, applies `data-theme="dark"` attribute to document root
+- **Color Variables**: All colors use `var(--color-name)` format for CSS custom property integration
+- **Theme Structure**: Light theme in `:root`, dark theme in `[data-theme="dark"]` selector
 
 ### UI Component System
 - **Base Library**: Complete Radix UI primitives for accessibility
 - **Styling Approach**: Custom CSS classes with design system consistency
 - **Component Location**: `frontend/src/components/ui/` - pre-built, styled components
-- **Utility Functions**: `cn()` function in `utils.ts` for conditional class merging
+- **No Utility Libraries**: Components use direct className strings, no `cn()` utility or class-variance-authority
 
 ### Common Styling Patterns
 ```typescript
@@ -283,6 +286,43 @@ className="button-primary button-medium"
 - **Calendar**: Custom formatters for react-day-picker in Russian
 - **Text Content**: All UI text in Russian, consider i18n for future English support
 
-## Important Work Rules
+## Critical Development Rules
 
-**ОБЯЗАТЕЛЬНОЕ ПРАВИЛО**: После выполнения каждой задачи Claude Code должен делать коммит в git с осмысленным сообщением, описывающим выполненную работу.
+### Git Workflow
+- **ОБЯЗАТЕЛЬНОЕ ПРАВИЛО**: После выполнения каждой задачи Claude Code должен делать коммит в git с осмысленным сообщением, описывающим выполненную работу
+- Always run `npm run build` from frontend directory before committing to ensure TypeScript compilation passes
+- Development occurs on `develop` branch, not main
+- Use conventional commit format: `type: description`
+
+### Code Quality
+- All UI components use custom CSS with CSS custom properties (no Tailwind CSS)
+- Components are built on Radix UI primitives for accessibility
+- Always run `npm run lint` before committing frontend changes
+- Maintain Russian localization throughout the interface
+
+### Architecture Constraints
+- Frontend uses local React state management only (no external state libraries)
+- Backend is minimal Django setup - no custom apps exist yet
+- All styling uses CSS custom properties defined in `frontend/src/index.css`
+- Theme switching implemented via `data-theme` attribute on document root
+
+## Testing and Troubleshooting
+
+### Frontend Testing
+```bash
+cd frontend
+npm run build        # Must pass before any commit
+npm run lint         # Check for ESLint issues
+npm run dev          # Test development server at localhost:5173
+```
+
+### Common Issues
+- **Build Failures**: Usually caused by unused imports or TypeScript errors
+- **Styling Problems**: Check CSS custom properties in `index.css`, ensure no Tailwind classes remain
+- **Component Issues**: All UI components expect direct className strings, not utility functions
+- **Theme Issues**: Dark mode uses `[data-theme="dark"]` selector, not `.dark` class
+
+### Server URLs
+- **Frontend Development**: http://localhost:5173 (Vite dev server)
+- **Backend Development**: http://localhost:8000 (Django dev server) 
+- **Django Admin**: http://localhost:8000/admin (requires superuser account)
