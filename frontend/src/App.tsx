@@ -174,6 +174,16 @@ export default function App() {
   });
 
   const today = new Date();
+  
+  // Функция для получения текущей даты и времени
+  const getCurrentDateTimeForTask = () => {
+    const now = new Date();
+    
+    const date = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const time = now.toTimeString().slice(0, 5); // HH:MM
+    
+    return { date, time };
+  };
   const weekStart = new Date(today);
   // Начинаем неделю с понедельника (1), воскресенье становится 7-м днем
   const dayOfWeek = today.getDay();
@@ -413,6 +423,27 @@ export default function App() {
       cleanup.forEach(fn => fn());
     };
   }, [newTask, editingTask]);
+
+  // Автоматическое заполнение времени и даты при открытии диалога добавления задачи
+  useEffect(() => {
+    if (isAddDialogOpen) {
+      const { date, time } = getCurrentDateTimeForTask();
+      setNewTask(prev => ({
+        ...prev,
+        date: prev.date || date,
+        time: prev.time || time,
+      }));
+    } else {
+      // Очищаем поля при закрытии диалога
+      setNewTask({
+        title: "",
+        description: "",
+        time: "",
+        date: "",
+        priority: "medium" as const,
+      });
+    }
+  }, [isAddDialogOpen]);
 
   const updateTask = () => {
     if (!editingTask || !editingTask.title.trim()) {
