@@ -711,12 +711,12 @@ export default function App() {
         }`}
       >
         <Card
-          className="p-3 mb-1 cursor-pointer bg-card border-border hover:bg-accent transition-colors"
+          className="task-card"
           onClick={() => !isAnimating && openEditDialog(task)}
         >
           {/* Top row with badge, time and date */}
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center gap-2">
+          <div className="task-header">
+            <div className="task-priority-group">
               {task.priority === "critical" && (
                 <Badge className="badge-priority-critical">
                   Критический
@@ -737,12 +737,12 @@ export default function App() {
                   Низкий
                 </Badge>
               )}
-              <div className="flex items-center gap-1 text-muted-foreground text-sm">
+              <div className="task-time-info">
                 <Clock className="w-4 h-4" />
                 <span>{task.time}</span>
               </div>
             </div>
-            <div className="flex items-center gap-1 text-muted-foreground text-sm">
+            <div className="task-time-info">
               <CalendarIcon className="w-4 h-4" />
               <span>
                 {new Date(task.date).toLocaleDateString(
@@ -760,21 +760,21 @@ export default function App() {
           {/* Task content */}
           <div className="mb-2">
             <h3
-              className={`text-lg font-medium mb-1 leading-tight text-card-foreground ${task.completed ? "line-through text-muted-foreground" : ""}`}
+              className={`task-title ${task.completed ? "line-through text-muted-foreground" : ""}`}
             >
               {task.title}
             </h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
+            <p className="task-description">
               {task.description}
             </p>
           </div>
 
           {/* Bottom row with complete button */}
-          <div className="flex items-center justify-end">
+          <div className="task-actions">
             <Button
               variant="outline"
               size="sm"
-              className="btn-outline btn-sm complete-task-btn"
+              className="complete-task-btn"
               disabled={isAnimating}
               onClick={(e) => {
                 e.stopPropagation();

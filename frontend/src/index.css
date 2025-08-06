@@ -1017,6 +1017,60 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
+.task-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.4;
+  color: var(--color-card-foreground);
+}
+
+.task-card {
+  padding: 0.75rem;
+  margin-bottom: var(--spacing-xs);
+  cursor: pointer;
+  background-color: var(--color-card);
+  border-color: var(--color-border);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.task-card:hover {
+  background-color: var(--color-accent);
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xs);
+}
+
+.task-priority-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.task-time-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--color-muted-foreground);
+  font-size: var(--font-size-sm);
+}
+
+.task-description {
+  color: var(--color-muted-foreground);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .complete-task-btn {
   color: var(--color-muted-foreground);
   border-color: var(--color-border);
