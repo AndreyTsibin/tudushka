@@ -18,6 +18,8 @@
   --color-border: #e4e4e7;
   --color-input: #e4e4e7;
   --color-ring: #0070f3;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0a0a0a;
   
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -78,6 +80,8 @@
   --color-border: #2e2e2e;
   --color-input: #2e2e2e;
   --color-ring: #0070f3;
+  --color-popover: #1a1a1a;
+  --color-popover-foreground: #fafafa;
 }
 
 /* ===== RESET & BASE STYLES ===== */
@@ -236,7 +240,7 @@ body {
 }
 
 .btn-outline {
-  background-color: var(--color-background);
+  background-color: var(--color-card);
   color: var(--color-foreground);
   border: 1px solid var(--color-border);
 }
@@ -668,8 +672,8 @@ body {
   overflow: hidden;
   border-radius: var(--radius);
   border: 1px solid var(--color-border);
-  background-color: var(--color-popover);
-  color: var(--color-popover-foreground);
+  background-color: var(--color-popover) !important;
+  color: var(--color-popover-foreground) !important;
   box-shadow: var(--shadow-lg);
 }
 
