@@ -96,12 +96,25 @@ npm run install          # Install all dependencies
 source venv/bin/activate # Activate Python virtual environment
 python manage.py migrate # Initialize database
 
-# Daily development
+# Daily development - ОБЯЗАТЕЛЬНО освобождать порты перед запуском!
+lsof -ti:5173 | xargs kill -9  # Освободить порт 5173 (frontend)
+lsof -ti:8000 | xargs kill -9  # Освободить порт 8000 (backend)
 npm run dev             # Start both servers concurrently
 # OR separately:
 npm run backend         # Django server (localhost:8000)  
 npm run frontend        # Vite dev server (localhost:5173)
 ```
+
+### КРИТИЧЕСКИ ВАЖНОЕ ПРАВИЛО - Освобождение портов
+**ВСЕГДА** перед запуском проекта Claude Code должен освобождать порты:
+```bash
+# Обязательные команды перед каждым запуском:
+lsof -ti:5173 | xargs kill -9  # Освободить порт 5173 для frontend
+lsof -ti:8000 | xargs kill -9  # Освободить порт 8000 для backend
+# Затем запускать проект
+npm run dev
+```
+Это гарантирует стабильную работу приложения на постоянных портах.
 
 ## Environment Setup
 
