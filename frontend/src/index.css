@@ -1311,7 +1311,7 @@ body {
 
 /* ===== FIELD LABELS ===== */
 .priority-label {
-  margin-bottom: 0.5rem;
+  margin-bottom: -0.5rem;
 }
 
 .field-label {

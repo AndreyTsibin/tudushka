@@ -165,12 +165,18 @@ export default function App() {
   const [animatingTasks, setAnimatingTasks] = useState<
     Set<string>
   >(new Set());
-  const [newTask, setNewTask] = useState({
+  const [newTask, setNewTask] = useState<{
+    title: string;
+    description: string;
+    time: string;
+    date: string;
+    priority: "critical" | "high" | "medium" | "low";
+  }>({
     title: "",
     description: "",
     time: "",
     date: "",
-    priority: "medium" as const,
+    priority: "medium",
   });
 
   const today = new Date();
@@ -1766,6 +1772,51 @@ export default function App() {
                   className="dialog-field"
                   style={{ minHeight: '5rem', resize: 'vertical' }}
                 />
+                {/* AI описание кнопка под полем описания */}
+                <Dialog
+                  open={isAIHelpDialogOpen}
+                  onOpenChange={setIsAIHelpDialogOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="dialog-button-flex dialog-button-outline"
+                      disabled={!canUseAIDescription()}
+                      style={{ width: '100%', marginTop: '0.5rem', marginBottom: '1rem' }}
+                    >
+                      <Sparkles className="dialog-icon" />
+                      AI описание
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="dialog-content-container">
+                    <DialogHeader>
+                      <DialogTitle className="dialog-title-text">
+                        AI Генерация описания
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="dialog-form">
+                      <p className="dialog-text">
+                        AI создаст подробное описание задачи
+                        на основе введенного заголовка.
+                        Убедитесь, что заголовок задачи
+                        заполнен.
+                      </p>
+                      <div className="dialog-small-text">
+                        Осталось использований:{" "}
+                        {getPlanLimits().descriptions -
+                          userSettings.aiUsage
+                            .descriptionsUsed}
+                      </div>
+                      <Button
+                        onClick={generateTaskDescription}
+                        className="dialog-button-primary"
+                      >
+                        <Sparkles className="dialog-icon" />
+                        Сгенерировать описание
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
                 <div className="dialog-form-grid">
                   {/* Custom Time Field */}
                   <div className="custom-datetime-field">
@@ -1825,7 +1876,7 @@ export default function App() {
                 </div>
                 <Select
                   value={newTask.priority}
-                  onValueChange={(value: "urgent" | "medium" | "low") =>
+                  onValueChange={(value: "critical" | "high" | "medium" | "low") =>
                     setNewTask({ ...newTask, priority: value })
                   }
                 >
@@ -1849,52 +1900,10 @@ export default function App() {
                   <Button
                     onClick={addTask}
                     className="dialog-button-flex dialog-button-primary"
+                    style={{ width: '100%', minHeight: '50px' }}
                   >
-                    Добавить
+                    Добавить задачу
                   </Button>
-                  <Dialog
-                    open={isAIHelpDialogOpen}
-                    onOpenChange={setIsAIHelpDialogOpen}
-                  >
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="dialog-button-flex dialog-button-outline"
-                        disabled={!canUseAIDescription()}
-                      >
-                        <Sparkles className="dialog-icon" />
-                        AI-помощь
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="dialog-content-container">
-                      <DialogHeader>
-                        <DialogTitle className="dialog-title-text">
-                          AI Генерация описания
-                        </DialogTitle>
-                      </DialogHeader>
-                      <div className="dialog-form">
-                        <p className="dialog-text">
-                          AI создаст подробное описание задачи
-                          на основе введенного заголовка.
-                          Убедитесь, что заголовок задачи
-                          заполнен.
-                        </p>
-                        <div className="dialog-small-text">
-                          Осталось использований:{" "}
-                          {getPlanLimits().descriptions -
-                            userSettings.aiUsage
-                              .descriptionsUsed}
-                        </div>
-                        <Button
-                          onClick={generateTaskDescription}
-                          className="dialog-button-primary"
-                        >
-                          <Sparkles className="dialog-icon" />
-                          Сгенерировать описание
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
                 </div>
               </div>
             </DialogContent>
@@ -1943,6 +1952,51 @@ export default function App() {
                 className="dialog-field"
                 style={{ minHeight: '5rem', resize: 'vertical' }}
               />
+              {/* AI описание кнопка под полем описания */}
+              <Dialog
+                open={isEditAIHelpDialogOpen}
+                onOpenChange={setIsEditAIHelpDialogOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="dialog-button-flex dialog-button-outline"
+                    disabled={!canUseAIDescription()}
+                    style={{ width: '100%', marginTop: '0.5rem', marginBottom: '1rem' }}
+                  >
+                    <Sparkles className="dialog-icon" />
+                    AI описание
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="dialog-content-container">
+                  <DialogHeader>
+                    <DialogTitle className="dialog-title-text">
+                      AI Генерация описания
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="dialog-form">
+                    <p className="dialog-text">
+                      AI создаст подробное описание задачи
+                      на основе введенного заголовка.
+                      Убедитесь, что заголовок задачи
+                      заполнен.
+                    </p>
+                    <div className="dialog-small-text">
+                      Осталось использований:{" "}
+                      {getPlanLimits().descriptions -
+                        userSettings.aiUsage
+                          .descriptionsUsed}
+                    </div>
+                    <Button
+                      onClick={generateEditTaskDescription}
+                      className="dialog-button-primary"
+                    >
+                      <Sparkles className="dialog-icon" />
+                      Сгенерировать описание
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
               <div className="dialog-form-grid">
                 {/* Custom Time Field */}
                 <div className="custom-datetime-field">
@@ -2002,7 +2056,7 @@ export default function App() {
               </div>
               <Select
                 value={editingTask.priority}
-                onValueChange={(value: "urgent" | "medium" | "low") =>
+                onValueChange={(value: "critical" | "high" | "medium" | "low") =>
                   setEditingTask({
                     ...editingTask,
                     priority: value,
@@ -2029,53 +2083,10 @@ export default function App() {
                 <Button
                   onClick={updateTask}
                   className="dialog-button-flex dialog-button-primary"
+                  style={{ width: '100%', minHeight: '50px' }}
                 >
-                  Сохранить
+                  Сохранить задачу
                 </Button>
-                <Dialog
-                  open={isEditAIHelpDialogOpen}
-                  onOpenChange={setIsEditAIHelpDialogOpen}
-                >
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="dialog-button-flex dialog-button-outline"
-                      disabled={!canUseAIDescription()}
-                    >
-                      <Sparkles className="dialog-icon" />
-                      AI-помощь
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="dialog-content-container">
-                    <DialogHeader>
-                      <DialogTitle className="dialog-title-text">
-                        AI Генерация описания
-                      </DialogTitle>
-                    </DialogHeader>
-                    <div className="dialog-form">
-                      <p className="dialog-text">
-                        AI создаст подробное описание задачи на
-                        основе введенного заголовка. Убедитесь,
-                        что заголовок задачи заполнен.
-                      </p>
-                      <div className="dialog-small-text">
-                        Осталось использований:{" "}
-                        {getPlanLimits().descriptions -
-                          userSettings.aiUsage.descriptionsUsed}
-                      </div>
-                      <Button
-                        onClick={() => {
-                          generateEditTaskDescription();
-                          setIsEditAIHelpDialogOpen(false);
-                        }}
-                        className="dialog-button-primary"
-                      >
-                        <Sparkles className="dialog-icon" />
-                        Сгенерировать описание
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
               </div>
             </div>
           )}
