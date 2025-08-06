@@ -1808,7 +1808,7 @@ export default function App() {
                       </div>
                       <Button
                         onClick={generateTaskDescription}
-                        className="dialog-button-primary"
+                        className="dialog-button-primary dialog-button-ai-generate"
                       >
                         <Sparkles className="dialog-icon" />
                         Сгенерировать описание
@@ -1986,7 +1986,7 @@ export default function App() {
                     </div>
                     <Button
                       onClick={generateEditTaskDescription}
-                      className="dialog-button-primary"
+                      className="dialog-button-primary dialog-button-ai-generate"
                     >
                       <Sparkles className="dialog-icon" />
                       Сгенерировать описание
