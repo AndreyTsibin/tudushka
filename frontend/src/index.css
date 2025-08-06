@@ -515,7 +515,7 @@ body {
 
 .bottom-nav-content {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   max-width: var(--container-max-width);
   margin: 0 auto;
   width: 100%;
