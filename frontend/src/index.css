@@ -1416,8 +1416,18 @@ body {
 .field-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-muted-foreground);
-  display: block;
+}
+
+/* ===== HEADER STYLES ===== */
+.header-content {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* ===== BOTTOM NAVIGATION STYLES ===== */
+.bottom-nav {
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 [data-theme="dark"] .field-label {

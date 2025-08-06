@@ -1734,7 +1734,7 @@ export default function App() {
             <DialogTrigger asChild>
               <button className="btn btn-primary btn-lg rounded-full">
                 <Plus className="w-5 h-5" />
-                Добавить
+                Добавить задачу
               </button>
             </DialogTrigger>
             <DialogContent className="dialog-content-container">
