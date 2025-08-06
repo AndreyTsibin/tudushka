@@ -111,11 +111,11 @@ npm run frontend        # Vite dev server (localhost:5173)
 # Обязательные команды перед каждым запуском:
 pkill -f "node\|vite\|python" 2>/dev/null || true  # Остановить все процессы
 lsof -ti:5173,8000 | xargs kill -9 2>/dev/null || true  # Освободить порты принудительно
-# Затем запускать проект в фоновом режиме
-npm run dev &
-# Ждать несколько секунд для полного запуска
-sleep 5
+# Затем запускать проект
+npm run dev
 ```
+
+**ВАЖНО**: Пользователь НЕ хочет чтобы Claude Code запускал сервер в фоновом режиме (`&`) или MCP Playwright, если сервер уже запущен. Всегда спрашивать пользователя перед запуском серверов.
 
 ### Диагностика проблем запуска
 Если приложение не запускается или недоступно:
@@ -130,10 +130,11 @@ curl -I http://localhost:8000
 # 3. Принудительно очистить все и перезапустить
 pkill -f "node\|vite\|python" 2>/dev/null || true
 lsof -ti:5173,8000 | xargs kill -9 2>/dev/null || true  
-npm run dev &
-sleep 5
+npm run dev
 
-# 4. Проверить через MCP Playwright доступность
+# 4. Проверить доступность портов
+lsof -i :5173
+lsof -i :8000
 ```
 Это гарантирует стабильную работу приложения на постоянных портах.
 
@@ -218,6 +219,32 @@ interface UserSettings {
 - Russian localization and Moscow timezone
 - No custom Django apps yet - ready for API integration
 
+## Current Form Field Implementation
+
+### Modal Dialog Styling
+All form fields in modal dialogs (add task, edit task) use a borderless design:
+- **Input Fields**: `border: none` with focus box-shadow effects only
+- **Textarea Fields**: Auto-resizing with `field-sizing: content` for modern browsers
+- **Select Fields**: Borderless dropdown with focus outline effects
+- **Custom DateTime Fields**: Split 80%/20% layout with blue icon sections
+
+### DateTime Field Architecture
+Custom implementation in `frontend/src/App.tsx` and `frontend/src/index.css`:
+```typescript
+// Custom datetime field structure
+<div className="custom-datetime-field">
+  <input className="custom-datetime-input" type="time|date" />
+  <div className="custom-datetime-icon" onClick={handleShowPicker}>
+    <ClockIcon|CalendarIcon />
+  </div>
+</div>
+```
+
+**CSS Classes:**
+- `.custom-datetime-field`: Flex container with borderless styling
+- `.custom-datetime-input`: 80% width input field, no native icons
+- `.custom-datetime-icon`: 20% width blue background (#3b82f6) with hover effects
+
 ## CORS Configuration
 
 Frontend development server (localhost:5173) is configured in Django CORS settings. Additional allowed origins include localhost:3000 for compatibility. CORS credentials are enabled for authentication support.
@@ -282,10 +309,11 @@ The frontend is ready for backend integration. Key areas for API development:
 - **Theme Structure**: Light theme in `:root`, dark theme in `[data-theme="dark"]` selector
 
 ### UI Component System
-- **Base Library**: Complete Radix UI primitives for accessibility
+- **Base Library**: Complete Radix UI primitives for accessibility 
 - **Styling Approach**: Custom CSS classes with design system consistency
 - **Component Location**: `frontend/src/components/ui/` - pre-built, styled components
 - **No Utility Libraries**: Components use direct className strings, no `cn()` utility or class-variance-authority
+- **Form Fields**: All input fields in modals use borderless design (`border: none`) with focus box-shadow effects only
 
 ### Common Styling Patterns
 ```typescript
@@ -333,6 +361,8 @@ className="button-primary button-medium"
 - Components are built on Radix UI primitives for accessibility
 - Always run `npm run lint` before committing frontend changes
 - Maintain Russian localization throughout the interface
+- Modal form fields use borderless styling (`border: none`) with focus box-shadow effects
+- Custom datetime fields use 80%/20% split layout with blue icon backgrounds matching the "Добавить" button (#3b82f6)
 
 ### Architecture Constraints
 - Frontend uses local React state management only (no external state libraries)
@@ -355,6 +385,8 @@ npm run dev          # Test development server at localhost:5173
 - **Styling Problems**: Check CSS custom properties in `index.css`, ensure no Tailwind classes remain
 - **Component Issues**: All UI components expect direct className strings, not utility functions
 - **Theme Issues**: Dark mode uses `[data-theme="dark"]` selector, not `.dark` class
+- **Form Field Issues**: All modal form fields should use `border: none` styling, not borders
+- **DateTime Fields**: Use custom div layout with 80%/20% split and blue icon backgrounds (#3b82f6)
 
 ### Server URLs
 - **Frontend Development**: http://localhost:5173 (Vite dev server)

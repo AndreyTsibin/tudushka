@@ -1756,6 +1756,8 @@ export default function App() {
               </DialogHeader>
               <div className="dialog-form">
                 <Textarea
+                  id="new-task-title"
+                  name="title"
                   placeholder="Заголовок задачи"
                   value={newTask.title}
                   onChange={(e) =>
@@ -1768,6 +1770,8 @@ export default function App() {
                   rows={1}
                 />
                 <Textarea
+                  id="new-task-description"
+                  name="description"
                   placeholder="Описание задачи"
                   value={newTask.description}
                   onChange={(e) =>
@@ -1780,28 +1784,58 @@ export default function App() {
                   style={{ minHeight: '3rem', resize: 'vertical' }}
                 />
                 <div className="dialog-form-grid">
-                  <Input
-                    type="time"
-                    value={newTask.time}
-                    onChange={(e) =>
-                      setNewTask({
-                        ...newTask,
-                        time: e.target.value,
-                      })
-                    }
-                    className="dialog-field"
-                  />
-                  <Input
-                    type="date"
-                    value={newTask.date}
-                    onChange={(e) =>
-                      setNewTask({
-                        ...newTask,
-                        date: e.target.value,
-                      })
-                    }
-                    className="dialog-field"
-                  />
+                  {/* Custom Time Field */}
+                  <div className="custom-datetime-field">
+                    <input
+                      id="new-task-time"
+                      name="time"
+                      type="time"
+                      value={newTask.time}
+                      onChange={(e) =>
+                        setNewTask({
+                          ...newTask,
+                          time: e.target.value,
+                        })
+                      }
+                      className="custom-datetime-input"
+                    />
+                    <div className="custom-datetime-icon" onClick={() => {
+                      const input = document.getElementById('new-task-time') as HTMLInputElement;
+                      input?.showPicker?.();
+                    }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12,6 12,12 16,14"></polyline>
+                      </svg>
+                    </div>
+                  </div>
+                  {/* Custom Date Field */}
+                  <div className="custom-datetime-field">
+                    <input
+                      id="new-task-date"
+                      name="date"
+                      type="date"
+                      value={newTask.date}
+                      onChange={(e) =>
+                        setNewTask({
+                          ...newTask,
+                          date: e.target.value,
+                        })
+                      }
+                      className="custom-datetime-input"
+                    />
+                    <div className="custom-datetime-icon" onClick={() => {
+                      const input = document.getElementById('new-task-date') as HTMLInputElement;
+                      input?.showPicker?.();
+                    }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                    </div>
+                  </div>
                 </div>
                 <Select
                   value={newTask.priority}
@@ -1896,6 +1930,8 @@ export default function App() {
           {editingTask && (
             <div className="dialog-form">
               <Textarea
+                id="edit-task-title"
+                name="title"
                 placeholder="Заголовок задачи"
                 value={editingTask.title}
                 onChange={(e) =>
@@ -1908,6 +1944,8 @@ export default function App() {
                 rows={1}
               />
               <Textarea
+                id="edit-task-description"
+                name="description"
                 placeholder="Описание задачи"
                 value={editingTask.description}
                 onChange={(e) =>
@@ -1920,28 +1958,58 @@ export default function App() {
                 style={{ minHeight: '3rem', resize: 'vertical' }}
               />
               <div className="dialog-form-grid">
-                <Input
-                  type="time"
-                  value={editingTask.time}
-                  onChange={(e) =>
-                    setEditingTask({
-                      ...editingTask,
-                      time: e.target.value,
-                    })
-                  }
-                  className="dialog-field"
-                />
-                <Input
-                  type="date"
-                  value={editingTask.date}
-                  onChange={(e) =>
-                    setEditingTask({
-                      ...editingTask,
-                      date: e.target.value,
-                    })
-                  }
-                  className="dialog-field"
-                />
+                {/* Custom Time Field */}
+                <div className="custom-datetime-field">
+                  <input
+                    id="edit-task-time"
+                    name="time"
+                    type="time"
+                    value={editingTask.time}
+                    onChange={(e) =>
+                      setEditingTask({
+                        ...editingTask,
+                        time: e.target.value,
+                      })
+                    }
+                    className="custom-datetime-input"
+                  />
+                  <div className="custom-datetime-icon" onClick={() => {
+                    const input = document.getElementById('edit-task-time') as HTMLInputElement;
+                    input?.showPicker?.();
+                  }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12,6 12,12 16,14"></polyline>
+                    </svg>
+                  </div>
+                </div>
+                {/* Custom Date Field */}
+                <div className="custom-datetime-field">
+                  <input
+                    id="edit-task-date"
+                    name="date"
+                    type="date"
+                    value={editingTask.date}
+                    onChange={(e) =>
+                      setEditingTask({
+                        ...editingTask,
+                        date: e.target.value,
+                      })
+                    }
+                    className="custom-datetime-input"
+                  />
+                  <div className="custom-datetime-icon" onClick={() => {
+                    const input = document.getElementById('edit-task-date') as HTMLInputElement;
+                    input?.showPicker?.();
+                  }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                  </div>
+                </div>
               </div>
               <Select
                 value={editingTask.priority}
