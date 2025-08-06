@@ -706,10 +706,8 @@ export default function App() {
 
     return (
       <div
-        className={`overflow-hidden transition-all duration-500 ease-out ${
-          isAnimating
-            ? "transform translate-x-full opacity-0 scale-95"
-            : "transform translate-x-0 opacity-100 scale-100"
+        className={`task-card-wrapper ${
+          isAnimating ? "task-card-animating" : "task-card-normal"
         }`}
       >
         <Card
@@ -720,25 +718,22 @@ export default function App() {
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
               {task.priority === "critical" && (
-                <Badge
-                  variant="destructive"
-                  className="text-xs px-2 py-1 rounded-full bg-red-600 text-white"
-                >
+                <Badge className="badge-priority-critical">
                   Критический
                 </Badge>
               )}
               {task.priority === "high" && (
-                <Badge className="text-xs px-2 py-1 rounded-full bg-orange-500 text-white">
+                <Badge className="badge-priority-high">
                   Высокий
                 </Badge>
               )}
               {task.priority === "medium" && (
-                <Badge className="text-xs px-2 py-1 rounded-full bg-blue-500 text-white">
+                <Badge className="badge-priority-medium">
                   Средний
                 </Badge>
               )}
               {task.priority === "low" && (
-                <Badge className="text-xs px-2 py-1 rounded-full bg-gray-500 text-white">
+                <Badge className="badge-priority-low">
                   Низкий
                 </Badge>
               )}
@@ -779,7 +774,7 @@ export default function App() {
             <Button
               variant="outline"
               size="sm"
-              className="text-muted-foreground border-border hover:bg-accent rounded-full px-4 py-2"
+              className="btn-outline btn-sm complete-task-btn"
               disabled={isAnimating}
               onClick={(e) => {
                 e.stopPropagation();
@@ -1082,10 +1077,11 @@ export default function App() {
                         </span>
                       </div>
                       <div className="progress-bar">
-                        <div className="progress-fill"
+                        <div 
+                          className="progress-fill"
                           style={{
-                            width: `${Math.min((userSettings.aiUsage.descriptionsUsed / limits.descriptions) * 100, 100)}%`,
-                          }}
+                            "--progress-width": `${Math.min((userSettings.aiUsage.descriptionsUsed / limits.descriptions) * 100, 100)}%`
+                          } as React.CSSProperties}
                         />
                       </div>
                     </div>
@@ -1104,10 +1100,11 @@ export default function App() {
                         </span>
                       </div>
                       <div className="progress-bar">
-                        <div className="progress-fill"
+                        <div 
+                          className="progress-fill"
                           style={{
-                            width: `${Math.min((userSettings.aiUsage.chatRequestsUsed / limits.chatRequests) * 100, 100)}%`,
-                          }}
+                            "--progress-width": `${Math.min((userSettings.aiUsage.chatRequestsUsed / limits.chatRequests) * 100, 100)}%`
+                          } as React.CSSProperties}
                         />
                       </div>
                     </div>
@@ -1138,13 +1135,13 @@ export default function App() {
                       </div>
                     </div>
                     <Badge
-                      className={`${
+                      className={`plan-badge ${
                         userSettings.plan === "free"
-                          ? "bg-gray-500"
+                          ? "plan-free"
                           : userSettings.plan === "plus"
-                            ? "bg-blue-500"
-                            : "bg-purple-500"
-                      } text-white`}
+                            ? "plan-plus"
+                            : "plan-pro"
+                      }`}
                     >
                       {userSettings.plan === "free"
                         ? "Бесплатный"
@@ -1183,7 +1180,7 @@ export default function App() {
                               0 ₽
                             </Badge>
                             {userSettings.plan === "free" && (
-                              <Badge className="bg-green-500 text-white">
+                              <Badge className="plan-badge plan-active">
                                 Активен
                               </Badge>
                             )}
@@ -1222,11 +1219,11 @@ export default function App() {
                             <h4 className="font-medium text-card-foreground">
                               Plus
                             </h4>
-                            <Badge className="bg-blue-500 text-white">
+                            <Badge className="plan-badge plan-plus">
                               250 ₽
                             </Badge>
                             {userSettings.plan === "plus" && (
-                              <Badge className="bg-green-500 text-white">
+                              <Badge className="plan-badge plan-active">
                                 Активен
                               </Badge>
                             )}
@@ -1242,7 +1239,7 @@ export default function App() {
                       </div>
                       {userSettings.plan !== "plus" && (
                         <Button
-                          className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                          className="purchase-btn purchase-plus"
                           onClick={() => purchasePlan("plus")}
                         >
                           Оплатить Plus - 250 ₽
@@ -1266,11 +1263,11 @@ export default function App() {
                             <h4 className="font-medium text-card-foreground">
                               Pro
                             </h4>
-                            <Badge className="bg-purple-500 text-white">
+                            <Badge className="plan-badge plan-pro">
                               550 ₽
                             </Badge>
                             {userSettings.plan === "pro" && (
-                              <Badge className="bg-green-500 text-white">
+                              <Badge className="plan-badge plan-active">
                                 Активен
                               </Badge>
                             )}
@@ -1287,7 +1284,7 @@ export default function App() {
                       </div>
                       {userSettings.plan !== "pro" && (
                         <Button
-                          className="w-full bg-purple-500 hover:bg-purple-600 text-white"
+                          className="purchase-btn purchase-pro"
                           onClick={() => purchasePlan("pro")}
                         >
                           Оплатить Pro - 550 ₽
@@ -1373,15 +1370,15 @@ export default function App() {
                     className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-xs p-3 rounded-lg ${
+                      className={`chat-message ${
                         message.sender === "user"
-                          ? "bg-blue-500 text-white"
-                          : "bg-muted text-card-foreground"
+                          ? "chat-message-user"
+                          : "chat-message-ai"
                       }`}
                     >
                       <p className="text-sm">{message.text}</p>
                       <span
-                        className={`text-xs ${message.sender === "user" ? "text-blue-100" : "text-muted-foreground"}`}
+                        className={`text-xs ${message.sender === "user" ? "chat-message-timestamp-user" : "text-muted-foreground"}`}
                       >
                         {message.timestamp}
                       </span>
@@ -1390,8 +1387,8 @@ export default function App() {
                 ))}
               </div>
             ) : (
-              <div className="text-center text-muted-foreground py-16">
-                <Bot className="w-12 h-12 mx-auto mb-2" />
+              <div className="text-center text-muted-foreground empty-chat-state">
+                <Bot className="empty-chat-icon" />
                 <p>Начните диалог с AI ассистентом</p>
               </div>
             )}
@@ -1488,8 +1485,8 @@ export default function App() {
                     <TaskCard key={task.id} task={task} />
                   ))}
                   {getCompletedTasks().length === 0 && (
-                    <div className="text-center text-muted-foreground py-8">
-                      <CheckCircle2 className="w-12 h-12 mx-auto mb-2 text-muted" />
+                    <div className="text-center text-muted-foreground empty-tasks-state">
+                      <CheckCircle2 className="empty-tasks-icon" />
                       <p>Нет завершенных задач</p>
                     </div>
                   )}
@@ -1584,7 +1581,7 @@ export default function App() {
                   className="w-full flex justify-center bg-transparent"
                   classNames={{
                     day_selected:
-                      "!bg-blue-500 !text-white hover:!bg-blue-500 hover:!text-white focus:!bg-blue-500 focus:!text-white rounded-full !important",
+                      "calendar-day-selected",
                     day: "relative w-8 h-8 p-0 font-normal text-sm bg-transparent hover:bg-accent text-card-foreground",
                     head_cell:
                       "text-center text-muted-foreground font-normal text-[0.8rem] w-8 h-8 flex items-center justify-center",
@@ -1642,7 +1639,7 @@ export default function App() {
                         <div className="relative w-full h-full flex items-center justify-center">
                           {date.getDate()}
                           {hasTasks && (
-                            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                            <div className="calendar-task-indicator"></div>
                           )}
                         </div>
                       );
@@ -1770,7 +1767,6 @@ export default function App() {
                     })
                   }
                   className="dialog-field dialog-description-field"
-                  style={{ minHeight: '5rem', resize: 'vertical' }}
                 />
                 {/* AI описание кнопка под полем описания */}
                 <Dialog
@@ -1948,7 +1944,6 @@ export default function App() {
                   })
                 }
                 className="dialog-field dialog-description-field"
-                style={{ minHeight: '5rem', resize: 'vertical' }}
               />
               {/* AI описание кнопка под полем описания */}
               <Dialog
