@@ -1787,7 +1787,7 @@ export default function App() {
                       AI описание
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="dialog-content-container">
+                  <DialogContent className="dialog-content-container dialog-content-ai">
                     <DialogHeader>
                       <DialogTitle className="dialog-title-text">
                         AI Генерация описания
@@ -1965,7 +1965,7 @@ export default function App() {
                     AI описание
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="dialog-content-container">
+                <DialogContent className="dialog-content-container dialog-content-ai">
                   <DialogHeader>
                     <DialogTitle className="dialog-title-text">
                       AI Генерация описания

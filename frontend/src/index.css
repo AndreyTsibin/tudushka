@@ -1361,9 +1361,50 @@ body {
   color: #888888;
 }
 
+/* Градиент для кнопки "Сгенерировать описание" в AI диалоге */
+.dialog-button-primary {
+  background: linear-gradient(135deg, #988CED 0%, #7B68EE 25%, #DA70D6 50%, #FF69B4 75%, #FF6D70 100%);
+  border: 1px solid transparent;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.dialog-button-primary:hover {
+  background: linear-gradient(135deg, #7B68EE 0%, #6A5ACD 25%, #C865D8 50%, #FF1493 75%, #FF4500 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(152, 140, 237, 0.3);
+}
+
+.dialog-button-primary:disabled {
+  background: linear-gradient(135deg, #cccccc 0%, #aaaaaa 100%);
+  color: #666666;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Темная тема для кнопки "Сгенерировать описание" */
+[data-theme="dark"] .dialog-button-primary {
+  background: linear-gradient(135deg, #8A7FE8 0%, #7B68EE 25%, #D86CD8 50%, #FF69B4 75%, #FF6B6B 100%);
+}
+
+[data-theme="dark"] .dialog-button-primary:hover {
+  background: linear-gradient(135deg, #9B90E9 0%, #8A79EF 25%, #E97DE9 50%, #FF7AC4 75%, #FF7C7C 100%);
+  box-shadow: 0 4px 12px rgba(138, 127, 232, 0.4);
+}
+
+[data-theme="dark"] .dialog-button-primary:disabled {
+  background: linear-gradient(135deg, #4a4a4a 0%, #333333 100%);
+  color: #888888;
+}
+
 .dialog-description-field {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+}
+
+/* AI диалог - уменьшенная ширина на 20% относительно основного диалога */
+.dialog-content-ai {
+  max-width: 80% !important; /* 20% меньше, чем обычное модальное окно */
 }
 
 .field-label {
