@@ -370,7 +370,7 @@ export default function App() {
       setTimeout(() => {
         const titleInput = document.querySelector(
           '[placeholder="Заголовок задачи"]',
-        ) as HTMLInputElement;
+        ) as HTMLTextAreaElement;
         if (titleInput) {
           titleInput.selectionStart = titleInput.selectionEnd =
             titleInput.value.length;
@@ -385,11 +385,11 @@ export default function App() {
     
     // Настройка для полей в диалоге добавления задачи
     setTimeout(() => {
-      const titleInput = document.querySelector('input[placeholder="Заголовок задачи"]') as HTMLInputElement;
+      const titleInput = document.querySelector('textarea[placeholder="Заголовок задачи"]') as HTMLTextAreaElement;
       const descTextarea = document.querySelector('textarea[placeholder="Описание задачи"]') as HTMLTextAreaElement;
       
       if (titleInput) {
-        const titleHandler = (e: Event) => autoResize(e.target as HTMLInputElement);
+        const titleHandler = (e: Event) => autoResize(e.target as HTMLTextAreaElement);
         titleInput.addEventListener('input', titleHandler);
         titleInput.addEventListener('focus', titleHandler);
         cleanup.push(() => {
@@ -1724,7 +1724,7 @@ export default function App() {
                 </DialogTitle>
               </DialogHeader>
               <div className="dialog-form">
-                <Input
+                <Textarea
                   placeholder="Заголовок задачи"
                   value={newTask.title}
                   onChange={(e) =>
@@ -1733,7 +1733,8 @@ export default function App() {
                       title: e.target.value,
                     })
                   }
-                  className="dialog-field"
+                  className="dialog-field dialog-title-field"
+                  rows={1}
                 />
                 <Textarea
                   placeholder="Описание задачи"
@@ -1863,7 +1864,7 @@ export default function App() {
           </DialogHeader>
           {editingTask && (
             <div className="dialog-form">
-              <Input
+              <Textarea
                 placeholder="Заголовок задачи"
                 value={editingTask.title}
                 onChange={(e) =>
@@ -1872,7 +1873,8 @@ export default function App() {
                     title: e.target.value,
                   })
                 }
-                className="dialog-field"
+                className="dialog-field dialog-title-field"
+                rows={1}
               />
               <Textarea
                 placeholder="Описание задачи"

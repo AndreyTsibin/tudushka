@@ -540,6 +540,17 @@ body {
   field-sizing: content;
 }
 
+/* Title field specific styling - make textarea look like input */
+.dialog-title-field {
+  min-height: 2.5rem;
+  resize: none;
+  overflow: hidden;
+  line-height: 1.5;
+  font-size: var(--font-size-sm);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
 /* Auto-resize input fields */
 .dialog-field.input {
   height: auto;
