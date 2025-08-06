@@ -558,7 +558,7 @@ input[type="time"] {
   position: relative;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  background: linear-gradient(to right, var(--color-background) 50%, var(--color-primary) 50%);
+  background: linear-gradient(to right, var(--color-background) 80%, var(--color-primary) 80%);
   color: var(--color-foreground);
   min-height: 2.5rem; /* Match other dialog fields */
   height: 2.5rem; /* Fixed height to match other fields */
@@ -571,12 +571,16 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   background-size: 16px 16px;
   background-repeat: no-repeat;
   background-position: center;
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
+  width: 20%;
+  height: 100%;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   opacity: 1;
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
 }
 
 /* Clock icon for time input */
@@ -601,7 +605,7 @@ input[type="time"]:focus {
 /* Hover effects for the entire input */
 input[type="date"]:hover,
 input[type="time"]:hover {
-  background: linear-gradient(to right, var(--color-background) 50%, color-mix(in srgb, var(--color-primary) 90%, black) 50%);
+  background: linear-gradient(to right, var(--color-background) 80%, color-mix(in srgb, var(--color-primary) 90%, black) 80%);
   border-color: var(--color-primary);
 }
 
@@ -619,12 +623,12 @@ input[type="time"]:hover {
 /* Dark theme adjustments */
 [data-theme="dark"] input[type="date"],
 [data-theme="dark"] input[type="time"] {
-  background: linear-gradient(to right, var(--color-background) 50%, var(--color-primary) 50%);
+  background: linear-gradient(to right, var(--color-background) 80%, var(--color-primary) 80%);
 }
 
 [data-theme="dark"] input[type="date"]:hover,
 [data-theme="dark"] input[type="time"]:hover {
-  background: linear-gradient(to right, var(--color-background) 50%, color-mix(in srgb, var(--color-primary) 90%, black) 50%);
+  background: linear-gradient(to right, var(--color-background) 80%, color-mix(in srgb, var(--color-primary) 90%, black) 80%);
 }
 
 /* Auto-resize input fields */
