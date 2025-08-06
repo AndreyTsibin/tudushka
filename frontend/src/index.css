@@ -558,33 +558,36 @@ input[type="time"] {
   position: relative;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  padding-right: 50%; /* Reserve half of the field for the icon area */
+  background: linear-gradient(to right, var(--color-background) 50%, var(--color-primary) 50%);
+  color: var(--color-foreground);
+  min-height: 2.5rem; /* Match other dialog fields */
+  height: 2.5rem; /* Fixed height to match other fields */
 }
 
-/* Brand blue background for date and time input icons taking half the field */
+/* Style the calendar picker icons */
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
-  background-color: var(--color-primary); /* Brand blue color */
-  border-radius: 0 var(--radius) var(--radius) 0; /* Rounded on the right side only */
-  padding: 0.75rem 1rem;
-  margin: -0.5rem -0.75rem -0.5rem 0;
-  width: 50%; /* Take exactly half of the input field */
-  height: calc(100% + 1rem);
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   opacity: 1;
-  filter: brightness(0) invert(1); /* Make icon white */
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+}
+
+/* Clock icon for time input */
+input[type="time"]::-webkit-calendar-picker-indicator {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12,6 12,12 16,14"></polyline></svg>');
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator:hover,
 input[type="time"]::-webkit-calendar-picker-indicator:hover {
-  background-color: color-mix(in srgb, var(--color-primary) 85%, black); /* Darker blue on hover */
-  transform: translateY(-50%) scale(1.02);
-  filter: brightness(0) invert(1); /* Keep icon white on hover */
+  transform: scale(1.1);
+  opacity: 0.8;
 }
 
 /* Enhanced focus states for date/time inputs */
@@ -595,31 +598,33 @@ input[type="time"]:focus {
   outline: none;
 }
 
-/* Subtle hover effects for the input text area */
+/* Hover effects for the entire input */
 input[type="date"]:hover,
 input[type="time"]:hover {
+  background: linear-gradient(to right, var(--color-background) 50%, color-mix(in srgb, var(--color-primary) 90%, black) 50%);
   border-color: var(--color-primary);
 }
 
 /* Custom styling for dialog datetime fields */
 .dialog-field[type="date"],
 .dialog-field[type="time"] {
-  background-color: var(--color-background);
-  position: relative;
-  overflow: hidden; /* Hide overflow to create clean split */
+  text-align: left;
+  padding-left: 0.75rem;
+  min-height: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
 }
 
-/* Dark theme - keep the same blue brand color */
-[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
-[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator {
-  background-color: var(--color-primary); /* Same brand blue for consistency */
-  filter: brightness(0) invert(1); /* White icon */
+/* Dark theme adjustments */
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="time"] {
+  background: linear-gradient(to right, var(--color-background) 50%, var(--color-primary) 50%);
 }
 
-[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator:hover,
-[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator:hover {
-  background-color: color-mix(in srgb, var(--color-primary) 85%, black);
-  filter: brightness(0) invert(1); /* Keep icon white on hover */
+[data-theme="dark"] input[type="date"]:hover,
+[data-theme="dark"] input[type="time"]:hover {
+  background: linear-gradient(to right, var(--color-background) 50%, color-mix(in srgb, var(--color-primary) 90%, black) 50%);
 }
 
 /* Auto-resize input fields */
