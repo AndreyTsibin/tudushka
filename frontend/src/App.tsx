@@ -50,7 +50,7 @@ interface Task {
   description: string;
   time: string;
   date: string;
-  priority: "urgent" | "normal" | "low";
+  priority: "critical" | "high" | "medium" | "low";
   completed: boolean;
 }
 
@@ -92,7 +92,7 @@ export default function App() {
         "Описание задачи если есть, Описание задачи если есть, Описание задачи если есть....",
       time: "14:30",
       date: "2025-07-26",
-      priority: "urgent",
+      priority: "critical",
       completed: false,
     },
   ]);
@@ -170,7 +170,7 @@ export default function App() {
     description: "",
     time: "",
     date: "",
-    priority: "normal" as const,
+    priority: "medium" as const,
   });
 
   const today = new Date();
@@ -275,7 +275,7 @@ export default function App() {
       description: "",
       time: "",
       date: "",
-      priority: "normal",
+      priority: "medium",
     });
     setIsAddDialogOpen(false);
     toast.success("Задача добавлена");
@@ -618,21 +618,26 @@ export default function App() {
           {/* Top row with badge, time and date */}
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              {task.priority === "urgent" && (
+              {task.priority === "critical" && (
                 <Badge
                   variant="destructive"
-                  className="text-xs px-2 py-1 rounded-full bg-red-500 text-white"
+                  className="text-xs px-2 py-1 rounded-full bg-red-600 text-white"
                 >
-                  Срочно
+                  Критический
                 </Badge>
               )}
-              {task.priority === "normal" && (
+              {task.priority === "high" && (
                 <Badge className="text-xs px-2 py-1 rounded-full bg-orange-500 text-white">
-                  Обычный
+                  Высокий
+                </Badge>
+              )}
+              {task.priority === "medium" && (
+                <Badge className="text-xs px-2 py-1 rounded-full bg-blue-500 text-white">
+                  Средний
                 </Badge>
               )}
               {task.priority === "low" && (
-                <Badge className="text-xs px-2 py-1 rounded-full bg-green-500 text-white">
+                <Badge className="text-xs px-2 py-1 rounded-full bg-gray-500 text-white">
                   Низкий
                 </Badge>
               )}
@@ -1647,7 +1652,7 @@ export default function App() {
                       title: e.target.value,
                     })
                   }
-                  className="bg-background border-border"
+                  className="dialog-field"
                 />
                 <Textarea
                   placeholder="Описание задачи"
@@ -1658,7 +1663,8 @@ export default function App() {
                       description: e.target.value,
                     })
                   }
-                  className="bg-background border-border"
+                  className="dialog-field"
+                  style={{ minHeight: '3rem', resize: 'vertical' }}
                 />
                 <div className="grid grid-cols-2 gap-4">
                   <Input
@@ -1670,7 +1676,7 @@ export default function App() {
                         time: e.target.value,
                       })
                     }
-                    className="bg-background border-border"
+                    className="dialog-field"
                   />
                   <Input
                     type="date"
@@ -1681,7 +1687,7 @@ export default function App() {
                         date: e.target.value,
                       })
                     }
-                    className="bg-background border-border"
+                    className="dialog-field"
                   />
                 </div>
                 <Select
@@ -1690,16 +1696,19 @@ export default function App() {
                     setNewTask({ ...newTask, priority: value })
                   }
                 >
-                  <SelectTrigger className="bg-background border-border">
+                  <SelectTrigger className="dialog-field">
                     <SelectValue placeholder="Приоритет" />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border-border">
                     <SelectItem value="low">Низкий</SelectItem>
-                    <SelectItem value="normal">
-                      Обычный
+                    <SelectItem value="medium">
+                      Средний
                     </SelectItem>
-                    <SelectItem value="urgent">
-                      Срочный
+                    <SelectItem value="high">
+                      Высокий
+                    </SelectItem>
+                    <SelectItem value="critical">
+                      Критический
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -1782,7 +1791,7 @@ export default function App() {
                     title: e.target.value,
                   })
                 }
-                className="bg-background border-border"
+                className="dialog-field"
               />
               <Textarea
                 placeholder="Описание задачи"
@@ -1793,7 +1802,8 @@ export default function App() {
                     description: e.target.value,
                   })
                 }
-                className="bg-background border-border"
+                className="dialog-field"
+                style={{ minHeight: '3rem', resize: 'vertical' }}
               />
               <div className="grid grid-cols-2 gap-4">
                 <Input
@@ -1805,7 +1815,7 @@ export default function App() {
                       time: e.target.value,
                     })
                   }
-                  className="bg-background border-border"
+                  className="dialog-field"
                 />
                 <Input
                   type="date"
@@ -1816,7 +1826,7 @@ export default function App() {
                       date: e.target.value,
                     })
                   }
-                  className="bg-background border-border"
+                  className="dialog-field"
                 />
               </div>
               <Select
@@ -1828,16 +1838,19 @@ export default function App() {
                   })
                 }
               >
-                <SelectTrigger className="bg-background border-border">
+                <SelectTrigger className="dialog-field">
                   <SelectValue placeholder="Приоритет" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border">
                   <SelectItem value="low">Низкий</SelectItem>
-                  <SelectItem value="normal">
-                    Обычный
+                  <SelectItem value="medium">
+                    Средний
                   </SelectItem>
-                  <SelectItem value="urgent">
-                    Срочный
+                  <SelectItem value="high">
+                    Высокий
+                  </SelectItem>
+                  <SelectItem value="critical">
+                    Критический
                   </SelectItem>
                 </SelectContent>
               </Select>

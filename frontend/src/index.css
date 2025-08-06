@@ -499,6 +499,33 @@ body {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-ring) 20%, transparent);
 }
 
+/* ===== DIALOG FORM FIELDS ===== */
+.dialog-field {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--font-size-sm);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-input);
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color 0.2s ease-in-out;
+  color: var(--color-foreground);
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.dialog-field:focus,
+.dialog-field:focus-within,
+.dialog-field[data-state="open"] {
+  border-color: var(--color-ring);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-ring) 20%, transparent);
+}
+
+.dialog-field::placeholder {
+  color: var(--color-muted-foreground);
+}
+
 /* ===== BOTTOM NAVIGATION ===== */
 .bottom-nav {
   position: fixed;
