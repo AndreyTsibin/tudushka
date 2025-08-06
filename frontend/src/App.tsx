@@ -1764,7 +1764,7 @@ export default function App() {
                     })
                   }
                   className="dialog-field"
-                  style={{ minHeight: '3rem', resize: 'vertical' }}
+                  style={{ minHeight: '5rem', resize: 'vertical' }}
                 />
                 <div className="dialog-form-grid">
                   {/* Custom Time Field */}
@@ -1819,6 +1819,9 @@ export default function App() {
                       </svg>
                     </div>
                   </div>
+                </div>
+                <div className="priority-label">
+                  <span className="field-label">Приоритет задачи</span>
                 </div>
                 <Select
                   value={newTask.priority}
@@ -1938,7 +1941,7 @@ export default function App() {
                   })
                 }
                 className="dialog-field"
-                style={{ minHeight: '3rem', resize: 'vertical' }}
+                style={{ minHeight: '5rem', resize: 'vertical' }}
               />
               <div className="dialog-form-grid">
                 {/* Custom Time Field */}
@@ -1993,6 +1996,9 @@ export default function App() {
                     </svg>
                   </div>
                 </div>
+              </div>
+              <div className="priority-label">
+                <span className="field-label">Приоритет задачи</span>
               </div>
               <Select
                 value={editingTask.priority}

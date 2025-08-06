@@ -1,3 +1,6 @@
+/* ===== GOOGLE FONTS IMPORT ===== */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
+
 /* ===== CSS VARIABLES ===== */
 :root {
   /* Colors - Light Theme */
@@ -99,7 +102,7 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--color-background);
   color: var(--color-foreground);
   line-height: 1.5;
@@ -1304,6 +1307,22 @@ body {
 
 [data-theme="dark"] .button-primary-themed:hover {
   background-color: color-mix(in srgb, #697282 90%, transparent);
+}
+
+/* ===== FIELD LABELS ===== */
+.priority-label {
+  margin-bottom: 0.5rem;
+}
+
+.field-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-muted-foreground);
+  display: block;
+}
+
+[data-theme="dark"] .field-label {
+  color: var(--color-muted-foreground);
 }
 
 /* ===== RESPONSIVE ===== */
