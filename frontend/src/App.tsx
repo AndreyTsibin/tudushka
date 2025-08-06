@@ -218,23 +218,6 @@ export default function App() {
     }
   };
 
-  // Функция для настройки автоматического изменения размера
-  const setupAutoResize = (selector: string) => {
-    const element = document.querySelector(selector) as HTMLInputElement | HTMLTextAreaElement;
-    if (element) {
-      // Устанавливаем начальную высоту
-      autoResize(element);
-      
-      // Добавляем обработчики событий
-      element.addEventListener('input', () => autoResize(element));
-      element.addEventListener('focus', () => autoResize(element));
-      
-      return () => {
-        element.removeEventListener('input', () => autoResize(element));
-        element.removeEventListener('focus', () => autoResize(element));
-      };
-    }
-  };
 
   // Проверяем, нужно ли сбросить счетчики использования AI
   useEffect(() => {
@@ -289,25 +272,6 @@ export default function App() {
     );
   };
 
-  const useAIDescription = () => {
-    setUserSettings((prev) => ({
-      ...prev,
-      aiUsage: {
-        ...prev.aiUsage,
-        descriptionsUsed: prev.aiUsage.descriptionsUsed + 1,
-      },
-    }));
-  };
-
-  const useAIChat = () => {
-    setUserSettings((prev) => ({
-      ...prev,
-      aiUsage: {
-        ...prev.aiUsage,
-        chatRequestsUsed: prev.aiUsage.chatRequestsUsed + 1,
-      },
-    }));
-  };
 
   const addTask = () => {
     if (!newTask.title.trim()) {
@@ -514,7 +478,13 @@ export default function App() {
       description: generatedDescription,
     });
 
-    useAIDescription();
+    setUserSettings((prev) => ({
+      ...prev,
+      aiUsage: {
+        ...prev.aiUsage,
+        descriptionsUsed: prev.aiUsage.descriptionsUsed + 1,
+      },
+    }));
     setIsAIHelpDialogOpen(false);
     toast.success("Описание сгенерировано AI");
   };
@@ -571,7 +541,13 @@ export default function App() {
       description: generatedDescription,
     });
 
-    useAIDescription();
+    setUserSettings((prev) => ({
+      ...prev,
+      aiUsage: {
+        ...prev.aiUsage,
+        descriptionsUsed: prev.aiUsage.descriptionsUsed + 1,
+      },
+    }));
     toast.success("Описание сгенерировано AI");
   };
 
@@ -638,7 +614,13 @@ export default function App() {
       ),
     );
 
-    useAIChat();
+    setUserSettings((prev) => ({
+      ...prev,
+      aiUsage: {
+        ...prev.aiUsage,
+        chatRequestsUsed: prev.aiUsage.chatRequestsUsed + 1,
+      },
+    }));
     setAiMessage("");
   };
 
@@ -653,13 +635,14 @@ export default function App() {
           (task) =>
             task.date === today.toISOString().split("T")[0],
         );
-      case "week":
+      case "week": {
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 6);
         return incompleteTasks.filter((task) => {
           const taskDate = new Date(task.date);
           return taskDate >= weekStart && taskDate <= weekEnd;
         });
+      }
       case "month":
         return incompleteTasks.filter((task) => {
           const taskDate = new Date(task.date);
@@ -1839,7 +1822,7 @@ export default function App() {
                 </div>
                 <Select
                   value={newTask.priority}
-                  onValueChange={(value: any) =>
+                  onValueChange={(value: "urgent" | "medium" | "low") =>
                     setNewTask({ ...newTask, priority: value })
                   }
                 >
@@ -2013,7 +1996,7 @@ export default function App() {
               </div>
               <Select
                 value={editingTask.priority}
-                onValueChange={(value: any) =>
+                onValueChange={(value: "urgent" | "medium" | "low") =>
                   setEditingTask({
                     ...editingTask,
                     priority: value,

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Todo приложение с AI ассистентом",
   "scripts": {
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "dev": "concurrently --kill-others-on-fail --restart-tries 3 \"npm run backend\" \"npm run frontend\"",
     "backend": "./venv/bin/python manage.py runserver",
     "frontend": "cd frontend && npm run dev",
     "install": "pip install -r requirements.txt && cd frontend && npm install",

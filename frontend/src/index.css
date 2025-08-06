@@ -639,7 +639,7 @@ body {
 /* For browsers that don't support field-sizing */
 @supports not (field-sizing: content) {
   .dialog-field.textarea {
-    min-height: 3rem;
+    min-height: 5rem;
     max-height: 200px;
   }
   
