@@ -1642,7 +1642,7 @@ export default function App() {
                   Добавить задачу
                 </DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
+              <div className="dialog-form">
                 <Input
                   placeholder="Заголовок задачи"
                   value={newTask.title}
@@ -1666,7 +1666,7 @@ export default function App() {
                   className="dialog-field"
                   style={{ minHeight: '3rem', resize: 'vertical' }}
                 />
-                <div className="grid grid-cols-2 gap-4">
+                <div className="dialog-form-grid">
                   <Input
                     type="time"
                     value={newTask.time}
@@ -1699,7 +1699,7 @@ export default function App() {
                   <SelectTrigger className="dialog-field">
                     <SelectValue placeholder="Приоритет" />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover border-border">
+                  <SelectContent className="bg-popover border-border select-content">
                     <SelectItem value="low">Низкий</SelectItem>
                     <SelectItem value="medium">
                       Средний
@@ -1712,10 +1712,10 @@ export default function App() {
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                <div className="flex gap-2">
+                <div className="dialog-button-row">
                   <Button
                     onClick={addTask}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
+                    className="dialog-button-flex bg-blue-500 hover:bg-blue-600 text-white"
                   >
                     Добавить
                   </Button>
@@ -1726,7 +1726,7 @@ export default function App() {
                     <DialogTrigger asChild>
                       <Button
                         variant="outline"
-                        className="flex-1 border-border"
+                        className="dialog-button-flex border-border"
                         disabled={!canUseAIDescription()}
                       >
                         <Sparkles className="w-4 h-4 mr-2" />
@@ -1739,7 +1739,7 @@ export default function App() {
                           AI Генерация описания
                         </DialogTitle>
                       </DialogHeader>
-                      <div className="space-y-4">
+                      <div className="dialog-form">
                         <p className="text-popover-foreground">
                           AI создаст подробное описание задачи
                           на основе введенного заголовка.
@@ -1754,7 +1754,7 @@ export default function App() {
                         </div>
                         <Button
                           onClick={generateTaskDescription}
-                          className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                          className="bg-blue-500 hover:bg-blue-600 text-white"
                         >
                           <Sparkles className="w-4 h-4 mr-2" />
                           Сгенерировать описание
@@ -1781,7 +1781,7 @@ export default function App() {
             </DialogTitle>
           </DialogHeader>
           {editingTask && (
-            <div className="space-y-4">
+            <div className="dialog-form">
               <Input
                 placeholder="Заголовок задачи"
                 value={editingTask.title}
@@ -1805,7 +1805,7 @@ export default function App() {
                 className="dialog-field"
                 style={{ minHeight: '3rem', resize: 'vertical' }}
               />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="dialog-form-grid">
                 <Input
                   type="time"
                   value={editingTask.time}
@@ -1841,7 +1841,7 @@ export default function App() {
                 <SelectTrigger className="dialog-field">
                   <SelectValue placeholder="Приоритет" />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border-border">
+                <SelectContent className="bg-popover border-border select-content">
                   <SelectItem value="low">Низкий</SelectItem>
                   <SelectItem value="medium">
                     Средний
@@ -1854,10 +1854,10 @@ export default function App() {
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <div className="flex gap-2">
+              <div className="dialog-button-row">
                 <Button
                   onClick={updateTask}
-                  className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
+                  className="dialog-button-flex bg-blue-500 hover:bg-blue-600 text-white"
                 >
                   Сохранить
                 </Button>
@@ -1868,7 +1868,7 @@ export default function App() {
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
-                      className="flex-1 border-border"
+                      className="dialog-button-flex border-border"
                       disabled={!canUseAIDescription()}
                     >
                       <Sparkles className="w-4 h-4 mr-2" />
@@ -1881,7 +1881,7 @@ export default function App() {
                         AI Генерация описания
                       </DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="dialog-form">
                       <p className="text-popover-foreground">
                         AI создаст подробное описание задачи на
                         основе введенного заголовка. Убедитесь,
@@ -1897,7 +1897,7 @@ export default function App() {
                           generateEditTaskDescription();
                           setIsEditAIHelpDialogOpen(false);
                         }}
-                        className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                        className="bg-blue-500 hover:bg-blue-600 text-white"
                       >
                         <Sparkles className="w-4 h-4 mr-2" />
                         Сгенерировать описание

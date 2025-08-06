@@ -526,6 +526,38 @@ body {
   color: var(--color-muted-foreground);
 }
 
+/* ===== DIALOG FORM LAYOUT ===== */
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.dialog-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.dialog-button-row {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.dialog-button-flex {
+  flex: 1;
+}
+
+/* ===== SELECT DROPDOWN ===== */
+[data-radix-popper-content-wrapper] {
+  z-index: 100 !important;
+}
+
+.select-content {
+  z-index: 100;
+  position: relative;
+}
+
 /* ===== BOTTOM NAVIGATION ===== */
 .bottom-nav {
   position: fixed;
