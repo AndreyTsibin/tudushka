@@ -1636,9 +1636,9 @@ export default function App() {
                 Добавить
               </button>
             </DialogTrigger>
-            <DialogContent className="bg-popover border-border">
+            <DialogContent className="dialog-content-container">
               <DialogHeader>
-                <DialogTitle className="text-popover-foreground">
+                <DialogTitle className="dialog-title-text">
                   Добавить задачу
                 </DialogTitle>
               </DialogHeader>
@@ -1715,7 +1715,7 @@ export default function App() {
                 <div className="dialog-button-row">
                   <Button
                     onClick={addTask}
-                    className="dialog-button-flex bg-blue-500 hover:bg-blue-600 text-white"
+                    className="dialog-button-flex dialog-button-primary"
                   >
                     Добавить
                   </Button>
@@ -1726,27 +1726,27 @@ export default function App() {
                     <DialogTrigger asChild>
                       <Button
                         variant="outline"
-                        className="dialog-button-flex border-border"
+                        className="dialog-button-flex dialog-button-outline"
                         disabled={!canUseAIDescription()}
                       >
-                        <Sparkles className="w-4 h-4 mr-2" />
+                        <Sparkles className="dialog-icon" />
                         AI-помощь
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-popover border-border">
+                    <DialogContent className="dialog-content-container">
                       <DialogHeader>
-                        <DialogTitle className="text-popover-foreground">
+                        <DialogTitle className="dialog-title-text">
                           AI Генерация описания
                         </DialogTitle>
                       </DialogHeader>
                       <div className="dialog-form">
-                        <p className="text-popover-foreground">
+                        <p className="dialog-text">
                           AI создаст подробное описание задачи
                           на основе введенного заголовка.
                           Убедитесь, что заголовок задачи
                           заполнен.
                         </p>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="dialog-small-text">
                           Осталось использований:{" "}
                           {getPlanLimits().descriptions -
                             userSettings.aiUsage
@@ -1754,9 +1754,9 @@ export default function App() {
                         </div>
                         <Button
                           onClick={generateTaskDescription}
-                          className="bg-blue-500 hover:bg-blue-600 text-white"
+                          className="dialog-button-primary"
                         >
-                          <Sparkles className="w-4 h-4 mr-2" />
+                          <Sparkles className="dialog-icon" />
                           Сгенерировать описание
                         </Button>
                       </div>
@@ -1774,9 +1774,9 @@ export default function App() {
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
       >
-        <DialogContent className="bg-popover border-border">
+        <DialogContent className="dialog-content-container">
           <DialogHeader>
-            <DialogTitle className="text-popover-foreground">
+            <DialogTitle className="dialog-title-text">
               Редактировать задачу
             </DialogTitle>
           </DialogHeader>
@@ -1857,7 +1857,7 @@ export default function App() {
               <div className="dialog-button-row">
                 <Button
                   onClick={updateTask}
-                  className="dialog-button-flex bg-blue-500 hover:bg-blue-600 text-white"
+                  className="dialog-button-flex dialog-button-primary"
                 >
                   Сохранить
                 </Button>
@@ -1868,26 +1868,26 @@ export default function App() {
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
-                      className="dialog-button-flex border-border"
+                      className="dialog-button-flex dialog-button-outline"
                       disabled={!canUseAIDescription()}
                     >
-                      <Sparkles className="w-4 h-4 mr-2" />
+                      <Sparkles className="dialog-icon" />
                       AI-помощь
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-popover border-border">
+                  <DialogContent className="dialog-content-container">
                     <DialogHeader>
-                      <DialogTitle className="text-popover-foreground">
+                      <DialogTitle className="dialog-title-text">
                         AI Генерация описания
                       </DialogTitle>
                     </DialogHeader>
                     <div className="dialog-form">
-                      <p className="text-popover-foreground">
+                      <p className="dialog-text">
                         AI создаст подробное описание задачи на
                         основе введенного заголовка. Убедитесь,
                         что заголовок задачи заполнен.
                       </p>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="dialog-small-text">
                         Осталось использований:{" "}
                         {getPlanLimits().descriptions -
                           userSettings.aiUsage.descriptionsUsed}
@@ -1897,9 +1897,9 @@ export default function App() {
                           generateEditTaskDescription();
                           setIsEditAIHelpDialogOpen(false);
                         }}
-                        className="bg-blue-500 hover:bg-blue-600 text-white"
+                        className="dialog-button-primary"
                       >
-                        <Sparkles className="w-4 h-4 mr-2" />
+                        <Sparkles className="dialog-icon" />
                         Сгенерировать описание
                       </Button>
                     </div>
