@@ -818,7 +818,7 @@ export default function App() {
                       <SelectTrigger className="w-32 select-trigger-themed">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-popover border-border">
+                      <SelectContent className="select-content">
                         <SelectItem value="ru">
                           Русский
                         </SelectItem>
@@ -912,7 +912,7 @@ export default function App() {
                       <SelectTrigger className="w-40 select-trigger-themed">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-popover border-border">
+                      <SelectContent className="select-content">
                         <SelectItem value="chatgpt">
                           ChatGPT
                         </SelectItem>
@@ -1699,7 +1699,7 @@ export default function App() {
                   <SelectTrigger className="dialog-field">
                     <SelectValue placeholder="Приоритет" />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover border-border select-content">
+                  <SelectContent className="select-content">
                     <SelectItem value="low">Низкий</SelectItem>
                     <SelectItem value="medium">
                       Средний
@@ -1841,7 +1841,7 @@ export default function App() {
                 <SelectTrigger className="dialog-field">
                   <SelectValue placeholder="Приоритет" />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border-border select-content">
+                <SelectContent className="select-content">
                   <SelectItem value="low">Низкий</SelectItem>
                   <SelectItem value="medium">
                     Средний
