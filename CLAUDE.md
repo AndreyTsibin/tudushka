@@ -109,10 +109,31 @@ npm run frontend        # Vite dev server (localhost:5173)
 **ВСЕГДА** перед запуском проекта Claude Code должен освобождать порты:
 ```bash
 # Обязательные команды перед каждым запуском:
-lsof -ti:5173 | xargs kill -9  # Освободить порт 5173 для frontend
-lsof -ti:8000 | xargs kill -9  # Освободить порт 8000 для backend
-# Затем запускать проект
-npm run dev
+pkill -f "node\|vite\|python" 2>/dev/null || true  # Остановить все процессы
+lsof -ti:5173,8000 | xargs kill -9 2>/dev/null || true  # Освободить порты принудительно
+# Затем запускать проект в фоновом режиме
+npm run dev &
+# Ждать несколько секунд для полного запуска
+sleep 5
+```
+
+### Диагностика проблем запуска
+Если приложение не запускается или недоступно:
+```bash
+# 1. Проверить запущенные процессы
+ps aux | grep -E "(vite|runserver)" | grep -v grep
+
+# 2. Проверить доступность портов
+curl -I http://localhost:5173
+curl -I http://localhost:8000
+
+# 3. Принудительно очистить все и перезапустить
+pkill -f "node\|vite\|python" 2>/dev/null || true
+lsof -ti:5173,8000 | xargs kill -9 2>/dev/null || true  
+npm run dev &
+sleep 5
+
+# 4. Проверить через MCP Playwright доступность
 ```
 Это гарантирует стабильную работу приложения на постоянных портах.
 
