@@ -1780,9 +1780,8 @@ export default function App() {
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
-                      className="dialog-button-flex dialog-button-outline"
+                      className="dialog-button-flex dialog-button-outline dialog-button-ai-description"
                       disabled={!canUseAIDescription()}
-                      style={{ width: '100%', marginTop: '0.5rem', marginBottom: '1rem' }}
                     >
                       <Sparkles className="dialog-icon" />
                       AI описание
@@ -1899,8 +1898,7 @@ export default function App() {
                 <div className="dialog-button-row">
                   <Button
                     onClick={addTask}
-                    className="dialog-button-flex dialog-button-primary"
-                    style={{ width: '100%', minHeight: '50px' }}
+                    className="dialog-button-flex dialog-button-primary dialog-button-main-action"
                   >
                     Добавить задачу
                   </Button>
@@ -1960,9 +1958,8 @@ export default function App() {
                 <DialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="dialog-button-flex dialog-button-outline"
+                    className="dialog-button-flex dialog-button-outline dialog-button-ai-description"
                     disabled={!canUseAIDescription()}
-                    style={{ width: '100%', marginTop: '0.5rem', marginBottom: '1rem' }}
                   >
                     <Sparkles className="dialog-icon" />
                     AI описание
@@ -2082,8 +2079,7 @@ export default function App() {
               <div className="dialog-button-row">
                 <Button
                   onClick={updateTask}
-                  className="dialog-button-flex dialog-button-primary"
-                  style={{ width: '100%', minHeight: '50px' }}
+                  className="dialog-button-flex dialog-button-primary dialog-button-main-action"
                 >
                   Сохранить задачу
                 </Button>
