@@ -477,6 +477,8 @@ body {
   border-radius: var(--radius);
   outline: none;
   transition: border-color 0.2s ease-in-out;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .input:focus {
@@ -496,6 +498,9 @@ body {
   min-height: 3rem;
   font-family: inherit;
   transition: border-color 0.2s ease-in-out;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .textarea:focus {
@@ -517,6 +522,19 @@ body {
   min-height: 2.5rem;
   display: flex;
   align-items: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Specific styling for input and textarea dialog fields */
+.dialog-field.input,
+.dialog-field.textarea {
+  display: block;
+  align-items: unset;
+}
+
+.dialog-field.textarea {
+  white-space: pre-wrap;
 }
 
 .dialog-field:focus,
