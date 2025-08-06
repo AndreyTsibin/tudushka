@@ -551,6 +551,77 @@ body {
   padding-bottom: 0.75rem;
 }
 
+/* ===== DATE AND TIME INPUT FIELDS ===== */
+/* Enhanced styling for date and time inputs to make icons more prominent */
+input[type="date"],
+input[type="time"] {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Make date and time input icons more prominent */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  background-color: var(--color-accent);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  opacity: 0.8;
+  filter: invert(0.5);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  background-color: var(--color-primary);
+  transform: scale(1.05);
+  opacity: 1;
+  filter: invert(0) brightness(0) saturate(100%) hue-rotate(210deg) brightness(1.2);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator {
+  background-color: var(--color-muted);
+  filter: invert(1);
+}
+
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator:hover,
+[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  background-color: var(--color-primary);
+  filter: invert(0) brightness(0) saturate(100%) hue-rotate(210deg) brightness(1.5);
+}
+
+/* Enhanced focus states for date/time inputs */
+input[type="date"]:focus,
+input[type="time"]:focus {
+  border-color: var(--color-ring);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-ring) 20%, transparent);
+  outline: none;
+}
+
+/* Additional hover effects for the entire input */
+input[type="date"]:hover,
+input[type="time"]:hover {
+  border-color: var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+/* Custom styling for dialog datetime fields */
+.dialog-field[type="date"],
+.dialog-field[type="time"] {
+  background-color: var(--color-background);
+  position: relative;
+  padding-right: 3rem; /* Space for the enhanced icon */
+}
+
+.dialog-field[type="date"]:hover,
+.dialog-field[type="time"]:hover {
+  background-color: color-mix(in srgb, var(--color-accent) 20%, var(--color-background));
+}
+
 /* Auto-resize input fields */
 .dialog-field.input {
   height: auto;
