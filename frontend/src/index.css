@@ -1322,8 +1322,16 @@ body {
 
 .dialog-button-ai-description {
   width: 100%;
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  margin-top: -1.0rem;
+  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.dialog-description-field {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .field-label {

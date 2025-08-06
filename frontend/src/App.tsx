@@ -1769,7 +1769,7 @@ export default function App() {
                       description: e.target.value,
                     })
                   }
-                  className="dialog-field"
+                  className="dialog-field dialog-description-field"
                   style={{ minHeight: '5rem', resize: 'vertical' }}
                 />
                 {/* AI описание кнопка под полем описания */}
@@ -1947,7 +1947,7 @@ export default function App() {
                     description: e.target.value,
                   })
                 }
-                className="dialog-field"
+                className="dialog-field dialog-description-field"
                 style={{ minHeight: '5rem', resize: 'vertical' }}
               />
               {/* AI описание кнопка под полем описания */}
