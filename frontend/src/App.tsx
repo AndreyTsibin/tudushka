@@ -1526,7 +1526,7 @@ export default function App() {
         {/* Content */}
         <div className="max-w-container p-4 pb-bottom-nav">
           {activeView === "today" && (
-            <div>
+            <>
               {getTasksForView().map((task) => (
                 <TaskCard key={task.id} task={task} />
               ))}
@@ -1535,11 +1535,11 @@ export default function App() {
                   <p>Нет задач на сегодня</p>
                 </div>
               )}
-            </div>
+            </>
           )}
 
           {activeView === "week" && (
-            <div>
+            <>
               {getAllWeekDates().map((date) => {
                 const weekTasks = getTasksForView();
                 const tasksForDate = weekTasks.filter(
@@ -1565,11 +1565,11 @@ export default function App() {
                   </div>
                 );
               })}
-            </div>
+            </>
           )}
 
           {activeView === "month" && (
-            <div>
+            <>
               <div className="bg-card rounded-lg border border-border">
                 <Calendar
                   mode="single"
@@ -1688,7 +1688,7 @@ export default function App() {
                   );
                 })()}
               </div>
-            </div>
+            </>
           )}
         </div>
       </>

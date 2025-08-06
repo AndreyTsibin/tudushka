@@ -14,8 +14,9 @@ function Badge({
 }: BadgeProps) {
   const Comp = asChild ? Slot : "span";
   
-  const variantClass = variant !== "default" ? `badge-${variant}` : "badge-primary";
-  const classes = `badge ${variantClass} ${className}`.trim();
+  const variantClass = variant !== "default" ? `badge-${variant}` : "";
+  const baseClasses = className.includes("badge-priority") ? "" : "badge";
+  const classes = `${baseClasses} ${variantClass} ${className}`.trim();
 
   return (
     <Comp
