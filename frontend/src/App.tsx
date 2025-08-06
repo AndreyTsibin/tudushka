@@ -180,6 +180,52 @@ export default function App() {
   const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
   weekStart.setDate(today.getDate() - daysFromMonday);
 
+  // Функция автоматического изменения размера для input и textarea
+  const autoResize = (element: HTMLInputElement | HTMLTextAreaElement) => {
+    if (element.tagName === 'TEXTAREA') {
+      element.style.height = 'auto';
+      element.style.height = element.scrollHeight + 'px';
+    } else if (element.tagName === 'INPUT') {
+      // Для input создаем скрытый div для измерения высоты
+      const hiddenDiv = document.createElement('div');
+      hiddenDiv.style.position = 'absolute';
+      hiddenDiv.style.visibility = 'hidden';
+      hiddenDiv.style.height = 'auto';
+      hiddenDiv.style.width = element.offsetWidth + 'px';
+      hiddenDiv.style.fontSize = window.getComputedStyle(element).fontSize;
+      hiddenDiv.style.fontFamily = window.getComputedStyle(element).fontFamily;
+      hiddenDiv.style.lineHeight = window.getComputedStyle(element).lineHeight;
+      hiddenDiv.style.padding = window.getComputedStyle(element).padding;
+      hiddenDiv.style.border = window.getComputedStyle(element).border;
+      hiddenDiv.style.whiteSpace = 'pre-wrap';
+      hiddenDiv.style.wordBreak = 'break-word';
+      hiddenDiv.textContent = element.value || element.placeholder;
+      
+      document.body.appendChild(hiddenDiv);
+      const newHeight = Math.max(40, hiddenDiv.offsetHeight); // минимум 40px
+      element.style.height = newHeight + 'px';
+      document.body.removeChild(hiddenDiv);
+    }
+  };
+
+  // Функция для настройки автоматического изменения размера
+  const setupAutoResize = (selector: string) => {
+    const element = document.querySelector(selector) as HTMLInputElement | HTMLTextAreaElement;
+    if (element) {
+      // Устанавливаем начальную высоту
+      autoResize(element);
+      
+      // Добавляем обработчики событий
+      element.addEventListener('input', () => autoResize(element));
+      element.addEventListener('focus', () => autoResize(element));
+      
+      return () => {
+        element.removeEventListener('input', () => autoResize(element));
+        element.removeEventListener('focus', () => autoResize(element));
+      };
+    }
+  };
+
   // Проверяем, нужно ли сбросить счетчики использования AI
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
@@ -332,6 +378,41 @@ export default function App() {
       }, 100);
     }
   }, [isEditDialogOpen]);
+
+  // Настраиваем автоматическое изменение размера полей в диалогах
+  useEffect(() => {
+    const cleanup: (() => void)[] = [];
+    
+    // Настройка для полей в диалоге добавления задачи
+    setTimeout(() => {
+      const titleInput = document.querySelector('input[placeholder="Заголовок задачи"]') as HTMLInputElement;
+      const descTextarea = document.querySelector('textarea[placeholder="Описание задачи"]') as HTMLTextAreaElement;
+      
+      if (titleInput) {
+        const titleHandler = (e: Event) => autoResize(e.target as HTMLInputElement);
+        titleInput.addEventListener('input', titleHandler);
+        titleInput.addEventListener('focus', titleHandler);
+        cleanup.push(() => {
+          titleInput.removeEventListener('input', titleHandler);
+          titleInput.removeEventListener('focus', titleHandler);
+        });
+      }
+      
+      if (descTextarea) {
+        const descHandler = (e: Event) => autoResize(e.target as HTMLTextAreaElement);
+        descTextarea.addEventListener('input', descHandler);
+        descTextarea.addEventListener('focus', descHandler);
+        cleanup.push(() => {
+          descTextarea.removeEventListener('input', descHandler);
+          descTextarea.removeEventListener('focus', descHandler);
+        });
+      }
+    }, 100);
+    
+    return () => {
+      cleanup.forEach(fn => fn());
+    };
+  }, [newTask, editingTask]);
 
   const updateTask = () => {
     if (!editingTask || !editingTask.title.trim()) {

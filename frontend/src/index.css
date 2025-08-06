@@ -535,6 +535,36 @@ body {
 
 .dialog-field.textarea {
   white-space: pre-wrap;
+  resize: none;
+  overflow: hidden;
+  field-sizing: content;
+}
+
+/* Auto-resize input fields */
+.dialog-field.input {
+  height: auto;
+  min-height: 2.5rem;
+  line-height: 1.5;
+  overflow: hidden;
+  resize: none;
+  white-space: pre-wrap;
+  text-overflow: clip;
+  word-break: break-word;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+/* For browsers that don't support field-sizing */
+@supports not (field-sizing: content) {
+  .dialog-field.textarea {
+    min-height: 3rem;
+    max-height: 200px;
+  }
+  
+  .dialog-field.input {
+    height: auto;
+    overflow: visible;
+  }
 }
 
 .dialog-field:focus,
