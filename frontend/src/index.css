@@ -523,7 +523,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 0.125rem;
-  padding: 0.125rem;
+  padding: 0;
   background: none;
   border: none;
   cursor: pointer;
