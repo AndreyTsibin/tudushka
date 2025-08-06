@@ -552,46 +552,39 @@ body {
 }
 
 /* ===== DATE AND TIME INPUT FIELDS ===== */
-/* Enhanced styling for date and time inputs to make icons more prominent */
+/* Enhanced styling for date and time inputs with brand blue background */
 input[type="date"],
 input[type="time"] {
   position: relative;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  padding-right: 50%; /* Reserve half of the field for the icon area */
 }
 
-/* Make date and time input icons more prominent */
+/* Brand blue background for date and time input icons taking half the field */
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
-  background-color: var(--color-accent);
-  border-radius: var(--radius-sm);
-  padding: 0.25rem;
-  margin-left: 0.5rem;
+  background-color: var(--color-primary); /* Brand blue color */
+  border-radius: 0 var(--radius) var(--radius) 0; /* Rounded on the right side only */
+  padding: 0.75rem 1rem;
+  margin: -0.5rem -0.75rem -0.5rem 0;
+  width: 50%; /* Take exactly half of the input field */
+  height: calc(100% + 1rem);
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  opacity: 0.8;
-  filter: invert(0.5);
+  opacity: 1;
+  filter: brightness(0) invert(1); /* Make icon white */
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator:hover,
 input[type="time"]::-webkit-calendar-picker-indicator:hover {
-  background-color: var(--color-primary);
-  transform: scale(1.05);
-  opacity: 1;
-  filter: invert(0) brightness(0) saturate(100%) hue-rotate(210deg) brightness(1.2);
-}
-
-/* Dark theme adjustments */
-[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
-[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator {
-  background-color: var(--color-muted);
-  filter: invert(1);
-}
-
-[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator:hover,
-[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator:hover {
-  background-color: var(--color-primary);
-  filter: invert(0) brightness(0) saturate(100%) hue-rotate(210deg) brightness(1.5);
+  background-color: color-mix(in srgb, var(--color-primary) 85%, black); /* Darker blue on hover */
+  transform: translateY(-50%) scale(1.02);
+  filter: brightness(0) invert(1); /* Keep icon white on hover */
 }
 
 /* Enhanced focus states for date/time inputs */
@@ -602,11 +595,10 @@ input[type="time"]:focus {
   outline: none;
 }
 
-/* Additional hover effects for the entire input */
+/* Subtle hover effects for the input text area */
 input[type="date"]:hover,
 input[type="time"]:hover {
   border-color: var(--color-primary);
-  background-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
 }
 
 /* Custom styling for dialog datetime fields */
@@ -614,12 +606,20 @@ input[type="time"]:hover {
 .dialog-field[type="time"] {
   background-color: var(--color-background);
   position: relative;
-  padding-right: 3rem; /* Space for the enhanced icon */
+  overflow: hidden; /* Hide overflow to create clean split */
 }
 
-.dialog-field[type="date"]:hover,
-.dialog-field[type="time"]:hover {
-  background-color: color-mix(in srgb, var(--color-accent) 20%, var(--color-background));
+/* Dark theme - keep the same blue brand color */
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator,
+[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator {
+  background-color: var(--color-primary); /* Same brand blue for consistency */
+  filter: brightness(0) invert(1); /* White icon */
+}
+
+[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator:hover,
+[data-theme="dark"] input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 85%, black);
+  filter: brightness(0) invert(1); /* Keep icon white on hover */
 }
 
 /* Auto-resize input fields */
