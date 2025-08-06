@@ -1597,7 +1597,14 @@ export default function App() {
       {/* Header */}
       <div className="header">
         <div className="header-content">
-          <h1 className="header-title">
+          <h1 
+            className="header-title cursor-pointer hover:text-blue-500 transition-colors"
+            onClick={() => {
+              setCurrentPage("home");
+              setActiveView("today");
+            }}
+            title="Перейти на главную"
+          >
             TUDUSHKA
           </h1>
           <button
