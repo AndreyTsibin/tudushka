@@ -470,6 +470,17 @@ body {
   width: 100%;
 }
 
+/* Унифицированные отступы для всех блоков с табами */
+.tabs-header-container {
+  background-color: var(--color-card);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tabs-header-content {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 5px var(--spacing-md) 5px var(--spacing-md);
+}
 
 .tabs-list {
   background-color: var(--color-muted);
@@ -1284,28 +1295,183 @@ body {
   color: var(--color-card-foreground);
 }
 
-/* Calendar styles */
-.calendar-day-selected {
+/* ===== CALENDAR STYLES (Apple Design) ===== */
+
+/* Calendar container with rounded corners */
+.rdp {
+  background-color: var(--color-card) !important;
+  border-radius: var(--radius-card) !important;
+  border: 1px solid var(--color-border) !important;
+  padding: 1rem !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* Calendar header (month/year title and navigation) */
+.rdp-caption {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Month/year title - centered and larger */
+.rdp-caption div[aria-live] {
+  font-size: var(--font-size-xl) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  color: var(--color-card-foreground) !important;
+  flex: 1 !important;
+  text-align: center !important;
+  margin: 0 1rem !important;
+}
+
+/* Navigation buttons container */
+.calendar-nav {
+  display: flex !important;
+  gap: 0.5rem !important;
+}
+
+/* Navigation buttons styling */
+.calendar-nav-button {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background-color: transparent !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
+  color: var(--color-muted-foreground) !important;
+}
+
+.calendar-nav-button:hover {
+  background-color: var(--color-accent) !important;
+  color: var(--color-accent-foreground) !important;
+  transform: scale(1.05) !important;
+}
+
+.calendar-nav-button:active {
+  transform: scale(0.95) !important;
+}
+
+/* Previous/Next button positioning */
+.calendar-nav-previous {
+  order: -1 !important;
+}
+
+.calendar-nav-next {
+  order: 1 !important;
+}
+
+/* Calendar table styling */
+.rdp table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 2px !important;
+}
+
+/* Day header styling (Mon, Tue, etc.) */
+.rdp thead th {
+  font-size: var(--font-size-xs) !important;
+  font-weight: var(--font-weight-medium) !important;
+  color: var(--color-muted-foreground) !important;
+  text-align: center !important;
+  padding: 0.5rem 0 !important;
+  width: 2rem !important;
+  height: 2rem !important;
+}
+
+/* Day cell container */
+.rdp td {
+  text-align: center !important;
+  padding: 0 !important;
+}
+
+/* Day button styling */
+.rdp td button {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  border: none !important;
+  background: transparent !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-normal) !important;
+  color: var(--color-card-foreground) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+}
+
+/* Day button hover state */
+.rdp td button:hover {
+  background-color: var(--color-accent) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Outside month days (previous/next month) */
+.calendar-day-outside {
+  color: var(--color-muted-foreground) !important;
+  opacity: 0.5 !important;
+}
+
+/* Selected day styling */
+.calendar-day-selected,
+.rdp td button[aria-selected="true"] {
   background-color: #2563eb !important;
   color: white !important;
-  border-radius: var(--radius-full) !important;
+  font-weight: var(--font-weight-medium) !important;
 }
 
 .calendar-day-selected:hover,
-.calendar-day-selected:focus {
-  background-color: #2563eb !important;
+.rdp td button[aria-selected="true"]:hover {
+  background-color: #1d4ed8 !important;
   color: white !important;
+  transform: scale(1.05) !important;
 }
 
+/* Task indicator dot */
 .calendar-task-indicator {
   position: absolute;
-  bottom: 1px;
+  bottom: 2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
   background-color: #2563eb;
-  border-radius: var(--radius-full);
+  border-radius: 50%;
+}
+
+/* Task indicator for selected day */
+.calendar-day-selected .calendar-task-indicator {
+  background-color: white;
+}
+
+/* Today styling */
+.rdp td button[data-today="true"] {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  font-weight: var(--font-weight-medium);
+}
+
+.rdp td button[data-today="true"]:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 90%, black);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .rdp td button {
+  color: var(--color-card-foreground) !important;
+}
+
+[data-theme="dark"] .calendar-day-outside {
+  color: var(--color-muted-foreground) !important;
+}
+
+[data-theme="dark"] .rdp td button:hover {
+  background-color: var(--color-accent) !important;
 }
 
 .empty-state {
