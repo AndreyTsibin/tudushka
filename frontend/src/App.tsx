@@ -982,8 +982,8 @@ export default function App() {
       return (
         <>
           {/* Settings Navigation Tabs */}
-          <div className="bg-card border-b border-border">
-            <div className="max-w-container p-4">
+          <div className="tabs-header-container">
+            <div className="tabs-header-content">
               <Tabs
                 value={settingsTab}
                 onValueChange={setSettingsTab}
@@ -1430,8 +1430,8 @@ export default function App() {
       return (
         <>
           {/* Chat Header */}
-          <div className="bg-card border-b border-border">
-            <div className="max-w-container p-4">
+          <div className="tabs-header-container">
+            <div className="tabs-header-content">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   {currentSession ? (
@@ -1549,8 +1549,8 @@ export default function App() {
       return (
         <>
           {/* Archive Navigation Tabs */}
-          <div className="bg-card border-b border-border">
-            <div className="max-w-container p-4">
+          <div className="tabs-header-container">
+            <div className="tabs-header-content">
               <Tabs
                 value={archiveTab}
                 onValueChange={setArchiveTab}
@@ -1627,8 +1627,8 @@ export default function App() {
     return (
       <>
         {/* Navigation Tabs */}
-        <div className="bg-card border-b border-border">
-          <div className="max-w-container p-4" style={{ paddingTop: '5px', paddingBottom: '5px' }}>
+        <div className="tabs-header-container">
+          <div className="tabs-header-content">
             <Tabs
               value={activeView}
               onValueChange={setActiveView}
@@ -1821,6 +1821,7 @@ export default function App() {
   };
 
   return (
+    <>
     <div className="app" data-theme={userSettings.theme}>
       {/* Header */}
       <div className="header">
@@ -2382,5 +2383,6 @@ export default function App() {
       </div>
     </div>
     <Toaster theme={userSettings.theme} />
+    </>
   );
 }
