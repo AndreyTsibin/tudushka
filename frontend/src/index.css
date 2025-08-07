@@ -1615,6 +1615,7 @@ body {
 
 .dialog-button-ai-description:hover {
   background: linear-gradient(135deg, #7B68EE 0%, #6A5ACD 25%, #C865D8 50%, #FF1493 75%, #FF4500 100%);
+  color: white !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(152, 140, 237, 0.3);
 }
@@ -1633,6 +1634,7 @@ body {
 
 [data-theme="dark"] .dialog-button-ai-description:hover {
   background: linear-gradient(135deg, #9B90E9 0%, #8A79EF 25%, #E97DE9 50%, #FF7AC4 75%, #FF7C7C 100%);
+  color: white !important;
   box-shadow: 0 4px 12px rgba(138, 127, 232, 0.4);
 }
 
