@@ -109,18 +109,7 @@ const renderPriorityBadge = (priorityName: string, customPriorities: CustomPrior
 export default function App() {
   const [activeView, setActiveView] = useState("today");
   const [currentPage, setCurrentPage] = useState("home"); // home, ai-assistant, archive, settings
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: "1",
-      title: "Заголовок задачи которую нужно выполнить",
-      description:
-        "Описание задачи если есть, Описание задачи если есть, Описание задачи если есть....",
-      time: "14:30",
-      date: "2025-07-26",
-      priority: "critical",
-      completed: false,
-    },
-  ]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const [chatSessions, setChatSessions] = useState<
     ChatSession[]
@@ -409,16 +398,18 @@ export default function App() {
       event.preventDefault();
     }
     
-    // Проверяем, есть ли задачи с этим приоритетом
-    const tasksWithPriority = tasks.filter(task => task.priority === priorityName);
-    if (tasksWithPriority.length > 0) {
-      toast.error(`Нельзя удалить приоритет - есть задачи с этим приоритетом`);
-      return;
-    }
-    
     // Находим приоритет для получения displayName
     const priority = customPriorities.find(p => p.id === priorityId);
     const displayName = priority?.displayName || priorityName;
+    
+    // Проверяем, есть ли задачи с этим приоритетом
+    const tasksWithPriority = tasks.filter(task => task.priority === priorityName);
+    if (tasksWithPriority.length > 0) {
+      const taskWord = tasksWithPriority.length === 1 ? 'задача' : 
+                      tasksWithPriority.length < 5 ? 'задачи' : 'задач';
+      toast.error(`Нельзя удалить приоритет "${displayName}" - есть ${tasksWithPriority.length} ${taskWord} с этим приоритетом`);
+      return;
+    }
     
     // Удаляем приоритет (разрешаем удаление всех приоритетов)
     const updatedPriorities = customPriorities.filter(p => p.id !== priorityId);
