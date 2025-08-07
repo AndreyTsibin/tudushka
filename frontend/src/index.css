@@ -359,12 +359,27 @@ body {
 }
 
 .badge-priority-low {
-  background-color: #6b7280;
+  background-color: #10b981;
   color: white;
   border-color: transparent;
   font-size: var(--font-size-xs);
   padding: 0.25rem 0.5rem;
   border-radius: var(--radius-full);
+}
+
+/* Динамический класс для пользовательских приоритетов */
+.badge-priority-dynamic {
+  color: white;
+  border-color: transparent;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  /* Цвет фона задается через inline style */
 }
 
 /* ===== DIALOG COMPONENTS ===== */

@@ -44,13 +44,21 @@ import {
   BarChart3,
 } from "lucide-react";
 
+interface CustomPriority {
+  id: string;
+  name: string;
+  displayName: string;
+  color: string;
+  isDefault: boolean;
+}
+
 interface Task {
   id: string;
   title: string;
   description: string;
   time: string;
   date: string;
-  priority: "critical" | "high" | "medium" | "low";
+  priority: string;
   completed: boolean;
 }
 
@@ -80,6 +88,21 @@ interface UserSettings {
     lastResetDate: string;
   };
 }
+
+// Функция для динамического отображения бейджей приоритетов
+const renderPriorityBadge = (priorityName: string, customPriorities: CustomPriority[]) => {
+  const priority = customPriorities.find(p => p.name === priorityName);
+  if (!priority) return null;
+  
+  return (
+    <Badge 
+      className="badge-priority-dynamic" 
+      style={{ backgroundColor: priority.color }}
+    >
+      {priority.displayName}
+    </Badge>
+  );
+};
 
 export default function App() {
   const [activeView, setActiveView] = useState("today");
@@ -136,6 +159,14 @@ export default function App() {
       },
     });
 
+  // Пользовательские приоритеты с дефолтными значениями
+  const [customPriorities, setCustomPriorities] = useState<CustomPriority[]>([
+    { id: "low", name: "low", displayName: "Низкий", color: "#10b981", isDefault: true },
+    { id: "medium", name: "medium", displayName: "Средний", color: "#2563eb", isDefault: true },
+    { id: "high", name: "high", displayName: "Высокий", color: "#ea580c", isDefault: true },
+    { id: "critical", name: "critical", displayName: "Критический", color: "#dc2626", isDefault: true }
+  ]);
+
   const [currentChatId, setCurrentChatId] = useState<
     string | null
   >(null);
@@ -165,12 +196,18 @@ export default function App() {
   const [animatingTasks, setAnimatingTasks] = useState<
     Set<string>
   >(new Set());
+  
+  // Состояния для создания нового приоритета
+  const [isCreatePriorityDialogOpen, setIsCreatePriorityDialogOpen] = useState(false);
+  const [newPriorityName, setNewPriorityName] = useState("");
+  const [newPriorityColor, setNewPriorityColor] = useState("#6b7280");
+  
   const [newTask, setNewTask] = useState<{
     title: string;
     description: string;
     time: string;
     date: string;
-    priority: "critical" | "high" | "medium" | "low";
+    priority: string;
   }>({
     title: "",
     description: "",
@@ -180,6 +217,26 @@ export default function App() {
   });
 
   const today = new Date();
+  
+  // Загрузка и сохранение пользовательских приоритетов в localStorage
+  useEffect(() => {
+    const savedPriorities = localStorage.getItem('customPriorities');
+    if (savedPriorities) {
+      try {
+        const parsed = JSON.parse(savedPriorities);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setCustomPriorities(parsed);
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки приоритетов из localStorage:', error);
+      }
+    }
+  }, []);
+
+  // Сохранение пользовательских приоритетов в localStorage при их изменении
+  useEffect(() => {
+    localStorage.setItem('customPriorities', JSON.stringify(customPriorities));
+  }, [customPriorities]);
   
   // Функция для получения текущей даты и времени
   const getCurrentDateTimeForTask = () => {
@@ -305,6 +362,36 @@ export default function App() {
     });
     setIsAddDialogOpen(false);
     toast.success("Задача добавлена");
+  };
+
+  // Функция для создания нового приоритета
+  const createNewPriority = () => {
+    if (!newPriorityName.trim()) {
+      toast.error("Название приоритета обязательно");
+      return;
+    }
+
+    // Проверка на уникальность названия
+    if (customPriorities.some(p => p.name === newPriorityName.trim())) {
+      toast.error("Приоритет с таким названием уже существует");
+      return;
+    }
+
+    const newPriority: CustomPriority = {
+      id: Date.now().toString(),
+      name: newPriorityName.trim().toLowerCase().replace(/\s+/g, '-'),
+      displayName: newPriorityName.trim(),
+      color: newPriorityColor,
+      isDefault: false
+    };
+
+    setCustomPriorities([...customPriorities, newPriority]);
+    setNewPriorityName("");
+    setNewPriorityColor("#6b7280");
+    setIsCreatePriorityDialogOpen(false);
+    toast.success(`Приоритет "${newPriority.displayName}" создан`);
+    
+    return newPriority.name; // Возвращаем name для автовыбора
   };
 
   const toggleTask = (taskId: string) => {
@@ -717,26 +804,7 @@ export default function App() {
           {/* Top row with badge, time and date */}
           <div className="task-header">
             <div className="task-priority-group">
-              {task.priority === "critical" && (
-                <Badge className="badge-priority-critical">
-                  Критический
-                </Badge>
-              )}
-              {task.priority === "high" && (
-                <Badge className="badge-priority-high">
-                  Высокий
-                </Badge>
-              )}
-              {task.priority === "medium" && (
-                <Badge className="badge-priority-medium">
-                  Средний
-                </Badge>
-              )}
-              {task.priority === "low" && (
-                <Badge className="badge-priority-low">
-                  Низкий
-                </Badge>
-              )}
+              {renderPriorityBadge(task.priority, customPriorities)}
               <div className="task-time-info">
                 <Clock className="w-4 h-4" />
                 <span>{task.time}</span>
@@ -1873,23 +1941,34 @@ export default function App() {
                 </div>
                 <Select
                   value={newTask.priority}
-                  onValueChange={(value: "critical" | "high" | "medium" | "low") =>
-                    setNewTask({ ...newTask, priority: value })
-                  }
+                  onValueChange={(value: string) => {
+                    if (value === "create-new") {
+                      setIsCreatePriorityDialogOpen(true);
+                    } else {
+                      setNewTask({ ...newTask, priority: value });
+                    }
+                  }}
                 >
                   <SelectTrigger className="dialog-field">
                     <SelectValue placeholder="Приоритет" />
                   </SelectTrigger>
                   <SelectContent className="select-content">
-                    <SelectItem value="low">Низкий</SelectItem>
-                    <SelectItem value="medium">
-                      Средний
-                    </SelectItem>
-                    <SelectItem value="high">
-                      Высокий
-                    </SelectItem>
-                    <SelectItem value="critical">
-                      Критический
+                    {customPriorities.map(priority => (
+                      <SelectItem key={priority.id} value={priority.name}>
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-3 h-3 rounded-full" 
+                            style={{ backgroundColor: priority.color }}
+                          />
+                          {priority.displayName}
+                        </div>
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="create-new">
+                      <div className="flex items-center gap-2">
+                        <Plus className="w-3 h-3" />
+                        Создать новый приоритет
+                      </div>
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -2052,26 +2131,37 @@ export default function App() {
               </div>
               <Select
                 value={editingTask.priority}
-                onValueChange={(value: "critical" | "high" | "medium" | "low") =>
-                  setEditingTask({
-                    ...editingTask,
-                    priority: value,
-                  })
-                }
+                onValueChange={(value: string) => {
+                  if (value === "create-new") {
+                    setIsCreatePriorityDialogOpen(true);
+                  } else {
+                    setEditingTask({
+                      ...editingTask,
+                      priority: value,
+                    });
+                  }
+                }}
               >
                 <SelectTrigger className="dialog-field">
                   <SelectValue placeholder="Приоритет" />
                 </SelectTrigger>
                 <SelectContent className="select-content">
-                  <SelectItem value="low">Низкий</SelectItem>
-                  <SelectItem value="medium">
-                    Средний
-                  </SelectItem>
-                  <SelectItem value="high">
-                    Высокий
-                  </SelectItem>
-                  <SelectItem value="critical">
-                    Критический
+                  {customPriorities.map(priority => (
+                    <SelectItem key={priority.id} value={priority.name}>
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: priority.color }}
+                        />
+                        {priority.displayName}
+                      </div>
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="create-new">
+                    <div className="flex items-center gap-2">
+                      <Plus className="w-3 h-3" />
+                      Создать новый приоритет
+                    </div>
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -2085,6 +2175,72 @@ export default function App() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Диалог создания нового приоритета */}
+      <Dialog
+        open={isCreatePriorityDialogOpen}
+        onOpenChange={setIsCreatePriorityDialogOpen}
+      >
+        <DialogContent className="dialog-content-container">
+          <DialogHeader>
+            <DialogTitle className="dialog-title-text">
+              Создать новый приоритет
+            </DialogTitle>
+          </DialogHeader>
+          <div className="dialog-form">
+            <div className="space-y-4">
+              <div>
+                <span className="field-label">Название приоритета</span>
+                <input
+                  type="text"
+                  placeholder="Например: Срочно"
+                  value={newPriorityName}
+                  onChange={(e) => setNewPriorityName(e.target.value)}
+                  className="dialog-field input"
+                  maxLength={20}
+                />
+              </div>
+              <div>
+                <span className="field-label">Цвет приоритета</span>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={newPriorityColor}
+                    onChange={(e) => setNewPriorityColor(e.target.value)}
+                    className="w-10 h-10 rounded border-0 cursor-pointer"
+                  />
+                  <span className="text-sm text-muted-foreground">
+                    {newPriorityColor}
+                  </span>
+                  {newPriorityName && (
+                    <Badge 
+                      className="badge-priority-dynamic ml-2" 
+                      style={{ backgroundColor: newPriorityColor }}
+                    >
+                      {newPriorityName}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="dialog-button-row mt-6">
+              <Button
+                onClick={() => setIsCreatePriorityDialogOpen(false)}
+                className="dialog-button-flex dialog-button-outline"
+              >
+                Отмена
+              </Button>
+              <Button
+                onClick={createNewPriority}
+                className="dialog-button-flex dialog-button-primary"
+                disabled={!newPriorityName.trim()}
+              >
+                Создать
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
