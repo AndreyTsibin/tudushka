@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "./components/ui/select";
 import { toast } from "sonner";
+import { Toaster } from "./components/ui/sonner";
 import {
   Clock,
   Calendar as CalendarIcon,
@@ -190,7 +191,6 @@ export default function App() {
   
   // Состояния для создания нового приоритета
   const [isCreatePriorityDialogOpen, setIsCreatePriorityDialogOpen] = useState(false);
-  const [isPrioritySuccessDialogOpen, setIsPrioritySuccessDialogOpen] = useState(false);
   const [newPriorityName, setNewPriorityName] = useState("");
   const [newPriorityColor, setNewPriorityColor] = useState("#3b82f6");
   
@@ -381,12 +381,37 @@ export default function App() {
     setNewPriorityName("");
     setNewPriorityColor("#3b82f6");
     setIsCreatePriorityDialogOpen(false);
-    setIsPrioritySuccessDialogOpen(true);
     
-    // Автоматически закрыть уведомление через 2 секунды
-    setTimeout(() => {
-      setIsPrioritySuccessDialogOpen(false);
-    }, 2000);
+    // Показываем красивое toast уведомление
+    toast.success(
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ 
+          backgroundColor: '#10b981', 
+          borderRadius: '50%', 
+          width: '20px', 
+          height: '20px', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center' 
+        }}>
+          <Check size={12} color="white" />
+        </div>
+        <span style={{ fontWeight: '500' }}>
+          Новый приоритет "{newPriority.displayName}" добавлен!
+        </span>
+      </div>,
+      {
+        duration: 3000,
+        style: {
+          background: 'var(--color-card)',
+          border: '1px solid var(--color-border)',
+          color: 'var(--color-card-foreground)',
+          borderRadius: 'var(--radius)',
+          padding: '12px 16px',
+          fontSize: '14px'
+        }
+      }
+    );
     
     return newPriority.name; // Возвращаем name для автовыбора
   };
@@ -1603,7 +1628,7 @@ export default function App() {
       <>
         {/* Navigation Tabs */}
         <div className="bg-card border-b border-border">
-          <div className="max-w-container p-4">
+          <div className="max-w-container p-4 tabs-container-main">
             <Tabs
               value={activeView}
               onValueChange={setActiveView}
@@ -1624,7 +1649,7 @@ export default function App() {
         </div>
 
         {/* Content */}
-        <div className="max-w-container p-4 pb-bottom-nav">
+        <div className="max-w-container p-4 pb-bottom-nav-extra">
           {activeView === "today" && (
             <>
               {getTasksForView().map((task) => (
@@ -1656,11 +1681,11 @@ export default function App() {
                         <TaskCard key={task.id} task={task} />
                       ))
                     ) : (
-                      <Card className="p-3 mb-3 bg-card border-border">
-                        <p className="text-muted-foreground text-sm text-center">
+                      <div className="empty-day-card">
+                        <p className="empty-day-text">
                           На этот день задач нет
                         </p>
-                      </Card>
+                      </div>
                     )}
                   </div>
                 );
@@ -1780,11 +1805,11 @@ export default function App() {
                       <TaskCard key={task.id} task={task} />
                     ))
                   ) : (
-                    <Card className="p-3 mb-3 bg-card border-border">
-                      <p className="text-muted-foreground text-sm text-center">
+                    <div className="empty-day-card">
+                      <p className="empty-day-text">
                         На этот день задач нет
                       </p>
-                    </Card>
+                    </div>
                   );
                 })()}
               </div>
@@ -1801,7 +1826,7 @@ export default function App() {
       <div className="header">
         <div className="header-content">
           <h1 
-            className="header-title cursor-pointer hover:text-blue-500 transition-colors"
+            className="header-title"
             onClick={() => {
               setCurrentPage("home");
               setActiveView("today");
@@ -2317,19 +2342,6 @@ export default function App() {
         </DialogContent>
       </Dialog>
 
-      {/* Диалог уведомления о создании приоритета */}
-      <Dialog
-        open={isPrioritySuccessDialogOpen}
-        onOpenChange={setIsPrioritySuccessDialogOpen}
-      >
-        <DialogContent className="dialog-content-container dialog-content-notification">
-          <DialogHeader>
-            <DialogTitle className="dialog-title-text">
-              Приоритет добавлен
-            </DialogTitle>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
 
       {/* Bottom Navigation */}
       <div className="bottom-nav">
@@ -2369,5 +2381,6 @@ export default function App() {
         </div>
       </div>
     </div>
+    <Toaster theme={userSettings.theme} />
   );
 }

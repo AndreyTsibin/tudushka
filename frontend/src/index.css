@@ -151,6 +151,12 @@ body {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-card-foreground);
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.header-title:hover {
+  color: var(--color-primary);
 }
 
 .main-content {
@@ -462,6 +468,11 @@ body {
 /* ===== TAB COMPONENTS ===== */
 .tabs {
   width: 100%;
+}
+
+.tabs-container-main {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
 }
 
 .tabs-list {
@@ -1464,6 +1475,7 @@ body {
 
 .pb-bottom-nav { padding-bottom: calc(var(--bottom-nav-height) + var(--spacing-md)); }
 .pb-bottom-nav-large { padding-bottom: calc(var(--bottom-nav-height) + var(--spacing-xl) + var(--spacing-lg)); }
+.pb-bottom-nav-extra { padding-bottom: calc(var(--bottom-nav-height) + 150px) !important; }
 
 .p-0 { padding: 0; }
 .p-0\.5 { padding: 0.125rem; }
@@ -1811,6 +1823,29 @@ body {
 
 [data-theme="dark"] .field-label {
   color: var(--color-muted-foreground);
+}
+
+/* ===== DATE HEADER STYLES ===== */
+.text-muted-foreground.mb-3 {
+  margin-bottom: 0.5rem;
+}
+
+/* ===== EMPTY DAY CARD STYLES ===== */
+.empty-day-card {
+  background-color: var(--color-card);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4rem;
+}
+
+.empty-day-text {
+  color: var(--color-muted-foreground);
+  font-size: var(--font-size-sm);
+  text-align: center;
 }
 
 /* ===== RESPONSIVE ===== */
