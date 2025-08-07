@@ -1023,6 +1023,10 @@ body {
   margin-bottom: var(--spacing-xs);
   line-height: 1.4;
   color: var(--color-card-foreground);
+  /* Limit title to one line with ellipsis */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .task-card {
@@ -1063,6 +1067,12 @@ body {
   color: var(--color-muted-foreground);
   font-size: var(--font-size-sm);
   line-height: 1.6;
+  /* Limit description to two lines with ellipsis */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .task-actions {

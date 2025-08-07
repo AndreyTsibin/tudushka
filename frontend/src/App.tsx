@@ -1749,11 +1749,12 @@ export default function App() {
                   onChange={(e) =>
                     setNewTask({
                       ...newTask,
-                      title: e.target.value,
+                      title: e.target.value.slice(0, 50),
                     })
                   }
                   className="dialog-field dialog-title-field"
                   rows={1}
+                  maxLength={50}
                 />
                 <Textarea
                   id="new-task-description"
@@ -1763,10 +1764,11 @@ export default function App() {
                   onChange={(e) =>
                     setNewTask({
                       ...newTask,
-                      description: e.target.value,
+                      description: e.target.value.slice(0, 500),
                     })
                   }
                   className="dialog-field dialog-description-field"
+                  maxLength={500}
                 />
                 {/* AI описание кнопка под полем описания */}
                 <Dialog
@@ -1926,11 +1928,12 @@ export default function App() {
                 onChange={(e) =>
                   setEditingTask({
                     ...editingTask,
-                    title: e.target.value,
+                    title: e.target.value.slice(0, 50),
                   })
                 }
                 className="dialog-field dialog-title-field"
                 rows={1}
+                maxLength={50}
               />
               <Textarea
                 id="edit-task-description"
@@ -1940,10 +1943,11 @@ export default function App() {
                 onChange={(e) =>
                   setEditingTask({
                     ...editingTask,
-                    description: e.target.value,
+                    description: e.target.value.slice(0, 500),
                   })
                 }
                 className="dialog-field dialog-description-field"
+                maxLength={500}
               />
               {/* AI описание кнопка под полем описания */}
               <Dialog
