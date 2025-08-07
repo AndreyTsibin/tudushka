@@ -1749,12 +1749,12 @@ export default function App() {
                   onChange={(e) =>
                     setNewTask({
                       ...newTask,
-                      title: e.target.value.slice(0, 50),
+                      title: e.target.value.slice(0, 100),
                     })
                   }
                   className="dialog-field dialog-title-field"
                   rows={1}
-                  maxLength={50}
+                  maxLength={100}
                 />
                 <Textarea
                   id="new-task-description"
@@ -1764,11 +1764,11 @@ export default function App() {
                   onChange={(e) =>
                     setNewTask({
                       ...newTask,
-                      description: e.target.value.slice(0, 500),
+                      description: e.target.value.slice(0, 1000),
                     })
                   }
                   className="dialog-field dialog-description-field"
-                  maxLength={500}
+                  maxLength={1000}
                 />
                 {/* AI описание кнопка под полем описания */}
                 <Dialog
@@ -1928,12 +1928,12 @@ export default function App() {
                 onChange={(e) =>
                   setEditingTask({
                     ...editingTask,
-                    title: e.target.value.slice(0, 50),
+                    title: e.target.value.slice(0, 100),
                   })
                 }
                 className="dialog-field dialog-title-field"
                 rows={1}
-                maxLength={50}
+                maxLength={100}
               />
               <Textarea
                 id="edit-task-description"
@@ -1943,11 +1943,11 @@ export default function App() {
                 onChange={(e) =>
                   setEditingTask({
                     ...editingTask,
-                    description: e.target.value.slice(0, 500),
+                    description: e.target.value.slice(0, 1000),
                   })
                 }
                 className="dialog-field dialog-description-field"
-                maxLength={500}
+                maxLength={1000}
               />
               {/* AI описание кнопка под полем описания */}
               <Dialog
