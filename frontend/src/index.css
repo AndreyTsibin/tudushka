@@ -1372,7 +1372,10 @@ body {
 
 .mb-0 { margin-bottom: 0; }
 .mb-1 { margin-bottom: var(--spacing-xs); }
-.mb-2 { margin-bottom: var(--spacing-sm); }
+.mb-2 { 
+  margin-bottom: var(--spacing-sm);
+  margin-top: 0.7rem;
+}
 .mb-4 { margin-bottom: var(--spacing-md); }
 .mb-6 { margin-bottom: var(--spacing-lg); }
 .mb-8 { margin-bottom: var(--spacing-xl); }
