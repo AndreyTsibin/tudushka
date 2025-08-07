@@ -470,10 +470,6 @@ body {
   width: 100%;
 }
 
-.tabs-container-main {
-  padding-top: 5px !important;
-  padding-bottom: 5px !important;
-}
 
 .tabs-list {
   background-color: var(--color-muted);

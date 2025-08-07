@@ -1628,7 +1628,7 @@ export default function App() {
       <>
         {/* Navigation Tabs */}
         <div className="bg-card border-b border-border">
-          <div className="max-w-container p-4 tabs-container-main">
+          <div className="max-w-container p-4" style={{ paddingTop: '5px', paddingBottom: '5px' }}>
             <Tabs
               value={activeView}
               onValueChange={setActiveView}
