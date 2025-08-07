@@ -639,6 +639,7 @@ body {
   font-size: var(--font-size-sm);
   color: var(--color-foreground);
   width: 80%;
+  font-family: inherit;
 }
 
 /* Hide native datetime picker icons */
@@ -830,6 +831,7 @@ body {
   color: var(--color-foreground);
   cursor: pointer;
   min-height: 2.5rem;
+  margin-top: -0.5rem;
 }
 
 .select-trigger:focus-visible,
@@ -949,6 +951,64 @@ body {
 .select-check-icon {
   width: 1rem;
   height: 1rem;
+}
+
+/* Стили для приоритетов в селекторах */
+.priority-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.priority-item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.priority-item-check {
+  width: 1rem;
+  height: 1rem;
+  color: #10b981;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.priority-item-check.visible {
+  opacity: 1;
+}
+
+.priority-item-color {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.priority-item-name {
+  flex: 1;
+}
+
+.priority-item-delete {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-muted-foreground);
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.priority-item-delete:hover {
+  opacity: 1;
+  color: #ef4444;
 }
 
 /* ===== BOTTOM NAVIGATION ===== */
@@ -1713,9 +1773,28 @@ body {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
 }
 
+/* Диалог создания приоритета - компактная ширина */
+.dialog-content-priority {
+  max-width: 400px !important;
+}
+
+/* Компактное модальное окно уведомления - максимум 150px */
+.dialog-content-notification {
+  max-width: 150px !important;
+  padding: var(--spacing-md) !important;
+  text-align: center;
+}
+
+.dialog-content-notification .dialog-title {
+  font-size: var(--font-size-sm);
+  margin-bottom: 0;
+}
+
 .field-label {
   font-size: 0.875rem;
   font-weight: 500;
+  margin-bottom: 5px;
+  display: block;
 }
 
 /* ===== HEADER STYLES ===== */

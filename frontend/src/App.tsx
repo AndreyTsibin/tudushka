@@ -42,6 +42,8 @@ import {
   Sun,
   Crown,
   BarChart3,
+  Trash2,
+  Check,
 } from "lucide-react";
 
 interface CustomPriority {
@@ -199,8 +201,9 @@ export default function App() {
   
   // Состояния для создания нового приоритета
   const [isCreatePriorityDialogOpen, setIsCreatePriorityDialogOpen] = useState(false);
+  const [isPrioritySuccessDialogOpen, setIsPrioritySuccessDialogOpen] = useState(false);
   const [newPriorityName, setNewPriorityName] = useState("");
-  const [newPriorityColor, setNewPriorityColor] = useState("#6b7280");
+  const [newPriorityColor, setNewPriorityColor] = useState("#3b82f6");
   
   const [newTask, setNewTask] = useState<{
     title: string;
@@ -387,11 +390,49 @@ export default function App() {
 
     setCustomPriorities([...customPriorities, newPriority]);
     setNewPriorityName("");
-    setNewPriorityColor("#6b7280");
+    setNewPriorityColor("#3b82f6");
     setIsCreatePriorityDialogOpen(false);
-    toast.success(`Приоритет "${newPriority.displayName}" создан`);
+    setIsPrioritySuccessDialogOpen(true);
+    
+    // Автоматически закрыть уведомление через 2 секунды
+    setTimeout(() => {
+      setIsPrioritySuccessDialogOpen(false);
+    }, 2000);
     
     return newPriority.name; // Возвращаем name для автовыбора
+  };
+
+  // Функция для удаления приоритета
+  const deletePriority = (priorityId: string, priorityName: string, event?: React.MouseEvent) => {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    
+    // Проверяем, есть ли задачи с этим приоритетом
+    const tasksWithPriority = tasks.filter(task => task.priority === priorityName);
+    if (tasksWithPriority.length > 0) {
+      toast.error(`Нельзя удалить приоритет - есть задачи с этим приоритетом`);
+      return;
+    }
+    
+    // Находим приоритет для получения displayName
+    const priority = customPriorities.find(p => p.id === priorityId);
+    const displayName = priority?.displayName || priorityName;
+    
+    // Удаляем приоритет (разрешаем удаление всех приоритетов)
+    const updatedPriorities = customPriorities.filter(p => p.id !== priorityId);
+    setCustomPriorities(updatedPriorities);
+    
+    // Если удаляемый приоритет был выбран в новой задаче, сбрасываем его
+    if (newTask.priority === priorityName) {
+      setNewTask(prev => ({
+        ...prev,
+        priority: ""
+      }));
+    }
+    
+    toast.success(`Приоритет "${displayName}" удален`);
   };
 
   const toggleTask = (taskId: string) => {
@@ -1953,14 +1994,34 @@ export default function App() {
                     <SelectValue placeholder="Приоритет" />
                   </SelectTrigger>
                   <SelectContent className="select-content">
+                    {customPriorities.length === 0 && (
+                      <div className="select-item text-sm text-muted-foreground px-2 py-1">
+                        Приоритеты не созданы
+                      </div>
+                    )}
                     {customPriorities.map(priority => (
                       <SelectItem key={priority.id} value={priority.name}>
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="w-3 h-3 rounded-full" 
-                            style={{ backgroundColor: priority.color }}
-                          />
-                          {priority.displayName}
+                        <div className="priority-item">
+                          <div className="priority-item-left">
+                            <Check className={`priority-item-check ${newTask.priority === priority.name ? 'visible' : ''}`} />
+                            <div 
+                              className="priority-item-color" 
+                              style={{ backgroundColor: priority.color }}
+                            />
+                            <span className="priority-item-name">{priority.displayName}</span>
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              deletePriority(priority.id, priority.name, e);
+                            }}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            className="priority-item-delete"
+                            title="Удалить приоритет"
+                          >
+                            <Trash2 />
+                          </button>
                         </div>
                       </SelectItem>
                     ))}
@@ -2146,14 +2207,34 @@ export default function App() {
                   <SelectValue placeholder="Приоритет" />
                 </SelectTrigger>
                 <SelectContent className="select-content">
+                  {customPriorities.length === 0 && (
+                    <div className="select-item text-sm text-muted-foreground px-2 py-1">
+                      Приоритеты не созданы
+                    </div>
+                  )}
                   {customPriorities.map(priority => (
                     <SelectItem key={priority.id} value={priority.name}>
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: priority.color }}
-                        />
-                        {priority.displayName}
+                      <div className="priority-item">
+                        <div className="priority-item-left">
+                          <Check className={`priority-item-check ${editingTask.priority === priority.name ? 'visible' : ''}`} />
+                          <div 
+                            className="priority-item-color" 
+                            style={{ backgroundColor: priority.color }}
+                          />
+                          <span className="priority-item-name">{priority.displayName}</span>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            deletePriority(priority.id, priority.name, e);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          className="priority-item-delete"
+                          title="Удалить приоритет"
+                        >
+                          <Trash2 />
+                        </button>
                       </div>
                     </SelectItem>
                   ))}
@@ -2183,7 +2264,7 @@ export default function App() {
         open={isCreatePriorityDialogOpen}
         onOpenChange={setIsCreatePriorityDialogOpen}
       >
-        <DialogContent className="dialog-content-container">
+        <DialogContent className="dialog-content-container dialog-content-priority">
           <DialogHeader>
             <DialogTitle className="dialog-title-text">
               Создать новый приоритет
@@ -2195,6 +2276,7 @@ export default function App() {
                 <span className="field-label">Название приоритета</span>
                 <input
                   type="text"
+                  name="priorityName"
                   placeholder="Например: Срочно"
                   value={newPriorityName}
                   onChange={(e) => setNewPriorityName(e.target.value)}
@@ -2241,6 +2323,20 @@ export default function App() {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Диалог уведомления о создании приоритета */}
+      <Dialog
+        open={isPrioritySuccessDialogOpen}
+        onOpenChange={setIsPrioritySuccessDialogOpen}
+      >
+        <DialogContent className="dialog-content-container dialog-content-notification">
+          <DialogHeader>
+            <DialogTitle className="dialog-title-text">
+              Приоритет добавлен
+            </DialogTitle>
+          </DialogHeader>
         </DialogContent>
       </Dialog>
 
