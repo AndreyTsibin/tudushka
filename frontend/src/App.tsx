@@ -1520,25 +1520,24 @@ export default function App() {
           </div>
 
           {/* Fixed Input Area */}
-          <div className="fixed bottom-20 left-0 right-0 bg-card border-t border-border p-4">
-            <div className="max-w-container">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Напишите сообщение..."
-                  value={aiMessage}
-                  onChange={(e) => setAiMessage(e.target.value)}
-                  onKeyPress={(e) =>
-                    e.key === "Enter" && sendAiMessage()
-                  }
-                  className="flex-1 input-themed"
-                />
-                <Button
-                  onClick={sendAiMessage}
-                  className="button-primary-themed"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
+          <div className="ai-input-container">
+            <div className="ai-input-wrapper">
+              <input
+                type="text"
+                placeholder="Напишите сообщение..."
+                value={aiMessage}
+                onChange={(e) => setAiMessage(e.target.value)}
+                onKeyPress={(e) =>
+                  e.key === "Enter" && sendAiMessage()
+                }
+                className="ai-input-field"
+              />
+              <button
+                onClick={sendAiMessage}
+                className="ai-send-button"
+              >
+                <Send className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </>
