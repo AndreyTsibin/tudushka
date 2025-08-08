@@ -1237,7 +1237,7 @@ body {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-card);
   color: white;
 }
 
