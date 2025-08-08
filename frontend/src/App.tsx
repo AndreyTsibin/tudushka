@@ -165,9 +165,6 @@ export default function App() {
   const [aiMessage, setAiMessage] = useState("");
   const [archiveTab, setArchiveTab] = useState("chats"); // chats, tasks
   const [settingsTab, setSettingsTab] = useState("general"); // general, ai, subscription
-  const [selectedPlan] = useState<
-    "free" | "plus" | "pro"
-  >("free");
   const [isEditingChatTitle, setIsEditingChatTitle] =
     useState(false);
   const [editingChatTitle, setEditingChatTitle] = useState("");
@@ -1284,11 +1281,7 @@ export default function App() {
                   </h3>
 
                   {/* Free Plan */}
-                  <div
-                    className={`subscription-plan-card ${
-                      selectedPlan === "free" && userSettings.plan !== "free" ? "selected" : ""
-                    }`}
-                  >
+                  <div className="subscription-plan-card">
                     <div className="subscription-plan-content">
                       <div className="subscription-plan-header">
                         <div className="subscription-plan-info">
@@ -1327,11 +1320,7 @@ export default function App() {
                   </div>
 
                   {/* Plus Plan */}
-                  <div
-                    className={`subscription-plan-card ${
-                      selectedPlan === "plus" && userSettings.plan !== "plus" ? "selected" : ""
-                    }`}
-                  >
+                  <div className="subscription-plan-card">
                     <div className="subscription-plan-content">
                       <div className="subscription-plan-header">
                         <div className="subscription-plan-info">
@@ -1367,11 +1356,7 @@ export default function App() {
                   </div>
 
                   {/* Pro Plan */}
-                  <div
-                    className={`subscription-plan-card ${
-                      selectedPlan === "pro" && userSettings.plan !== "pro" ? "selected" : ""
-                    }`}
-                  >
+                  <div className="subscription-plan-card">
                     <div className="subscription-plan-content">
                       <div className="subscription-plan-header">
                         <div className="subscription-plan-info">
