@@ -1317,8 +1317,7 @@ export default function App() {
                       </div>
                       {userSettings.plan !== "free" && (
                         <Button
-                          variant="outline"
-                          className="purchase-btn"
+                          className="purchase-btn purchase-free"
                           onClick={() => purchasePlan("free")}
                         >
                           Переключиться на Free

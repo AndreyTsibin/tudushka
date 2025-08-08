@@ -1262,6 +1262,15 @@ body {
   border-radius: var(--radius-card);
 }
 
+.purchase-free {
+  background-color: #6b7280;
+  color: white;
+}
+
+.purchase-free:hover {
+  background-color: #4b5563;
+}
+
 .purchase-plus {
   background-color: #2563eb;
   color: white;
