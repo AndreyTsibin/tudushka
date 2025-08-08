@@ -121,8 +121,7 @@ export default function App() {
     useState<UserSettings>({
       language: "ru",
       theme: "light",
-      aiPersonality:
-        "Дружелюбный и профессиональный помощник, который помогает с планированием задач и повышением продуктивности.",
+      aiPersonality: "", // Будет установлено в useEffect
       aiModel: "chatgpt",
       plan: "free",
       aiUsage: {
@@ -321,6 +320,15 @@ export default function App() {
       document.documentElement.setAttribute("data-theme", "light");
     }
   }, [userSettings.theme]);
+
+  // Автоматическая настройка высоты textarea для персонализации AI
+  useEffect(() => {
+    const textarea = document.querySelector('.textarea-themed') as HTMLTextAreaElement;
+    if (textarea && userSettings.aiPersonality) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+  }, [userSettings.aiPersonality]);
 
   const getPlanLimits = () => {
     switch (userSettings.plan) {
@@ -1156,14 +1164,23 @@ export default function App() {
                     <Textarea
                       placeholder={translations.personalityPlaceholder}
                       value={userSettings.aiPersonality}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setUserSettings((prev) => ({
                           ...prev,
                           aiPersonality: e.target.value,
-                        }))
-                      }
-                      rows={4}
+                        }));
+                        // Автоматический размер
+                        const target = e.target as HTMLTextAreaElement;
+                        target.style.height = 'auto';
+                        target.style.height = target.scrollHeight + 'px';
+                      }}
+                      rows={3}
                       className="textarea-themed"
+                      style={{
+                        minHeight: '4rem',
+                        resize: 'none',
+                        overflow: 'hidden'
+                      }}
                     />
                   </div>
                 </div>
