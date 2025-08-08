@@ -65,7 +65,7 @@
   --bottom-nav-height: 4.125rem;
 
   /* Tabs */
-  --color-tabs-list-background: #c4d1ff;
+  --color-tabs-list-background: #dce4ff;
 }
 
 /* Dark Theme */
@@ -186,7 +186,7 @@ body {
   font-weight: var(--font-weight-medium);
   line-height: 1;
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   text-decoration: none;
@@ -278,7 +278,7 @@ body {
 /* ===== CARD COMPONENTS ===== */
 .card {
   background-color: var(--color-card);
-  border: 1px solid var(--color-border);
+  border: none;
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-sm);
 }
@@ -413,7 +413,7 @@ body {
   max-width: 480px;
   background-color: var(--color-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-lg);
 }
@@ -494,7 +494,7 @@ body {
   width: 100%;
   align-items: center;
   justify-content: center;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-card);
   padding: 0.125rem;
 }
 
@@ -505,8 +505,8 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  border-radius: 0.375rem;
-  border: 1px solid transparent;
+  border-radius: var(--radius-card);
+  border: none;
   padding: 0.25rem 0.375rem;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
@@ -529,13 +529,11 @@ body {
 }
 
 [data-theme="dark"] .tabs-trigger[data-state="active"] {
-  border-color: var(--color-input);
   background-color: color-mix(in srgb, var(--color-input) 30%, transparent);
   color: var(--color-foreground);
 }
 
 .tabs-trigger:focus-visible {
-  border-color: var(--color-ring);
   outline: 1px solid var(--color-ring);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-ring) 50%, transparent);
 }
@@ -552,7 +550,7 @@ body {
   font-size: var(--font-size-sm);
   background-color: var(--color-background);
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   outline: none;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -568,7 +566,7 @@ body {
   font-size: var(--font-size-sm);
   background-color: var(--color-background);
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   outline: none;
   resize: vertical;
   min-height: 3rem;
@@ -589,7 +587,7 @@ body {
   font-size: var(--font-size-sm);
   background-color: var(--color-background);
   border: 1px solid var(--color-input);
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   outline: none;
   transition: border-color 0.2s ease-in-out;
   color: var(--color-foreground);
@@ -641,7 +639,7 @@ body {
   min-height: 2.5rem;
   height: 2.5rem;
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   background-color: var(--color-background);
   overflow: hidden;
 }
@@ -842,7 +840,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   border: none;
   background-color: var(--color-background);
   padding: 0.5rem 0.75rem;
@@ -884,7 +882,7 @@ body {
   max-height: var(--radix-select-content-available-height);
   min-width: 8rem;
   overflow: hidden;
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   border: 1px solid var(--color-border);
   background-color: var(--color-popover) !important;
   color: var(--color-popover-foreground) !important;
@@ -1108,7 +1106,7 @@ body {
 .task-item {
   background-color: var(--color-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   padding: var(--spacing-md);
   margin-bottom: var(--spacing-md);
   box-shadow: var(--shadow-sm);
@@ -1261,7 +1259,7 @@ body {
   width: 100%;
   font-weight: var(--font-weight-medium);
   padding: 0.75rem 1rem;
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
 }
 
 .purchase-plus {
@@ -1286,7 +1284,7 @@ body {
 .chat-message {
   max-width: 75%;
   padding: 0.75rem;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
 }
 
 .chat-message-user {
@@ -1550,8 +1548,8 @@ body {
 .settings-card {
   padding: 1rem;
   background-color: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  border: none;
+  border-radius: var(--radius-card);
   box-shadow: var(--shadow-sm);
 }
 
@@ -1668,17 +1666,16 @@ body {
 .ai-input-field {
   flex: 1;
   background: var(--color-input);
-  border: 1px solid var(--color-input-border);
-  border-radius: var(--radius);
+  border: none;
+  border-radius: var(--radius-card);
   padding: var(--spacing-sm) var(--spacing-md);
   color: var(--color-foreground);
   font-size: var(--font-size-sm);
-  transition: border-color 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .ai-input-field:focus {
   outline: none;
-  border-color: var(--color-ring);
   box-shadow: 0 0 0 2px var(--color-ring);
 }
 
@@ -1690,7 +1687,7 @@ body {
   background: var(--color-primary);
   color: var(--color-primary-foreground);
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   padding: var(--spacing-sm);
   cursor: pointer;
   display: flex;
@@ -2092,7 +2089,7 @@ body {
 /* ===== EMPTY DAY CARD STYLES ===== */
 .empty-day-card {
   background-color: var(--color-card);
-  border-radius: var(--radius);
+  border-radius: var(--radius-card);
   padding: 1rem;
   margin-bottom: 0.75rem;
   display: flex;
