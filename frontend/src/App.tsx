@@ -46,6 +46,7 @@ import {
   Trash2,
   Check,
 } from "lucide-react";
+import { useTranslations, formatDate, pluralize, getWeekdays, getMonths } from "./locales/translations";
 
 interface CustomPriority {
   id: string;
@@ -114,27 +115,7 @@ export default function App() {
 
   const [chatSessions, setChatSessions] = useState<
     ChatSession[]
-  >([
-    {
-      id: "1",
-      title: "Планирование недели",
-      date: "2025-07-26",
-      messages: [
-        {
-          id: "1",
-          text: "Помоги мне запланировать задачи на завтра",
-          sender: "user",
-          timestamp: "14:30",
-        },
-        {
-          id: "2",
-          text: "Конечно! Давайте составим план на завтра. Какие у вас основные приоритеты?",
-          sender: "ai",
-          timestamp: "14:31",
-        },
-      ],
-    },
-  ]);
+  >([]);
 
   const [userSettings, setUserSettings] =
     useState<UserSettings>({
@@ -151,13 +132,45 @@ export default function App() {
       },
     });
 
+  // Получаем переводы для текущего языка
+  const translations = useTranslations(userSettings.language);
+
   // Пользовательские приоритеты с дефолтными значениями
-  const [customPriorities, setCustomPriorities] = useState<CustomPriority[]>([
-    { id: "low", name: "low", displayName: "Низкий", color: "#10b981", isDefault: true },
-    { id: "medium", name: "medium", displayName: "Средний", color: "#2563eb", isDefault: true },
-    { id: "high", name: "high", displayName: "Высокий", color: "#ea580c", isDefault: true },
-    { id: "critical", name: "critical", displayName: "Критический", color: "#dc2626", isDefault: true }
-  ]);
+  const getDefaultPriorities = () => [
+    { id: "low", name: "low", displayName: translations.low, color: "#10b981", isDefault: true },
+    { id: "medium", name: "medium", displayName: translations.medium, color: "#2563eb", isDefault: true },
+    { id: "high", name: "high", displayName: translations.high, color: "#ea580c", isDefault: true },
+    { id: "critical", name: "critical", displayName: translations.critical, color: "#dc2626", isDefault: true }
+  ];
+  
+  const [customPriorities, setCustomPriorities] = useState<CustomPriority[]>(getDefaultPriorities());
+  
+  // Инициализируем чаты после получения переводов
+  useEffect(() => {
+    setChatSessions([{
+      id: "1",
+      title: translations.planningWeek,
+      date: "2025-07-26",
+      messages: [
+        {
+          id: "1",
+          text: userSettings.language === "ru" 
+            ? "Помоги мне запланировать задачи на завтра"
+            : "Help me plan tasks for tomorrow",
+          sender: "user",
+          timestamp: "14:30",
+        },
+        {
+          id: "2",
+          text: userSettings.language === "ru"
+            ? "Конечно! Давайте составим план на завтра. Какие у вас основные приоритеты?"
+            : "Sure! Let's make a plan for tomorrow. What are your main priorities?",
+          sender: "ai",
+          timestamp: "14:31",
+        },
+      ],
+    }]);
+  }, [userSettings.language, translations.planningWeek]);
 
   const [currentChatId, setCurrentChatId] = useState<
     string | null
@@ -207,20 +220,34 @@ export default function App() {
 
   const today = new Date();
   
-  // Загрузка и сохранение пользовательских приоритетов в localStorage
+  // Обновляем дефолтные приоритеты при смене языка
   useEffect(() => {
     const savedPriorities = localStorage.getItem('customPriorities');
     if (savedPriorities) {
       try {
         const parsed = JSON.parse(savedPriorities);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setCustomPriorities(parsed);
+          // Обновляем displayName для дефолтных приоритетов при смене языка
+          const updatedPriorities = parsed.map(priority => {
+            if (priority.isDefault) {
+              const defaultPriorities = getDefaultPriorities();
+              const defaultPriority = defaultPriorities.find(p => p.name === priority.name);
+              return defaultPriority ? { ...priority, displayName: defaultPriority.displayName } : priority;
+            }
+            return priority;
+          });
+          setCustomPriorities(updatedPriorities);
+        } else {
+          setCustomPriorities(getDefaultPriorities());
         }
       } catch (error) {
         console.error('Ошибка загрузки приоритетов из localStorage:', error);
+        setCustomPriorities(getDefaultPriorities());
       }
+    } else {
+      setCustomPriorities(getDefaultPriorities());
     }
-  }, []);
+  }, [userSettings.language, translations]);
 
   // Сохранение пользовательских приоритетов в localStorage при их изменении
   useEffect(() => {
@@ -327,7 +354,7 @@ export default function App() {
 
   const addTask = () => {
     if (!newTask.title.trim()) {
-      toast.error("Заголовок задачи обязателен");
+      toast.error(translations.titleRequired);
       return;
     }
 
@@ -350,19 +377,19 @@ export default function App() {
       priority: "medium",
     });
     setIsAddDialogOpen(false);
-    toast.success("Задача добавлена");
+    toast.success(translations.taskAdded);
   };
 
   // Функция для создания нового приоритета
   const createNewPriority = () => {
     if (!newPriorityName.trim()) {
-      toast.error("Название приоритета обязательно");
+      toast.error(translations.priorityRequired);
       return;
     }
 
     // Проверка на уникальность названия
     if (customPriorities.some(p => p.name === newPriorityName.trim())) {
-      toast.error("Приоритет с таким названием уже существует");
+      toast.error(translations.priorityExists);
       return;
     }
 
@@ -394,7 +421,10 @@ export default function App() {
           <Check size={12} color="white" />
         </div>
         <span style={{ fontWeight: '500' }}>
-          Новый приоритет "{newPriority.displayName}" добавлен!
+          {userSettings.language === "ru" 
+            ? `Новый приоритет "${newPriority.displayName}" ${translations.newPriorityAdded}`
+            : `New priority "${newPriority.displayName}" ${translations.newPriorityAdded}`
+          }
         </span>
       </div>,
       {
@@ -427,9 +457,11 @@ export default function App() {
     // Проверяем, есть ли задачи с этим приоритетом
     const tasksWithPriority = tasks.filter(task => task.priority === priorityName);
     if (tasksWithPriority.length > 0) {
-      const taskWord = tasksWithPriority.length === 1 ? 'задача' : 
-                      tasksWithPriority.length < 5 ? 'задачи' : 'задач';
-      toast.error(`Нельзя удалить приоритет "${displayName}" - есть ${tasksWithPriority.length} ${taskWord} с этим приоритетом`);
+      const taskWord = pluralize(tasksWithPriority.length, userSettings.language, "taskWord", "tasksWord", "tasksWordMany");
+      const errorMessage = userSettings.language === "ru"
+        ? `${translations.cannotDeletePriority} "${displayName}" - ${translations.tasksWithPriority} ${tasksWithPriority.length} ${taskWord} ${translations.withThisPriority}`
+        : `${translations.cannotDeletePriority} "${displayName}" - ${translations.tasksWithPriority} ${tasksWithPriority.length} ${taskWord} ${translations.withThisPriority}`;
+      toast.error(errorMessage);
       return;
     }
     
@@ -445,7 +477,7 @@ export default function App() {
       }));
     }
     
-    toast.success(`Приоритет "${displayName}" удален`);
+    toast.success(`${translations.priority} "${displayName}" ${translations.priorityDeleted}`);
   };
 
   const toggleTask = (taskId: string) => {
@@ -575,47 +607,41 @@ export default function App() {
 
   const generateTaskDescription = () => {
     if (!newTask.title.trim()) {
-      toast.error(
-        "Введите заголовок задачи для генерации описания",
-      );
+      toast.error(translations.enterTitleForAI);
       return;
     }
 
     if (!canUseAIDescription()) {
-      toast.error(
-        "Достигнут лимит генерацией описаний на сегодня. Обновите тариф для увеличения лимита.",
-      );
+      toast.error(translations.aiLimitReached);
       return;
     }
 
     // Простая AI-генерация описания на основе заголовка
-    const descriptions = {
-      встреча:
-        "Подготовиться к встрече, просмотреть материалы, составить список вопросов и целей для обсуждения.",
-      звонок:
-        "Подготовить план разговора, проверить контактную информацию, выбрать удобное время для звонка.",
-      покупки:
-        "Составить список необходимых товаров, проверить цены, выбрать подходящий магазин.",
-      работа:
-        "Определить приоритетные задачи, выделить время для концентрированной работы, подготовить необходимые материалы.",
-      учеба:
-        "Подготовить учебные материалы, выбрать подходящее место для занятий, составить план изучения.",
-      спорт:
-        "Подготовить спортивную форму, выбрать подходящее время, составить программу тренировки.",
-      здоровье:
-        "Записаться на прием, подготовить документы, составить список вопросов для специалиста.",
+    const keywordMappings = userSettings.language === "ru" ? {
+      встреча: "meetingDescription",
+      звонок: "callDescription", 
+      покупки: "shoppingDescription",
+      работа: "workDescription",
+      учеба: "studyDescription",
+      спорт: "sportsDescription",
+      здоровье: "healthDescription"
+    } : {
+      meeting: "meetingDescription",
+      call: "callDescription",
+      shopping: "shoppingDescription", 
+      work: "workDescription",
+      study: "studyDescription",
+      sport: "sportsDescription",
+      health: "healthDescription"
     };
 
     const title = newTask.title.toLowerCase();
-    let generatedDescription =
-      "Выполнить поставленную задачу согласно плану и достичь желаемого результата.";
+    let generatedDescription = translations.defaultDescription;
 
     // Ищем ключевые слова в заголовке
-    for (const [keyword, description] of Object.entries(
-      descriptions,
-    )) {
+    for (const [keyword, descriptionKey] of Object.entries(keywordMappings)) {
       if (title.includes(keyword)) {
-        generatedDescription = description;
+        generatedDescription = (translations as any)[descriptionKey];
         break;
       }
     }
@@ -633,52 +659,46 @@ export default function App() {
       },
     }));
     setIsAIHelpDialogOpen(false);
-    toast.success("Описание сгенерировано AI");
+    toast.success(translations.aiDescriptionGenerated);
   };
 
   const generateEditTaskDescription = () => {
     if (!editingTask || !editingTask.title.trim()) {
-      toast.error(
-        "Введите заголовок задачи для генерации описания",
-      );
+      toast.error(translations.enterTitleForAI);
       return;
     }
 
     if (!canUseAIDescription()) {
-      toast.error(
-        "Достигнут лимит генерацией описаний на сегодня. Обновите тариф для увеличения лимита.",
-      );
+      toast.error(translations.aiLimitReached);
       return;
     }
 
     // Простая AI-генерация описания на основе заголовка
-    const descriptions = {
-      встреча:
-        "Подготовиться к встрече, просмотреть материалы, составить список вопросов и целей для обсуждения.",
-      звонок:
-        "Подготовить план разговора, проверить контактную информацию, выбрать удобное время для звонка.",
-      покупки:
-        "Составить список необходимых товаров, проверить цены, выбрать подходящий магазин.",
-      работа:
-        "Определить приоритетные задачи, выделить время для концентрированной работы, подготовить необходимые материалы.",
-      учеба:
-        "Подготовить учебные материалы, выбрать подходящее место для занятий, составить план изучения.",
-      спорт:
-        "Подготовить спортивную форму, выбрать подходящее время, составить программу тренировки.",
-      здоровье:
-        "Записаться на прием, подготовить документы, составить список вопросов для специалиста.",
+    const keywordMappings = userSettings.language === "ru" ? {
+      встреча: "meetingDescription",
+      звонок: "callDescription", 
+      покупки: "shoppingDescription",
+      работа: "workDescription",
+      учеба: "studyDescription",
+      спорт: "sportsDescription",
+      здоровье: "healthDescription"
+    } : {
+      meeting: "meetingDescription",
+      call: "callDescription",
+      shopping: "shoppingDescription", 
+      work: "workDescription",
+      study: "studyDescription",
+      sport: "sportsDescription",
+      health: "healthDescription"
     };
 
     const title = editingTask.title.toLowerCase();
-    let generatedDescription =
-      "Выполнить поставленную задачу согласно плану и достичь желаемого результата.";
+    let generatedDescription = translations.defaultDescription;
 
     // Ищем ключевые слова в заголовке
-    for (const [keyword, description] of Object.entries(
-      descriptions,
-    )) {
+    for (const [keyword, descriptionKey] of Object.entries(keywordMappings)) {
       if (title.includes(keyword)) {
-        generatedDescription = description;
+        generatedDescription = (translations as any)[descriptionKey];
         break;
       }
     }
@@ -695,16 +715,14 @@ export default function App() {
         descriptionsUsed: prev.aiUsage.descriptionsUsed + 1,
       },
     }));
-    toast.success("Описание сгенерировано AI");
+    toast.success(translations.aiDescriptionGenerated);
   };
 
   const sendAiMessage = () => {
     if (!aiMessage.trim()) return;
 
     if (!canUseAIChat()) {
-      toast.error(
-        "Достигнут лимит запросов к AI на сегодня. Обновите тариф для увеличения лимита.",
-      );
+      toast.error(translations.chatLimitReached);
       return;
     }
 
@@ -725,11 +743,12 @@ export default function App() {
       setCurrentChatId(newSessionId);
     }
 
+    const locale = userSettings.language === "ru" ? "ru-RU" : "en-US";
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       text: aiMessage,
       sender: "user",
-      timestamp: new Date().toLocaleTimeString("ru-RU", {
+      timestamp: new Date().toLocaleTimeString(locale, {
         hour: "2-digit",
         minute: "2-digit",
       }),
@@ -737,9 +756,9 @@ export default function App() {
 
     const aiResponse: ChatMessage = {
       id: (Date.now() + 1).toString(),
-      text: "Отличная идея! Я могу помочь вам создать задачу. Какое время и приоритет вы хотите установить?",
+      text: translations.aiResponseText,
       sender: "ai",
-      timestamp: new Date().toLocaleTimeString("ru-RU", {
+      timestamp: new Date().toLocaleTimeString(locale, {
         hour: "2-digit",
         minute: "2-digit",
       }),
@@ -824,22 +843,8 @@ export default function App() {
     return dates;
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    };
-    const formatted = new Intl.DateTimeFormat(
-      "ru-RU",
-      options,
-    ).format(date);
-    // Делаем первую букву заглавной
-    return (
-      formatted.charAt(0).toUpperCase() + formatted.slice(1)
-    );
+  const formatDateForView = (dateString: string) => {
+    return formatDate(dateString, userSettings.language);
   };
 
   const TaskCard = ({ task }: { task: Task }) => {
@@ -867,14 +872,7 @@ export default function App() {
             <div className="task-time-info">
               <CalendarIcon className="w-4 h-4" />
               <span>
-                {new Date(task.date).toLocaleDateString(
-                  "ru-RU",
-                  {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  },
-                )}
+                {formatDate(task.date, userSettings.language)}
               </span>
             </div>
           </div>
@@ -905,7 +903,7 @@ export default function App() {
                 }
               }}
             >
-              {isAnimating ? "Завершается..." : "Завершить"}
+              {isAnimating ? translations.completing : translations.completeTask}
             </Button>
           </div>
         </Card>
@@ -949,7 +947,7 @@ export default function App() {
 
     setIsEditingChatTitle(false);
     setEditingChatTitle("");
-    toast.success("Название чата обновлено");
+    toast.success(translations.chatTitleUpdated);
   };
 
   const cancelEditingChatTitle = () => {
@@ -960,14 +958,10 @@ export default function App() {
   const purchasePlan = (plan: "free" | "plus" | "pro") => {
     if (plan === "free") {
       setUserSettings((prev) => ({ ...prev, plan: "free" }));
-      toast.success(
-        "Переключение на бесплатный тариф выполнено",
-      );
+      toast.success(translations.switchedToFree);
     } else {
       // Имитация процесса оплаты
-      toast.success(
-        "Оплата прошла успешно! Тариф активирован.",
-      );
+      toast.success(translations.paymentSuccess);
       setUserSettings((prev) => ({ ...prev, plan }));
     }
   };
@@ -987,13 +981,13 @@ export default function App() {
               >
                 <TabsList className="">
                   <TabsTrigger value="general">
-                    Общие
+                    {translations.general}
                   </TabsTrigger>
                   <TabsTrigger value="ai">
-                    AI-ассистент
+                    {translations.ai}
                   </TabsTrigger>
                   <TabsTrigger value="subscription">
-                    Подписка
+                    {translations.subscription}
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -1017,10 +1011,10 @@ export default function App() {
                       <Globe className="settings-icon settings-icon-language" />
                       <div>
                         <h3 className="settings-title">
-                          Язык интерфейса
+                          {translations.language}
                         </h3>
                         <p className="settings-description">
-                          Выберите язык приложения
+                          {translations.selectLanguage}
                         </p>
                       </div>
                     </div>
@@ -1038,10 +1032,10 @@ export default function App() {
                       </SelectTrigger>
                       <SelectContent className="select-content">
                         <SelectItem value="ru">
-                          Русский
+                          {translations.russian}
                         </SelectItem>
                         <SelectItem value="en">
-                          English
+                          {translations.english}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -1059,12 +1053,12 @@ export default function App() {
                       )}
                       <div>
                         <h3 className="settings-title">
-                          Тема
+                          {translations.theme}
                         </h3>
                         <p className="settings-description">
                           {userSettings.theme === "dark"
-                            ? "Темная тема"
-                            : "Светлая тема"}
+                            ? translations.darkTheme
+                            : translations.lightTheme}
                         </p>
                       </div>
                     </div>
@@ -1085,12 +1079,12 @@ export default function App() {
                       {userSettings.theme === "dark" ? (
                         <>
                           <Sun className="w-4 h-4" />
-                          Светлая
+                          {translations.light}
                         </>
                       ) : (
                         <>
                           <Moon className="w-4 h-4" />
-                          Темная
+                          {translations.dark}
                         </>
                       )}
                     </Button>
@@ -1106,10 +1100,10 @@ export default function App() {
                       <Sparkles className="settings-icon settings-icon-ai" />
                       <div>
                         <h3 className="settings-title">
-                          Модель AI
+                          {translations.aiModel}
                         </h3>
                         <p className="settings-description">
-                          Выберите нейросеть для работы
+                          {translations.selectModel}
                         </p>
                       </div>
                     </div>
@@ -1152,16 +1146,15 @@ export default function App() {
                       <Bot className="settings-icon settings-icon-personality" />
                       <div>
                         <h3 className="settings-title">
-                          Персонализация ассистента
+                          {translations.aiPersonality}
                         </h3>
                         <p className="settings-description">
-                          Расскажите о себе или настройте стиль
-                          ответов
+                          {translations.aiPersonalityDescription}
                         </p>
                       </div>
                     </div>
                     <Textarea
-                      placeholder="Например: Я студент, изучаю программирование. Отвечай кратко и по делу..."
+                      placeholder={translations.personalityPlaceholder}
                       value={userSettings.aiPersonality}
                       onChange={(e) =>
                         setUserSettings((prev) => ({
@@ -1181,14 +1174,14 @@ export default function App() {
                     <div className="settings-info">
                       <BarChart3 className="settings-icon settings-icon-usage" />
                       <h3 className="settings-title">
-                        Использование AI сегодня
+                        {translations.aiUsageToday}
                       </h3>
                     </div>
 
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-card-foreground">
-                          Генерация описаний
+                          {translations.descriptionsGeneration}
                         </span>
                         <span className="text-sm font-medium text-card-foreground">
                           {
@@ -1211,7 +1204,7 @@ export default function App() {
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-card-foreground">
-                          Запросы в чат
+                          {translations.chatRequests}
                         </span>
                         <span className="text-sm font-medium text-card-foreground">
                           {
@@ -1245,14 +1238,14 @@ export default function App() {
                       <Crown className="settings-icon settings-icon-subscription" />
                       <div>
                         <h3 className="settings-title">
-                          Текущий тариф
+                          {translations.currentPlan}
                         </h3>
                         <p className="settings-description">
                           {userSettings.plan === "free"
-                            ? "Free"
+                            ? translations.free
                             : userSettings.plan === "plus"
-                              ? "Plus"
-                              : "Pro"}
+                              ? translations.plus
+                              : translations.pro}
                         </p>
                       </div>
                     </div>
@@ -1266,10 +1259,10 @@ export default function App() {
                       }`}
                     >
                       {userSettings.plan === "free"
-                        ? "Бесплатный"
+                        ? translations.freePlan
                         : userSettings.plan === "plus"
-                          ? "Plus"
-                          : "Pro"}
+                          ? translations.plus
+                          : translations.pro}
                     </Badge>
                   </div>
                 </div>
@@ -1277,7 +1270,7 @@ export default function App() {
                 {/* Тарифные планы */}
                 <div className="subscription-plans">
                   <h3 className="subscription-plans-title">
-                    Доступные тарифы
+                    {translations.availablePlans}
                   </h3>
 
                   {/* Free Plan */}
@@ -1287,7 +1280,7 @@ export default function App() {
                         <div className="subscription-plan-info">
                           <div className="subscription-plan-title-row">
                             <h4 className="subscription-plan-title">
-                              Free
+                              {translations.free}
                             </h4>
                             <Badge
                               variant="outline"
@@ -1297,14 +1290,14 @@ export default function App() {
                             </Badge>
                             {userSettings.plan === "free" && (
                               <Badge className="plan-badge plan-active">
-                                Активен
+                                {translations.active}
                               </Badge>
                             )}
                           </div>
                           <ul className="subscription-plan-features">
-                            <li>• 3 описания задач в день</li>
-                            <li>• 3 запроса в чат в день</li>
-                            <li>• Базовая функциональность</li>
+                            {translations.freeFeatures.split('\n').map((feature, index) => (
+                              <li key={index}>• {feature}</li>
+                            ))}
                           </ul>
                         </div>
                       </div>
@@ -1313,7 +1306,7 @@ export default function App() {
                           className="purchase-btn purchase-free"
                           onClick={() => purchasePlan("free")}
                         >
-                          Переключиться на Free
+                          {translations.switchToFree}
                         </Button>
                       )}
                     </div>
@@ -1326,21 +1319,21 @@ export default function App() {
                         <div className="subscription-plan-info">
                           <div className="subscription-plan-title-row">
                             <h4 className="subscription-plan-title">
-                              Plus
+                              {translations.plus}
                             </h4>
                             <Badge className="plan-badge plan-plus">
                               250 ₽
                             </Badge>
                             {userSettings.plan === "plus" && (
                               <Badge className="plan-badge plan-active">
-                                Активен
+                                {translations.active}
                               </Badge>
                             )}
                           </div>
                           <ul className="subscription-plan-features">
-                            <li>• 10 описаний задач в день</li>
-                            <li>• 20 запросов в чат в день</li>
-                            <li>• Расширенные возможности AI</li>
+                            {translations.plusFeatures.split('\n').map((feature, index) => (
+                              <li key={index}>• {feature}</li>
+                            ))}
                           </ul>
                         </div>
                       </div>
@@ -1349,7 +1342,7 @@ export default function App() {
                           className="purchase-btn purchase-plus"
                           onClick={() => purchasePlan("plus")}
                         >
-                          Оплатить Plus - 250 ₽
+                          {translations.payForPlus}
                         </Button>
                       )}
                     </div>
@@ -1362,22 +1355,21 @@ export default function App() {
                         <div className="subscription-plan-info">
                           <div className="subscription-plan-title-row">
                             <h4 className="subscription-plan-title">
-                              Pro
+                              {translations.pro}
                             </h4>
                             <Badge className="plan-badge plan-pro">
                               550 ₽
                             </Badge>
                             {userSettings.plan === "pro" && (
                               <Badge className="plan-badge plan-active">
-                                Активен
+                                {translations.active}
                               </Badge>
                             )}
                           </div>
                           <ul className="subscription-plan-features">
-                            <li>• 20 описаний задач в день</li>
-                            <li>• 100 запросов в чат в день</li>
-                            <li>• Максимальные возможности AI</li>
-                            <li>• Приоритетная поддержка</li>
+                            {translations.proFeatures.split('\n').map((feature, index) => (
+                              <li key={index}>• {feature}</li>
+                            ))}
                           </ul>
                         </div>
                       </div>
@@ -1386,7 +1378,7 @@ export default function App() {
                           className="purchase-btn purchase-pro"
                           onClick={() => purchasePlan("pro")}
                         >
-                          Оплатить Pro - 550 ₽
+                          {translations.payForPro}
                         </Button>
                       )}
                     </div>
@@ -1434,14 +1426,14 @@ export default function App() {
                       <h2
                         className="text-xl font-semibold cursor-pointer hover:text-blue-500 transition-colors text-card-foreground"
                         onClick={startEditingChatTitle}
-                        title="Нажмите, чтобы изменить название"
+                        title={translations.clickToEdit}
                       >
                         {currentSession.title}
                       </h2>
                     )
                   ) : (
                     <h2 className="text-xl font-semibold text-card-foreground">
-                      Новый чат
+                      {translations.newChat}
                     </h2>
                   )}
                 </div>
@@ -1453,7 +1445,7 @@ export default function App() {
                   className="flex items-center gap-2 button-themed"
                 >
                   <Plus className="w-4 h-4" />
-                  Новый чат
+                  {translations.newChat}
                 </Button>
               </div>
             </div>
@@ -1488,7 +1480,7 @@ export default function App() {
             ) : (
               <div className="ai-empty-state">
                 <Bot className="ai-empty-icon" />
-                <p>Начните диалог с AI ассистентом</p>
+                <p>{translations.startDialogWithAI}</p>
               </div>
             )}
           </div>
@@ -1498,7 +1490,7 @@ export default function App() {
             <div className="ai-input-wrapper">
               <input
                 type="text"
-                placeholder="Напишите сообщение..."
+                placeholder={translations.sendMessage}
                 value={aiMessage}
                 onChange={(e) => setAiMessage(e.target.value)}
                 onKeyPress={(e) =>
@@ -1530,10 +1522,10 @@ export default function App() {
               >
                 <TabsList className="">
                   <TabsTrigger value="chats">
-                    Чаты
+                    {translations.chats}
                   </TabsTrigger>
                   <TabsTrigger value="tasks">
-                    Задачи
+                    {translations.tasks}
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -1563,13 +1555,11 @@ export default function App() {
                             {session.title}
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            {session.messages.length} сообщений
+                            {session.messages.length} {translations.messages}
                           </p>
                         </div>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(
-                            session.date,
-                          ).toLocaleDateString("ru-RU")}
+                          {formatDate(session.date, userSettings.language)}
                         </span>
                       </div>
                     </Card>
@@ -1585,7 +1575,7 @@ export default function App() {
                   {getCompletedTasks().length === 0 && (
                     <div className="text-center text-muted-foreground empty-tasks-state">
                       <CheckCircle2 className="empty-tasks-icon" />
-                      <p>Нет завершенных задач</p>
+                      <p>{translations.noCompletedTasks}</p>
                     </div>
                   )}
                 </div>
@@ -1608,13 +1598,13 @@ export default function App() {
             >
               <TabsList className="">
                 <TabsTrigger value="today">
-                  Сегодня
+                  {translations.today}
                 </TabsTrigger>
                 <TabsTrigger value="week">
-                  Неделя
+                  {translations.week}
                 </TabsTrigger>
                 <TabsTrigger value="month">
-                  Месяц
+                  {translations.month}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -1630,7 +1620,7 @@ export default function App() {
               ))}
               {getTasksForView().length === 0 && (
                 <div className="text-center text-muted-foreground mt-8">
-                  <p>Нет задач на сегодня</p>
+                  <p>{translations.noTasksToday}</p>
                 </div>
               )}
             </>
@@ -1647,7 +1637,7 @@ export default function App() {
                 return (
                   <div key={date} className="mb-6">
                     <h3 className="text-muted-foreground mb-3">
-                      {formatDate(date)}
+                      {formatDateForView(date)}
                     </h3>
                     {tasksForDate.length > 0 ? (
                       tasksForDate.map((task) => (
@@ -1656,7 +1646,7 @@ export default function App() {
                     ) : (
                       <div className="empty-day-card">
                         <p className="empty-day-text">
-                          На этот день задач нет
+                          {translations.noTasksThisDay}
                         </p>
                       </div>
                     )}
@@ -1694,33 +1684,10 @@ export default function App() {
                   }}
                   formatters={{
                     formatWeekdayName: (date) => {
-                      const days = [
-                        "Вс",
-                        "Пн",
-                        "Вт",
-                        "Ср",
-                        "Чт",
-                        "Пт",
-                        "Сб",
-                      ];
-                      return days[date.getDay()];
+                      return getWeekdays(userSettings.language)[date.getDay()];
                     },
                     formatCaption: (date) => {
-                      const months = [
-                        "Январь",
-                        "Февраль",
-                        "Март",
-                        "Апрель",
-                        "Май",
-                        "Июнь",
-                        "Июль",
-                        "Август",
-                        "Сентябрь",
-                        "Октябрь",
-                        "Ноябрь",
-                        "Декабрь",
-                      ];
-                      return `${months[date.getMonth()]} ${date.getFullYear()}`;
+                      return `${getMonths(userSettings.language)[date.getMonth()]} ${date.getFullYear()}`;
                     },
                   }}
                   components={{
@@ -1747,23 +1714,7 @@ export default function App() {
               </div>
               <div className="mt-6">
                 <h3 className="text-muted-foreground mb-3">
-                  {selectedDate
-                    .toLocaleDateString("ru-RU", {
-                      weekday: "long",
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })
-                    .charAt(0)
-                    .toUpperCase() +
-                    selectedDate
-                      .toLocaleDateString("ru-RU", {
-                        weekday: "long",
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })
-                      .slice(1)}
+                  {formatDate(selectedDate.toISOString().split('T')[0], userSettings.language)}
                 </h3>
                 {(() => {
                   const tasksForSelectedDate = tasks.filter(
@@ -1780,7 +1731,7 @@ export default function App() {
                   ) : (
                     <div className="empty-day-card">
                       <p className="empty-day-text">
-                        На этот день задач нет
+                        {translations.noTasksThisDay}
                       </p>
                     </div>
                   );
@@ -1805,9 +1756,9 @@ export default function App() {
               setCurrentPage("home");
               setActiveView("today");
             }}
-            title="Перейти на главную"
+            title={translations.goToHome}
           >
-            TUDUSHKA
+            {translations.appTitle}
           </h1>
           <button
             onClick={() => setCurrentPage("settings")}
@@ -1830,20 +1781,20 @@ export default function App() {
             <DialogTrigger asChild>
               <button className="btn btn-primary btn-lg rounded-full">
                 <Plus className="w-5 h-5" />
-                Добавить задачу
+                {translations.addTask}
               </button>
             </DialogTrigger>
             <DialogContent className="dialog-content-container">
               <DialogHeader>
                 <DialogTitle className="dialog-title-text">
-                  Добавить задачу
+                  {translations.addTask}
                 </DialogTitle>
               </DialogHeader>
               <div className="dialog-form">
                 <Textarea
                   id="new-task-title"
                   name="title"
-                  placeholder="Заголовок задачи"
+                  placeholder={translations.taskTitle}
                   value={newTask.title}
                   onChange={(e) =>
                     setNewTask({
@@ -1858,7 +1809,7 @@ export default function App() {
                 <Textarea
                   id="new-task-description"
                   name="description"
-                  placeholder="Описание задачи"
+                  placeholder={translations.taskDescription}
                   value={newTask.description}
                   onChange={(e) =>
                     setNewTask({
@@ -1881,24 +1832,21 @@ export default function App() {
                       disabled={!canUseAIDescription()}
                     >
                       <Sparkles className="dialog-icon" />
-                      AI описание
+                      {translations.aiDescription}
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="dialog-content-container dialog-content-ai">
                     <DialogHeader>
                       <DialogTitle className="dialog-title-text">
-                        AI Генерация описания
+                        {translations.aiGenerateDescription}
                       </DialogTitle>
                     </DialogHeader>
                     <div className="dialog-form">
                       <p className="dialog-text">
-                        AI создаст подробное описание задачи
-                        на основе введенного заголовка.
-                        Убедитесь, что заголовок задачи
-                        заполнен.
+                        {translations.aiDescriptionText}
                       </p>
                       <div className="dialog-small-text">
-                        Осталось использований:{" "}
+                        {translations.usageRemaining}:{" "}
                         {getPlanLimits().descriptions -
                           userSettings.aiUsage
                             .descriptionsUsed}
@@ -1908,7 +1856,7 @@ export default function App() {
                         className="dialog-button-primary dialog-button-ai-generate"
                       >
                         <Sparkles className="dialog-icon" />
-                        Сгенерировать описание
+                        {translations.generateDescription}
                       </Button>
                     </div>
                   </DialogContent>
@@ -1968,7 +1916,7 @@ export default function App() {
                   </div>
                 </div>
                 <div className="priority-label">
-                  <span className="field-label">Приоритет задачи</span>
+                  <span className="field-label">{translations.taskPriority}</span>
                 </div>
                 <Select
                   value={newTask.priority}
@@ -1981,12 +1929,14 @@ export default function App() {
                   }}
                 >
                   <SelectTrigger className="dialog-field">
-                    <SelectValue placeholder="Приоритет" />
+                    <SelectValue placeholder={translations.priority} />
                   </SelectTrigger>
                   <SelectContent className="select-content">
                     {customPriorities.length === 0 && (
                       <div className="select-item text-sm text-muted-foreground px-2 py-1">
-                        Приоритеты не созданы
+                        {userSettings.language === "ru" 
+                          ? "Приоритеты не созданы"
+                          : "No priorities created"}
                       </div>
                     )}
                     {customPriorities.map(priority => (
@@ -2008,7 +1958,7 @@ export default function App() {
                             }}
                             onMouseDown={(e) => e.stopPropagation()}
                             className="priority-item-delete"
-                            title="Удалить приоритет"
+                            title={userSettings.language === "ru" ? "Удалить приоритет" : "Delete priority"}
                           >
                             <Trash2 />
                           </button>
@@ -2018,7 +1968,7 @@ export default function App() {
                     <SelectItem value="create-new">
                       <div className="flex items-center gap-2">
                         <Plus className="w-3 h-3" />
-                        Создать новый приоритет
+                        {translations.createPriority}
                       </div>
                     </SelectItem>
                   </SelectContent>
@@ -2028,7 +1978,7 @@ export default function App() {
                     onClick={addTask}
                     className="dialog-button-flex dialog-button-primary dialog-button-main-action"
                   >
-                    Добавить задачу
+                    {translations.addTask}
                   </Button>
                 </div>
               </div>
@@ -2045,7 +1995,7 @@ export default function App() {
         <DialogContent className="dialog-content-container">
           <DialogHeader>
             <DialogTitle className="dialog-title-text">
-              Редактировать задачу
+              {translations.editTask}
             </DialogTitle>
           </DialogHeader>
           {editingTask && (
@@ -2241,7 +2191,7 @@ export default function App() {
                   onClick={updateTask}
                   className="dialog-button-flex dialog-button-primary dialog-button-main-action"
                 >
-                  Сохранить задачу
+                  {translations.saveTask}
                 </Button>
               </div>
             </div>
@@ -2257,17 +2207,17 @@ export default function App() {
         <DialogContent className="dialog-content-container dialog-content-priority">
           <DialogHeader>
             <DialogTitle className="dialog-title-text">
-              Создать новый приоритет
+              {translations.createPriority}
             </DialogTitle>
           </DialogHeader>
           <div className="dialog-form">
             <div className="space-y-4">
               <div>
-                <span className="field-label">Название приоритета</span>
+                <span className="field-label">{translations.priorityName}</span>
                 <input
                   type="text"
                   name="priorityName"
-                  placeholder="Например: Срочно"
+                  placeholder={translations.priorityExample}
                   value={newPriorityName}
                   onChange={(e) => setNewPriorityName(e.target.value)}
                   className="dialog-field input"
@@ -2275,7 +2225,7 @@ export default function App() {
                 />
               </div>
               <div>
-                <span className="field-label">Цвет приоритета</span>
+                <span className="field-label">{translations.priorityColor}</span>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
@@ -2302,14 +2252,14 @@ export default function App() {
                 onClick={() => setIsCreatePriorityDialogOpen(false)}
                 className="dialog-button-flex dialog-button-outline"
               >
-                Отмена
+                {translations.cancel}
               </Button>
               <Button
                 onClick={createNewPriority}
                 className="dialog-button-flex dialog-button-primary"
                 disabled={!newPriorityName.trim()}
               >
-                Создать
+                {translations.create}
               </Button>
             </div>
           </div>
@@ -2330,7 +2280,7 @@ export default function App() {
             }`}
           >
             <Home className="w-6 h-6" />
-            <span className="bottom-nav-text">Главная</span>
+            <span className="bottom-nav-text">{translations.home}</span>
           </button>
 
           <button
@@ -2340,7 +2290,7 @@ export default function App() {
             }`}
           >
             <Bot className="w-6 h-6" />
-            <span className="bottom-nav-text">AI Ассистент</span>
+            <span className="bottom-nav-text">{translations.aiAssistant}</span>
           </button>
 
           <button
@@ -2350,7 +2300,7 @@ export default function App() {
             }`}
           >
             <Archive className="w-6 h-6" />
-            <span className="bottom-nav-text">Архив</span>
+            <span className="bottom-nav-text">{translations.archive}</span>
           </button>
         </div>
       </div>
