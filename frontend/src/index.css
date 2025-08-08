@@ -66,6 +66,12 @@
 
   /* Tabs */
   --color-tabs-list-background: #dce4ff;
+  
+  /* Plan Colors */
+  --color-plan-free: #6b7280;
+  --color-plan-plus: #2563eb;
+  --color-plan-pro: #7c3aed;
+  --color-plan-active: #10b981;
 }
 
 /* Dark Theme */
@@ -89,6 +95,15 @@
   --color-ring: #0070f3;
   --color-popover: #1a1a1a;
   --color-popover-foreground: #fafafa;
+  
+  /* Tabs */
+  --color-tabs-list-background: #2e2e2e;
+  
+  /* Plan Colors - darker variants for dark theme */
+  --color-plan-free: #4b5563;
+  --color-plan-plus: #1e40af;
+  --color-plan-pro: #6d28d9;
+  --color-plan-active: #059669;
 }
 
 /* ===== RESET & BASE STYLES ===== */
@@ -313,7 +328,7 @@ body {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   border-radius: var(--radius-sm);
-  border: 1px solid;
+  border: none;
   white-space: nowrap;
 }
 
@@ -679,7 +694,7 @@ body {
 .custom-datetime-icon {
   width: 20%;
   height: 100%;
-  background-color: #3b82f6; /* Same as dialog-button-primary */
+  background-color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -690,7 +705,7 @@ body {
 }
 
 .custom-datetime-icon:hover {
-  background-color: #2563eb; /* Same as dialog-button-primary:hover */
+  background-color: color-mix(in srgb, var(--color-primary) 85%, black);
 }
 
 .custom-datetime-icon svg {
@@ -770,14 +785,14 @@ body {
 
 /* ===== DIALOG BUTTONS ===== */
 .dialog-button-primary {
-  background-color: #3b82f6;
+  background-color: var(--color-primary);
   color: white;
   border: none;
   transition: background-color 0.2s ease-in-out;
 }
 
 .dialog-button-primary:hover {
-  background-color: #2563eb;
+  background-color: color-mix(in srgb, var(--color-primary) 85%, black);
 }
 
 .dialog-button-outline {
@@ -1242,19 +1257,19 @@ body {
 }
 
 .plan-free {
-  background-color: #6b7280;
+  background-color: var(--color-plan-free);
 }
 
 .plan-plus {
-  background-color: #2563eb;
+  background-color: var(--color-plan-plus);
 }
 
 .plan-pro {
-  background-color: #7c3aed;
+  background-color: var(--color-plan-pro);
 }
 
 .plan-active {
-  background-color: #10b981;
+  background-color: var(--color-plan-active);
 }
 
 /* Purchase button styles */
@@ -1266,30 +1281,30 @@ body {
 }
 
 .purchase-free {
-  background-color: #6b7280;
+  background-color: var(--color-plan-free);
   color: white;
 }
 
 .purchase-free:hover {
-  background-color: #4b5563;
+  background-color: color-mix(in srgb, var(--color-plan-free) 80%, black);
 }
 
 .purchase-plus {
-  background-color: #2563eb;
+  background-color: var(--color-plan-plus);
   color: white;
 }
 
 .purchase-plus:hover {
-  background-color: #1d4ed8;
+  background-color: color-mix(in srgb, var(--color-plan-plus) 80%, black);
 }
 
 .purchase-pro {
-  background-color: #7c3aed;
+  background-color: var(--color-plan-pro);
   color: white;
 }
 
 .purchase-pro:hover {
-  background-color: #6d28d9;
+  background-color: color-mix(in srgb, var(--color-plan-pro) 80%, black);
 }
 
 /* Subscription plans styling */
@@ -1316,8 +1331,8 @@ body {
 }
 
 .subscription-plan-card.selected {
-  border: 2px solid #3b82f6;
-  box-shadow: 0 0 0 1px #3b82f6;
+  border: 2px solid var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
 }
 
 .subscription-plan-content {
@@ -1373,7 +1388,7 @@ body {
 }
 
 .chat-message-user {
-  background-color: #2563eb;
+  background-color: var(--color-primary);
   color: white;
 }
 
@@ -1511,14 +1526,14 @@ body {
 /* Selected day styling */
 .calendar-day-selected,
 .rdp td button[aria-selected="true"] {
-  background-color: #2563eb !important;
+  background-color: var(--color-primary) !important;
   color: white !important;
   font-weight: var(--font-weight-medium) !important;
 }
 
 .calendar-day-selected:hover,
 .rdp td button[aria-selected="true"]:hover {
-  background-color: #1d4ed8 !important;
+  background-color: color-mix(in srgb, var(--color-primary) 85%, black) !important;
   color: white !important;
   transform: scale(1.05) !important;
 }
@@ -1531,7 +1546,7 @@ body {
   transform: translateX(-50%);
   width: 4px;
   height: 4px;
-  background-color: #2563eb;
+  background-color: var(--color-primary);
   border-radius: 50%;
 }
 
@@ -1673,7 +1688,7 @@ body {
 
 /* Colored settings icons */
 .settings-icon-language {
-  color: #3b82f6;
+  color: var(--color-primary);
 }
 
 .settings-icon-theme-light {
@@ -1693,7 +1708,7 @@ body {
 }
 
 .settings-icon-usage {
-  color: #10b981;
+  color: var(--color-plan-active);
 }
 
 .settings-icon-subscription {
@@ -1701,7 +1716,7 @@ body {
 }
 
 .settings-icon-plan {
-  color: #ef4444;
+  color: var(--color-destructive);
 }
 
 .text-center { text-align: center; }
@@ -1889,17 +1904,17 @@ body {
 }
 
 [data-theme="dark"] .select-trigger-themed {
-  background-color: #697282;
+  background-color: var(--color-accent);
   color: white;
-  border-color: #697282;
+  border-color: var(--color-accent);
 }
 
 [data-theme="dark"] .select-trigger-themed:hover {
-  background-color: color-mix(in srgb, #697282 90%, transparent);
+  background-color: color-mix(in srgb, var(--color-accent) 90%, transparent);
 }
 
 [data-theme="dark"] .select-trigger-themed[data-state="open"] {
-  background-color: color-mix(in srgb, #697282 90%, transparent);
+  background-color: color-mix(in srgb, var(--color-accent) 90%, transparent);
 }
 
 .button-themed {
@@ -1918,13 +1933,13 @@ body {
 }
 
 [data-theme="dark"] .button-themed {
-  background-color: #697282;
+  background-color: var(--color-accent);
   color: white;
-  border-color: #697282;
+  border-color: var(--color-accent);
 }
 
 [data-theme="dark"] .button-themed:hover {
-  background-color: color-mix(in srgb, #697282 90%, transparent);
+  background-color: color-mix(in srgb, var(--color-accent) 90%, transparent);
   color: white;
 }
 
@@ -1939,13 +1954,13 @@ body {
 }
 
 [data-theme="dark"] .input-themed {
-  background-color: #1a1a1a;
-  border-color: #666;
-  color: white;
+  background-color: var(--color-card);
+  border-color: var(--color-border);
+  color: var(--color-foreground);
 }
 
 [data-theme="dark"] .input-themed::placeholder {
-  color: #999;
+  color: var(--color-muted-foreground);
 }
 
 .textarea-themed {
@@ -1959,13 +1974,13 @@ body {
 }
 
 [data-theme="dark"] .textarea-themed {
-  background-color: #1a1a1a;
-  border-color: #666;
-  color: white;
+  background-color: var(--color-card);
+  border-color: var(--color-border);
+  color: var(--color-foreground);
 }
 
 [data-theme="dark"] .textarea-themed::placeholder {
-  color: #999;
+  color: var(--color-muted-foreground);
 }
 
 .progress-bar {
@@ -1980,7 +1995,7 @@ body {
 }
 
 [data-theme="dark"] .progress-bar {
-  background-color: #374151;
+  background-color: var(--color-border);
 }
 
 .progress-fill {
@@ -1991,11 +2006,11 @@ body {
 }
 
 [data-theme="light"] .progress-fill {
-  background-color: #3b82f6;
+  background-color: var(--color-primary);
 }
 
 [data-theme="dark"] .progress-fill {
-  background-color: #697282;
+  background-color: var(--color-primary);
 }
 
 .button-primary-themed {
@@ -2003,21 +2018,21 @@ body {
 }
 
 [data-theme="light"] .button-primary-themed {
-  background-color: #3b82f6;
+  background-color: var(--color-primary);
   color: white;
 }
 
 [data-theme="light"] .button-primary-themed:hover {
-  background-color: #2563eb;
+  background-color: color-mix(in srgb, var(--color-primary) 85%, black);
 }
 
 [data-theme="dark"] .button-primary-themed {
-  background-color: #697282;
+  background-color: var(--color-primary);
   color: white;
 }
 
 [data-theme="dark"] .button-primary-themed:hover {
-  background-color: color-mix(in srgb, #697282 90%, transparent);
+  background-color: color-mix(in srgb, var(--color-primary) 85%, black);
 }
 
 /* ===== FIELD LABELS ===== */
