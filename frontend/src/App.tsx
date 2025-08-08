@@ -1286,7 +1286,7 @@ export default function App() {
                   {/* Free Plan */}
                   <div
                     className={`subscription-plan-card ${
-                      selectedPlan === "free" ? "selected" : ""
+                      selectedPlan === "free" && userSettings.plan !== "free" ? "selected" : ""
                     }`}
                   >
                     <div className="subscription-plan-content">
@@ -1329,7 +1329,7 @@ export default function App() {
                   {/* Plus Plan */}
                   <div
                     className={`subscription-plan-card ${
-                      selectedPlan === "plus" ? "selected" : ""
+                      selectedPlan === "plus" && userSettings.plan !== "plus" ? "selected" : ""
                     }`}
                   >
                     <div className="subscription-plan-content">
@@ -1369,7 +1369,7 @@ export default function App() {
                   {/* Pro Plan */}
                   <div
                     className={`subscription-plan-card ${
-                      selectedPlan === "pro" ? "selected" : ""
+                      selectedPlan === "pro" && userSettings.plan !== "pro" ? "selected" : ""
                     }`}
                   >
                     <div className="subscription-plan-content">
