@@ -63,6 +63,9 @@
   --container-max-width: 480px;
   --header-height: 3rem;
   --bottom-nav-height: 4.125rem;
+
+  /* Tabs */
+  --color-tabs-list-background: #c4d1ff;
 }
 
 /* Dark Theme */
@@ -484,7 +487,7 @@ body {
 }
 
 .tabs-list {
-  background-color: var(--color-muted);
+  background-color: var(--color-tabs-list-background);
   color: var(--color-muted-foreground);
   display: inline-flex;
   height: 2rem;
