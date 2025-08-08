@@ -1239,7 +1239,7 @@ export default function App() {
 
               <TabsContent
                 value="subscription"
-                className="space-y-6"
+                className="subscription-plans"
               >
                 {/* Текущий тариф */}
                 <div className="settings-card">
@@ -1278,24 +1278,22 @@ export default function App() {
                 </div>
 
                 {/* Тарифные планы */}
-                <div className="space-y-4">
-                  <h3 className="font-medium text-card-foreground">
+                <div className="subscription-plans">
+                  <h3 className="subscription-plans-title">
                     Доступные тарифы
                   </h3>
 
                   {/* Free Plan */}
-                  <Card
-                    className={`p-4 transition-all bg-card border-border ${
-                      selectedPlan === "free"
-                        ? "ring-2 ring-blue-500"
-                        : ""
+                  <div
+                    className={`subscription-plan-card ${
+                      selectedPlan === "free" ? "selected" : ""
                     }`}
                   >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-medium text-card-foreground">
+                    <div className="subscription-plan-content">
+                      <div className="subscription-plan-header">
+                        <div className="subscription-plan-info">
+                          <div className="subscription-plan-title-row">
+                            <h4 className="subscription-plan-title">
                               Free
                             </h4>
                             <Badge
@@ -1310,7 +1308,7 @@ export default function App() {
                               </Badge>
                             )}
                           </div>
-                          <ul className="text-sm text-muted-foreground space-y-1">
+                          <ul className="subscription-plan-features">
                             <li>• 3 описания задач в день</li>
                             <li>• 3 запроса в чат в день</li>
                             <li>• Базовая функциональность</li>
@@ -1320,28 +1318,26 @@ export default function App() {
                       {userSettings.plan !== "free" && (
                         <Button
                           variant="outline"
-                          className="w-full border-border"
+                          className="purchase-btn"
                           onClick={() => purchasePlan("free")}
                         >
                           Переключиться на Free
                         </Button>
                       )}
                     </div>
-                  </Card>
+                  </div>
 
                   {/* Plus Plan */}
-                  <Card
-                    className={`p-4 transition-all bg-card border-border ${
-                      selectedPlan === "plus"
-                        ? "ring-2 ring-blue-500"
-                        : ""
+                  <div
+                    className={`subscription-plan-card ${
+                      selectedPlan === "plus" ? "selected" : ""
                     }`}
                   >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-medium text-card-foreground">
+                    <div className="subscription-plan-content">
+                      <div className="subscription-plan-header">
+                        <div className="subscription-plan-info">
+                          <div className="subscription-plan-title-row">
+                            <h4 className="subscription-plan-title">
                               Plus
                             </h4>
                             <Badge className="plan-badge plan-plus">
@@ -1353,12 +1349,10 @@ export default function App() {
                               </Badge>
                             )}
                           </div>
-                          <ul className="text-sm text-muted-foreground space-y-1">
+                          <ul className="subscription-plan-features">
                             <li>• 10 описаний задач в день</li>
                             <li>• 20 запросов в чат в день</li>
-                            <li>
-                              • Расширенные возможности AI
-                            </li>
+                            <li>• Расширенные возможности AI</li>
                           </ul>
                         </div>
                       </div>
@@ -1371,21 +1365,19 @@ export default function App() {
                         </Button>
                       )}
                     </div>
-                  </Card>
+                  </div>
 
                   {/* Pro Plan */}
-                  <Card
-                    className={`p-4 transition-all bg-card border-border ${
-                      selectedPlan === "pro"
-                        ? "ring-2 ring-blue-500"
-                        : ""
+                  <div
+                    className={`subscription-plan-card ${
+                      selectedPlan === "pro" ? "selected" : ""
                     }`}
                   >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-medium text-card-foreground">
+                    <div className="subscription-plan-content">
+                      <div className="subscription-plan-header">
+                        <div className="subscription-plan-info">
+                          <div className="subscription-plan-title-row">
+                            <h4 className="subscription-plan-title">
                               Pro
                             </h4>
                             <Badge className="plan-badge plan-pro">
@@ -1397,12 +1389,10 @@ export default function App() {
                               </Badge>
                             )}
                           </div>
-                          <ul className="text-sm text-muted-foreground space-y-1">
+                          <ul className="subscription-plan-features">
                             <li>• 20 описаний задач в день</li>
                             <li>• 100 запросов в чат в день</li>
-                            <li>
-                              • Максимальные возможности AI
-                            </li>
+                            <li>• Максимальные возможности AI</li>
                             <li>• Приоритетная поддержка</li>
                           </ul>
                         </div>
@@ -1416,7 +1406,7 @@ export default function App() {
                         </Button>
                       )}
                     </div>
-                  </Card>
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>

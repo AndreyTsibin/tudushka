@@ -1280,6 +1280,78 @@ body {
   background-color: #6d28d9;
 }
 
+/* Subscription plans styling */
+.subscription-plans {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.subscription-plans-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-card-foreground);
+  margin: 0;
+}
+
+.subscription-plan-card {
+  padding: 1rem;
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  transition: all 0.2s ease;
+}
+
+.subscription-plan-card.selected {
+  border: 2px solid #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.subscription-plan-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.subscription-plan-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subscription-plan-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.subscription-plan-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subscription-plan-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-card-foreground);
+  margin: 0;
+}
+
+.subscription-plan-features {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.subscription-plan-features li {
+  font-size: var(--font-size-sm);
+  color: var(--color-muted-foreground);
+}
+
 /* Chat message styles */
 .chat-message {
   max-width: 75%;
