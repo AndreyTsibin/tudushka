@@ -477,6 +477,9 @@ body {
 
 /* Унифицированные отступы для всех блоков с табами */
 .tabs-header-container {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 9;
   background-color: var(--color-card);
   border-bottom: 1px solid var(--color-border);
 }
