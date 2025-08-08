@@ -1710,6 +1710,32 @@ body {
   cursor: not-allowed;
 }
 
+/* AI Chat Content */
+.ai-chat-content {
+  max-width: var(--container-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding: var(--spacing-md);
+  padding-bottom: calc(var(--bottom-nav-height) + var(--spacing-xl) + var(--spacing-lg));
+}
+
+.ai-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-muted-foreground);
+  gap: var(--spacing-md);
+  min-height: 200px;
+}
+
+.ai-empty-icon {
+  width: 3rem;
+  height: 3rem;
+  opacity: 0.5;
+}
+
 .p-0 { padding: 0; }
 .p-0\.5 { padding: 0.125rem; }
 .p-1 { padding: var(--spacing-xs); }

@@ -1486,7 +1486,7 @@ export default function App() {
           </div>
 
           {/* Chat Content */}
-          <div className="max-w-container p-4 pb-bottom-nav-large">
+          <div className="ai-chat-content">
             {currentSession ? (
               <div className="space-y-4">
                 {currentSession.messages.map((message) => (
@@ -1512,8 +1512,8 @@ export default function App() {
                 ))}
               </div>
             ) : (
-              <div className="text-center text-muted-foreground empty-chat-state">
-                <Bot className="empty-chat-icon" />
+              <div className="ai-empty-state">
+                <Bot className="ai-empty-icon" />
                 <p>Начните диалог с AI ассистентом</p>
               </div>
             )}
