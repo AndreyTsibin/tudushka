@@ -63,10 +63,12 @@ npm run backend      # Start Django server on http://localhost:8000
 ### Frontend Commands (from frontend/ directory)
 ```bash
 npm run dev          # Start Vite dev server on http://localhost:5173
-npm run build        # TypeScript compilation + Vite build (critical: run before commits)
+npm run build        # TypeScript compilation + Vite build (CRITICAL: run before commits)
 npm run lint         # ESLint checking with modern flat config
 npm run preview      # Preview production build locally
 ```
+
+**IMPORTANT**: Always run `npm run build` from the root directory before committing to ensure TypeScript compilation passes without errors.
 
 ### Backend Commands (from root directory)
 ```bash
@@ -297,10 +299,12 @@ The frontend is ready for backend integration. Key areas for API development:
 ## Styling Architecture
 
 ### Custom CSS Configuration
-- **Approach**: Custom CSS with CSS custom properties
-- **Dark Mode**: Class-based dark mode using CSS custom properties
-- **Color System**: HSL-based custom properties for theme switching
+- **Approach**: Custom CSS with CSS custom properties (no Tailwind CSS utility classes)
+- **Dark Mode**: Attribute-based dark mode using `[data-theme="dark"]` selector
+- **Color System**: CSS custom properties with consistent naming convention (`--color-*`)
 - **Component Styling**: Direct CSS classes with design system consistency
+- **Border Radius**: Standardized radius variables (`--radius-card: 12px`, `--radius-sm: 0.25rem`, etc.)
+- **Spacing**: Consistent spacing system using `--spacing-*` variables
 
 ### Theme Implementation
 - **CSS Custom Properties**: Defined in `frontend/src/index.css` with HSL values
@@ -314,6 +318,7 @@ The frontend is ready for backend integration. Key areas for API development:
 - **Component Location**: `frontend/src/components/ui/` - pre-built, styled components
 - **No Utility Libraries**: Components use direct className strings, no `cn()` utility or class-variance-authority
 - **Form Fields**: All input fields in modals use borderless design (`border: none`) with focus box-shadow effects only
+- **Sticky Elements**: Header (`.header`) and tabs container (`.tabs-header-container`) use `position: sticky` for persistent navigation
 
 ### Common Styling Patterns
 ```typescript
@@ -359,10 +364,12 @@ className="button-primary button-medium"
 ### Code Quality
 - All UI components use custom CSS with CSS custom properties (no Tailwind CSS)
 - Components are built on Radix UI primitives for accessibility
+- Always run `npm run build` before committing to ensure TypeScript compilation passes
 - Always run `npm run lint` before committing frontend changes
 - Maintain Russian localization throughout the interface
 - Modal form fields use borderless styling (`border: none`) with focus box-shadow effects
 - Custom datetime fields use 80%/20% split layout with blue icon backgrounds matching the "Добавить" button (#3b82f6)
+- All plan badges use `border-radius: var(--radius-card)` (12px) for consistent design
 
 ### Architecture Constraints
 - Frontend uses local React state management only (no external state libraries)
@@ -382,11 +389,12 @@ npm run dev          # Test development server at localhost:5173
 
 ### Common Issues
 - **Build Failures**: Usually caused by unused imports or TypeScript errors
-- **Styling Problems**: Check CSS custom properties in `index.css`, ensure no Tailwind classes remain
-- **Component Issues**: All UI components expect direct className strings, not utility functions
+- **Styling Problems**: Check CSS custom properties in `index.css`, ensure no Tailwind utility classes are used
+- **Component Issues**: All UI components expect direct className strings, not utility functions  
 - **Theme Issues**: Dark mode uses `[data-theme="dark"]` selector, not `.dark` class
 - **Form Field Issues**: All modal form fields should use `border: none` styling, not borders
 - **DateTime Fields**: Use custom div layout with 80%/20% split and blue icon backgrounds (#3b82f6)
+- **Sticky Navigation**: Header uses `z-index: 10`, tabs container uses `z-index: 9`
 
 ### Server URLs
 - **Frontend Development**: http://localhost:5173 (Vite dev server)
