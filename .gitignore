@@ -76,14 +76,11 @@ logs
 .claude/
 .claude.md
 
-<<<<<<< HEAD
 # Environment examples (should not be tracked)
 .env.example
-=======
+
 # MCP configuration (LOCAL SETTINGS)
 .mcp.json
-
->>>>>>> develop
 
 # Security sensitive files
 *.key

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
 import { Badge } from "./components/ui/badge";
@@ -135,12 +135,12 @@ export default function App() {
   const translations = useTranslations(userSettings.language);
 
   // Пользовательские приоритеты с дефолтными значениями
-  const getDefaultPriorities = () => [
+  const getDefaultPriorities = useCallback(() => [
     { id: "low", name: "low", displayName: translations.low, color: "#10b981", isDefault: true },
     { id: "medium", name: "medium", displayName: translations.medium, color: "#2563eb", isDefault: true },
     { id: "high", name: "high", displayName: translations.high, color: "#ea580c", isDefault: true },
     { id: "critical", name: "critical", displayName: translations.critical, color: "#dc2626", isDefault: true }
-  ];
+  ], [translations]);
   
   const [customPriorities, setCustomPriorities] = useState<CustomPriority[]>(getDefaultPriorities());
   
@@ -246,7 +246,7 @@ export default function App() {
     } else {
       setCustomPriorities(getDefaultPriorities());
     }
-  }, [userSettings.language, translations]);
+  }, [userSettings.language, translations, getDefaultPriorities]);
 
   // Сохранение пользовательских приоритетов в localStorage при их изменении
   useEffect(() => {
@@ -644,12 +644,12 @@ export default function App() {
     };
 
     const title = newTask.title.toLowerCase();
-    let generatedDescription = translations.defaultDescription;
+    let generatedDescription: string = translations.defaultDescription;
 
     // Ищем ключевые слова в заголовке
     for (const [keyword, descriptionKey] of Object.entries(keywordMappings)) {
       if (title.includes(keyword)) {
-        generatedDescription = (translations as any)[descriptionKey];
+        generatedDescription = (translations as Record<string, string>)[descriptionKey];
         break;
       }
     }
@@ -701,12 +701,12 @@ export default function App() {
     };
 
     const title = editingTask.title.toLowerCase();
-    let generatedDescription = translations.defaultDescription;
+    let generatedDescription: string = translations.defaultDescription;
 
     // Ищем ключевые слова в заголовке
     for (const [keyword, descriptionKey] of Object.entries(keywordMappings)) {
       if (title.includes(keyword)) {
-        generatedDescription = (translations as any)[descriptionKey];
+        generatedDescription = (translations as Record<string, string>)[descriptionKey];
         break;
       }
     }
