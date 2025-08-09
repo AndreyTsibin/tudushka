@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Тудушка** - A fully functional Todo application with AI assistant features built on React + Django architecture. The application includes task management, AI-powered task descriptions, chat functionality, themes, and subscription management.
 
+**Key Technologies**: React + TypeScript frontend, Django + Python backend, PostgreSQL database.
+
 ## Project Architecture
 
 This is a full-stack application with separated frontend and backend:
@@ -68,7 +70,7 @@ npm run lint         # ESLint checking with modern flat config
 npm run preview      # Preview production build locally
 ```
 
-**IMPORTANT**: Always run `npm run build` from the root directory before committing to ensure TypeScript compilation passes without errors.
+**IMPORTANT**: Always run `npm run build` from the frontend directory before committing to ensure TypeScript compilation passes without errors.
 
 ### Backend Commands (from root directory)
 ```bash
@@ -83,6 +85,18 @@ python manage.py shell           # Django interactive shell
 python manage.py startapp <name> # Create new Django application
 python manage.py check           # Validate Django configuration
 npm run test                     # Run Django tests (with venv activation)
+```
+
+### Testing Commands
+```bash
+# Frontend testing (from frontend/ directory)
+npm run build        # TypeScript compilation + Vite build (CRITICAL: run before commits)
+npm run lint         # ESLint checking with modern flat config
+
+# Backend testing (from root directory, requires venv activation)
+source venv/bin/activate
+python manage.py test            # Run Django tests
+python manage.py check           # Validate Django configuration
 ```
 
 ### Virtual Environment
@@ -164,12 +178,12 @@ The application is configured to use PostgreSQL with connection parameters from 
 
 - **Frontend**: React 19.1.0, TypeScript 5.8.3, Vite 7.0.4, custom CSS system, ESLint 9.x (flat config)
 - **UI Components**: Complete Radix UI library (@radix-ui/react-*), Lucide React icons, Sonner for toasts
-- **Styling**: Custom CSS with design system using CSS custom properties
-- **Calendar**: react-day-picker with full Russian localization
-- **Backend**: Django 5.2.4, Django REST Framework 3.16.0, django-cors-headers, python-decouple
-- **Database**: PostgreSQL (psycopg2-binary) 
-- **Development Tools**: Concurrently for running multiple processes
-- **Localization**: Russian language (ru-ru), Europe/Moscow timezone
+- **Additional Libraries**: date-fns 3.6.0, react-day-picker 8.10.1, react-hook-form 7.55.0, cmdk 1.1.1
+- **Styling**: Custom CSS with design system using CSS custom properties, no Tailwind CSS
+- **Backend**: Django 5.2.4, Django REST Framework 3.16.0, django-cors-headers 4.7.0, python-decouple 3.8
+- **Database**: PostgreSQL (psycopg2-binary 2.9.10)
+- **Development Tools**: Concurrently 8.2.2 for running multiple processes
+- **Localization**: Russian (ru-ru) primary, English secondary, Europe/Moscow timezone
 
 ### Application State Architecture
 
@@ -245,7 +259,7 @@ Custom implementation in `frontend/src/App.tsx` and `frontend/src/index.css`:
 **CSS Classes:**
 - `.custom-datetime-field`: Flex container with borderless styling
 - `.custom-datetime-input`: 80% width input field, no native icons
-- `.custom-datetime-icon`: 20% width blue background (#3b82f6) with hover effects
+- `.custom-datetime-icon`: 20% width blue background using `var(--color-primary)` with hover effects
 
 ## CORS Configuration
 
@@ -305,12 +319,16 @@ The frontend is ready for backend integration. Key areas for API development:
 - **Component Styling**: Direct CSS classes with design system consistency
 - **Border Radius**: Standardized radius variables (`--radius-card: 12px`, `--radius-sm: 0.25rem`, etc.)
 - **Spacing**: Consistent spacing system using `--spacing-*` variables
+- **Plan Colors**: Dedicated color variables for subscription tiers (`--color-plan-free`, `--color-plan-plus`, `--color-plan-pro`, `--color-plan-active`)
+- **Badge Components**: All badges use `border: none` for clean appearance without borders
 
 ### Theme Implementation
 - **CSS Custom Properties**: Defined in `frontend/src/index.css` with HSL values
 - **Theme Toggle**: Managed via React state, applies `data-theme="dark"` attribute to document root
 - **Color Variables**: All colors use `var(--color-name)` format for CSS custom property integration
 - **Theme Structure**: Light theme in `:root`, dark theme in `[data-theme="dark"]` selector
+- **Critical Rule**: NEVER use hardcoded colors like `#3b82f6` - always use CSS variables for theme compatibility
+- **Dark Theme Variables**: All color variables must be defined for both light and dark themes
 
 ### UI Component System
 - **Base Library**: Complete Radix UI primitives for accessibility 
@@ -319,6 +337,7 @@ The frontend is ready for backend integration. Key areas for API development:
 - **No Utility Libraries**: Components use direct className strings, no `cn()` utility or class-variance-authority
 - **Form Fields**: All input fields in modals use borderless design (`border: none`) with focus box-shadow effects only
 - **Sticky Elements**: Header (`.header`) and tabs container (`.tabs-header-container`) use `position: sticky` for persistent navigation
+- **Badge Styling**: All `.badge` elements use `border: none` - never add borders to badges
 
 ### Common Styling Patterns
 ```typescript
@@ -338,20 +357,31 @@ className="button-primary button-medium"
 
 ## Development Guidelines
 
+### Component Architecture
+- **Main Component**: `App.tsx` contains all application logic, state management, and page routing
+- **UI Components**: Complete Radix UI component library in `frontend/src/components/ui/`
+- **Component Styling**: Each component has custom CSS classes, no external styling utilities
+- **Custom Components**: Specialized components like `ImageWithFallback.tsx` for enhanced UX
+- **Single File Architecture**: All business logic consolidated in App.tsx (no separate components for features)
+
 ### State Management Patterns
 - **No External State Library**: All state managed with React hooks in App.tsx
 - **State Organization**: Separate useState hooks for different domains (tasks, chat, settings)
 - **Data Flow**: Props drilling for component communication (consider Context if complexity grows)
+- **Local Storage Integration**: UserSettings and tasks persist to localStorage automatically
 
 ### Animation & UX
 - **Task Completion**: Slide-out animation with opacity/transform transitions
 - **Loading States**: Toast notifications for user feedback (using Sonner)
 - **Form Handling**: Immediate validation with user-friendly error messages
 
-### Russian Localization
-- **Date Formatting**: Uses `Intl.DateTimeFormat` with 'ru-RU' locale
-- **Calendar**: Custom formatters for react-day-picker in Russian
-- **Text Content**: All UI text in Russian, consider i18n for future English support
+### Localization System
+- **Translation System**: Custom translations in `frontend/src/locales/translations.ts` with TypeScript support
+- **Languages**: Russian (primary) and English, with `useTranslations()` hook for switching
+- **Date Formatting**: Uses `Intl.DateTimeFormat` with 'ru-RU' locale and custom formatting functions
+- **Calendar**: Custom formatters for react-day-picker in Russian with `getWeekdays()` and `getMonths()` utilities
+- **Pluralization**: Smart pluralization system with `pluralize()` function for Russian grammar rules
+- **Text Content**: Complete interface localization through translation keys system
 
 ## Critical Development Rules
 
@@ -368,8 +398,10 @@ className="button-primary button-medium"
 - Always run `npm run lint` before committing frontend changes
 - Maintain Russian localization throughout the interface
 - Modal form fields use borderless styling (`border: none`) with focus box-shadow effects
-- Custom datetime fields use 80%/20% split layout with blue icon backgrounds matching the "Добавить" button (#3b82f6)
+- Custom datetime fields use 80%/20% split layout with icon backgrounds using `var(--color-primary)`
 - All plan badges use `border-radius: var(--radius-card)` (12px) for consistent design
+- **Theme Consistency**: Always use CSS variables instead of hardcoded colors for theme compatibility
+- **Badge Components**: All badges must use `border: none` - never add borders
 
 ### Architecture Constraints
 - Frontend uses local React state management only (no external state libraries)
@@ -379,21 +411,15 @@ className="button-primary button-medium"
 
 ## Testing and Troubleshooting
 
-### Frontend Testing
-```bash
-cd frontend
-npm run build        # Must pass before any commit
-npm run lint         # Check for ESLint issues
-npm run dev          # Test development server at localhost:5173
-```
-
 ### Common Issues
 - **Build Failures**: Usually caused by unused imports or TypeScript errors
 - **Styling Problems**: Check CSS custom properties in `index.css`, ensure no Tailwind utility classes are used
 - **Component Issues**: All UI components expect direct className strings, not utility functions  
-- **Theme Issues**: Dark mode uses `[data-theme="dark"]` selector, not `.dark` class
+- **Theme Issues**: Dark mode uses `[data-theme="dark"]` selector, not `.dark` class. Ensure all CSS variables are defined for both themes
 - **Form Field Issues**: All modal form fields should use `border: none` styling, not borders
-- **DateTime Fields**: Use custom div layout with 80%/20% split and blue icon backgrounds (#3b82f6)
+- **DateTime Fields**: Use custom div layout with 80%/20% split and icon backgrounds using `var(--color-primary)`
+- **Badge Issues**: All badges should use `border: none` - never add borders to badge components
+- **Color Variables**: Never use hardcoded hex colors - always use CSS variables for theme compatibility
 - **Sticky Navigation**: Header uses `z-index: 10`, tabs container uses `z-index: 9`
 
 ### Server URLs
