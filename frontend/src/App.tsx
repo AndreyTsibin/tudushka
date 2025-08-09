@@ -47,6 +47,9 @@ import {
   Check,
 } from "lucide-react";
 import { useTranslations, formatDate, pluralize, getWeekdays, getMonths } from "./locales/translations";
+import { tasksAPI } from "./services/tasks";
+import { useTasksAPI } from "./hooks/useAPI";
+import { apiTaskToTask, taskToApiTaskRequest } from "./utils/apiTransforms";
 
 interface CustomPriority {
   id: string;
@@ -134,12 +137,14 @@ export default function App() {
   // Получаем переводы для текущего языка
   const translations = useTranslations(userSettings.language);
 
+  // API хук для работы с задачами
+  const tasksApiHook = useTasksAPI();
+
   // Пользовательские приоритеты с дефолтными значениями
   const getDefaultPriorities = useCallback(() => [
     { id: "low", name: "low", displayName: translations.low, color: "#10b981", isDefault: true },
-    { id: "medium", name: "medium", displayName: translations.medium, color: "#2563eb", isDefault: true },
-    { id: "high", name: "high", displayName: translations.high, color: "#ea580c", isDefault: true },
-    { id: "critical", name: "critical", displayName: translations.critical, color: "#dc2626", isDefault: true }
+    { id: "normal", name: "normal", displayName: translations.medium, color: "#2563eb", isDefault: true },
+    { id: "urgent", name: "urgent", displayName: translations.high, color: "#ea580c", isDefault: true },
   ], [translations]);
   
   const [customPriorities, setCustomPriorities] = useState<CustomPriority[]>(getDefaultPriorities());
@@ -214,7 +219,7 @@ export default function App() {
     description: "",
     time: "",
     date: "",
-    priority: "medium",
+    priority: "normal",
   });
 
   const today = new Date();
@@ -330,6 +335,27 @@ export default function App() {
     }
   }, [userSettings.aiPersonality]);
 
+  // Инициализация токена для тестирования и загрузка задач при первом запуске
+  useEffect(() => {
+    // Устанавливаем тестовый токен (в продакшене будет из аутентификации)
+    const testToken = import.meta.env.VITE_TEST_TOKEN;
+    if (testToken && !localStorage.getItem('auth_token')) {
+      localStorage.setItem('auth_token', testToken);
+    }
+
+    // Загружаем задачи при инициализации
+    loadTasksFromAPI();
+  }, []); // Выполняется только при первом рендере
+
+  // Функция для загрузки задач с API
+  const loadTasksFromAPI = async () => {
+    const result = await tasksApiHook.loadTasks(() => tasksAPI.getTasks());
+    if (result) {
+      const frontendTasks = result.map(apiTaskToTask);
+      setTasks(frontendTasks);
+    }
+  };
+
   const getPlanLimits = () => {
     switch (userSettings.plan) {
       case "free":
@@ -360,32 +386,36 @@ export default function App() {
   };
 
 
-  const addTask = () => {
+  const addTask = async () => {
     if (!newTask.title.trim()) {
       toast.error(translations.titleRequired);
       return;
     }
 
-    const task: Task = {
-      id: Date.now().toString(),
+    const taskData = {
       title: newTask.title,
       description: newTask.description,
       time: newTask.time || "12:00",
       date: newTask.date || today.toISOString().split("T")[0],
       priority: newTask.priority,
-      completed: false,
     };
 
-    setTasks([...tasks, task]);
-    setNewTask({
-      title: "",
-      description: "",
-      time: "",
-      date: "",
-      priority: "medium",
-    });
-    setIsAddDialogOpen(false);
-    toast.success(translations.taskAdded);
+    const result = await tasksApiHook.createTask(() => 
+      tasksAPI.createTask(taskData)
+    );
+
+    if (result) {
+      const frontendTask = apiTaskToTask(result);
+      setTasks([...tasks, frontendTask]);
+      setNewTask({
+        title: "",
+        description: "",
+        time: "",
+        date: "",
+        priority: "normal",
+      });
+      setIsAddDialogOpen(false);
+    }
   };
 
   // Функция для создания нового приоритета
@@ -488,7 +518,7 @@ export default function App() {
     toast.success(`${translations.priority} "${displayName}" ${translations.priorityDeleted}`);
   };
 
-  const toggleTask = (taskId: string) => {
+  const toggleTask = async (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
 
@@ -497,12 +527,20 @@ export default function App() {
       setAnimatingTasks((prev) => new Set(prev).add(taskId));
 
       // Завершаем задачу после анимации
-      setTimeout(() => {
-        setTasks((prevTasks) =>
-          prevTasks.map((t) =>
-            t.id === taskId ? { ...t, completed: true } : t,
-          ),
+      setTimeout(async () => {
+        const result = await tasksApiHook.completeTask(() => 
+          tasksAPI.completeTask(taskId)
         );
+        
+        if (result) {
+          const updatedTask = apiTaskToTask(result);
+          setTasks((prevTasks) =>
+            prevTasks.map((t) =>
+              t.id === taskId ? updatedTask : t,
+            ),
+          );
+        }
+        
         setAnimatingTasks((prev) => {
           const newSet = new Set(prev);
           newSet.delete(taskId);
@@ -510,12 +548,19 @@ export default function App() {
         });
       }, 500); // Длительность анимации
     } else {
-      // Если задача уже завершена, просто переключаем обратно
-      setTasks(
-        tasks.map((t) =>
-          t.id === taskId ? { ...t, completed: false } : t,
-        ),
+      // Если задача уже завершена, отменяем выполнение
+      const result = await tasksApiHook.completeTask(() => 
+        tasksAPI.patchTask(taskId, { completed: false })
       );
+      
+      if (result) {
+        const updatedTask = apiTaskToTask(result);
+        setTasks(
+          tasks.map((t) =>
+            t.id === taskId ? updatedTask : t,
+          ),
+        );
+      }
     }
   };
 
@@ -596,21 +641,28 @@ export default function App() {
     }
   }, [isAddDialogOpen]);
 
-  const updateTask = () => {
+  const updateTask = async () => {
     if (!editingTask || !editingTask.title.trim()) {
       toast.error("Заголовок задачи обязателен");
       return;
     }
 
-    setTasks(
-      tasks.map((task) =>
-        task.id === editingTask.id ? editingTask : task,
-      ),
+    const updateData = taskToApiTaskRequest(editingTask);
+    const result = await tasksApiHook.updateTask(() => 
+      tasksAPI.updateTask(editingTask.id, updateData)
     );
 
-    setEditingTask(null);
-    setIsEditDialogOpen(false);
-    toast.success("Задача обновлена");
+    if (result) {
+      const updatedTask = apiTaskToTask(result);
+      setTasks(
+        tasks.map((task) =>
+          task.id === editingTask.id ? updatedTask : task,
+        ),
+      );
+
+      setEditingTask(null);
+      setIsEditDialogOpen(false);
+    }
   };
 
   const generateTaskDescription = () => {
@@ -1993,9 +2045,10 @@ export default function App() {
                 <div className="dialog-button-row">
                   <Button
                     onClick={addTask}
+                    disabled={tasksApiHook.loading}
                     className="dialog-button-flex dialog-button-primary dialog-button-main-action"
                   >
-                    {translations.addTask}
+                    {tasksApiHook.loading ? "Создание..." : translations.addTask}
                   </Button>
                 </div>
               </div>
@@ -2206,9 +2259,10 @@ export default function App() {
               <div className="dialog-button-row">
                 <Button
                   onClick={updateTask}
+                  disabled={tasksApiHook.loading}
                   className="dialog-button-flex dialog-button-primary dialog-button-main-action"
                 >
-                  {translations.saveTask}
+                  {tasksApiHook.loading ? "Сохранение..." : translations.saveTask}
                 </Button>
               </div>
             </div>
