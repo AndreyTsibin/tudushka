@@ -97,6 +97,7 @@ npm run lint         # ESLint checking with modern flat config
 source venv/bin/activate
 python manage.py test            # Run Django tests
 python manage.py check           # Validate Django configuration
+npm run test                     # Run Django tests (with venv activation)
 ```
 
 ### Virtual Environment
@@ -178,7 +179,7 @@ The application is configured to use PostgreSQL with connection parameters from 
 
 - **Frontend**: React 19.1.0, TypeScript 5.8.3, Vite 7.0.4, custom CSS system, ESLint 9.x (flat config)
 - **UI Components**: Complete Radix UI library (@radix-ui/react-*), Lucide React icons, Sonner for toasts
-- **Additional Libraries**: date-fns 3.6.0, react-day-picker 8.10.1, react-hook-form 7.55.0, cmdk 1.1.1
+- **Additional Libraries**: date-fns 3.6.0, react-day-picker 8.10.1, react-hook-form 7.55.0, cmdk 1.1.1, embla-carousel-react 8.6.0, next-themes 0.4.6, input-otp 1.4.2, vaul 1.1.2, recharts 2.15.2, react-resizable-panels 2.1.7
 - **Styling**: Custom CSS with design system using CSS custom properties, no Tailwind CSS
 - **Backend**: Django 5.2.4, Django REST Framework 3.16.0, django-cors-headers 4.7.0, python-decouple 3.8
 - **Database**: PostgreSQL (psycopg2-binary 2.9.10)
