@@ -39,6 +39,10 @@ npm run install
 pkill -f "node\|vite\|python" 2>/dev/null || true
 lsof -ti:5173,8000 | xargs kill -9 2>/dev/null || true
 npm run dev  # Runs frontend (5173) + backend (8000)
+
+# Start Telegram Bot (optional)
+source venv/bin/activate
+python run_bot.py  # Runs Telegram bot with welcome messages
 ```
 
 ### Individual Commands
@@ -123,3 +127,37 @@ lsof -ti:5173,8000 | xargs kill -9 2>/dev/null || true
 - Frontend: http://localhost:5173
 - Backend: http://localhost:8000  
 - Django Admin: http://localhost:8000/admin
+
+## Production Server (TimeWeb)
+
+### Server Information
+- **Domain**: tudushka.ru
+- **IPv4**: 5.129.225.19
+- **IPv6**: 2a03:6f02::cedf
+- **Provider**: TimeWeb
+- **SSH Access**: ssh root@5.129.225.19
+- **Root Password**: See .env file or secure storage
+
+### DNS Configuration
+- **A Record**: tudushka.ru → 5.129.225.19
+- **AAAA Record**: tudushka.ru → 2a03:6f02::cedf
+- **CNAME**: www.tudushka.ru → tudushka.ru
+- **MX Records**: Configured with TimeWeb mail servers
+- **TXT Records**: SPF configured for email security
+
+### Server Ports
+**Open Ports**: 389, 465, 3389, 2525, 587, 53413, 25
+- Standard web ports (80, 443) should be configured for HTTP/HTTPS
+- SSH access available on standard port 22
+- Email ports configured (25, 465, 587)
+
+### Production URLs
+- **Production Site**: https://tudushka.ru (to be configured)
+- **Admin Panel**: https://tudushka.ru/admin (to be configured)
+- **API Endpoint**: https://tudushka.ru/api (to be configured)
+
+### Deployment Notes
+- Application uploaded to server (path to be documented)
+- Further configuration needed for full deployment
+- SSL certificate setup required for HTTPS
+- Web server configuration (Nginx/Apache) needed
