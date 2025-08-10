@@ -156,8 +156,41 @@ lsof -ti:5173,8000 | xargs kill -9 2>/dev/null || true
 - **Admin Panel**: https://tudushka.ru/admin (to be configured)
 - **API Endpoint**: https://tudushka.ru/api (to be configured)
 
-### Deployment Notes
-- Application uploaded to server (path to be documented)
-- Further configuration needed for full deployment
-- SSL certificate setup required for HTTPS
-- Web server configuration (Nginx/Apache) needed
+### SSH Access Commands
+```bash
+# Connect to server (requires ed25519 key)
+ssh -i ~/.ssh/id_ed25519_timeweb_new root@5.129.225.19
+
+# Or if key is in ssh-agent
+ssh root@5.129.225.19
+```
+
+### Server Environment
+- **OS**: Ubuntu 22.04 LTS (Linux 5.15.0-142-generic)
+- **Python**: 3.10.12 (/usr/bin/python3)
+- **Web Server**: Nginx (active and running)
+- **SSL**: Let's Encrypt certificates configured
+- **Database**: PostgreSQL not installed yet
+
+### Current Configuration Status
+- **Nginx**: ✅ Running with SSL certificates
+- **Application Directory**: `/var/www/tudushka.ru/html` (basic index.html only)
+- **SSL Certificates**: ✅ `/etc/letsencrypt/live/tudushka.ru/`
+- **Nginx Config**: `/etc/nginx/sites-available/tudushka.ru`
+
+### Nginx Configuration Issues
+Current config has proxy to port 3000 AND static files - needs to be unified for Django app:
+```bash
+# View current config
+ssh -i ~/.ssh/id_ed25519_timeweb_new root@5.129.225.19 "cat /etc/nginx/sites-available/tudushka.ru"
+```
+
+### Required Next Steps for Deployment
+1. **Install PostgreSQL**: `apt install postgresql postgresql-contrib`
+2. **Upload Django application** to `/var/www/tudushka.ru/`
+3. **Install Python dependencies**: Create venv and pip install requirements
+4. **Configure database**: Create tudushka_db and user
+5. **Update Nginx config**: Point to Django app (Gunicorn/uWSGI)
+6. **Environment variables**: Create production .env file
+7. **Run migrations**: Set up database schema
+8. **Configure static files**: Django collectstatic for production
