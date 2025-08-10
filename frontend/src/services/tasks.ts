@@ -5,7 +5,9 @@ import type {
   CreateTaskRequest,
   UpdateTaskRequest,
   CreateCustomPriorityRequest,
-  TaskFilters
+  TaskFilters,
+  TaskDescriptionGenerateRequest,
+  TaskDescriptionGenerateResponse
 } from '../types/api';
 
 // API service для работы с задачами
@@ -68,6 +70,11 @@ export const tasksAPI = {
   // Получить завершенные задачи
   async getCompletedTasks(): Promise<APITask[]> {
     return apiClient.get<APITask[]>('/tasks/completed/');
+  },
+
+  // Генерация описания задачи с помощью AI
+  async generateDescription(data: TaskDescriptionGenerateRequest): Promise<TaskDescriptionGenerateResponse> {
+    return apiClient.post<TaskDescriptionGenerateResponse>('/tasks/generate_description/', data);
   }
 };
 

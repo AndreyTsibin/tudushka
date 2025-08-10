@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 
 from .models import Task, CustomPriority
 from .serializers import TaskSerializer, TaskCompletionSerializer, CustomPrioritySerializer
+from .ai_task_service import task_ai_service
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -78,6 +79,55 @@ class TaskViewSet(viewsets.ModelViewSet):
         tasks = self.get_queryset().filter(completed=True)
         serializer = self.get_serializer(tasks, many=True)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'])
+    def generate_description(self, request):
+        """Генерация описания задачи с помощью AI"""
+        title = request.data.get('title', '').strip()
+        language = request.data.get('language', 'ru')
+        
+        if not title:
+            return Response(
+                {'error': 'Заголовок задачи обязателен для генерации описания'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            # Проверяем лимиты AI использования
+            profile = getattr(request.user, 'profile', None)
+            if not profile:
+                return Response(
+                    {'error': 'Профиль пользователя не найден'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            if profile.ai_descriptions_used >= profile.ai_descriptions_limit:
+                return Response(
+                    {'error': f'Превышен лимит AI описаний: {profile.ai_descriptions_limit}'},
+                    status=status.HTTP_429_TOO_MANY_REQUESTS
+                )
+            
+            # Генерируем описание
+            description = task_ai_service.generate_task_description(
+                user_profile=profile,
+                task_title=title,
+                language=language
+            )
+            
+            # Увеличиваем счетчик использования
+            profile.ai_descriptions_used += 1
+            profile.save()
+            
+            return Response({
+                'description': description,
+                'remaining_uses': profile.ai_descriptions_limit - profile.ai_descriptions_used
+            })
+            
+        except Exception as e:
+            return Response(
+                {'error': f'Ошибка генерации описания: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class CustomPriorityViewSet(viewsets.ModelViewSet):

@@ -1,5 +1,10 @@
 from rest_framework import serializers
 from .models import ChatSession, ChatMessage
+from .ai_service import ai_service
+import asyncio
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ChatMessageSerializer(serializers.ModelSerializer):
@@ -72,6 +77,7 @@ class CreateChatMessageSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Создаем пользовательское сообщение и генерируем AI ответ"""
         session = self.context['session']
+        request = self.context['request']
         
         # Создаем сообщение пользователя
         user_message = ChatMessage.objects.create(
@@ -80,9 +86,12 @@ class CreateChatMessageSerializer(serializers.ModelSerializer):
             sender='user'
         )
         
-        # Здесь можно добавить логику генерации AI ответа
-        # Пока создаем заглушку
-        ai_response = self._generate_ai_response(validated_data['text'])
+        # Генерируем AI ответ с использованием реального AI сервиса
+        ai_response = self._generate_ai_response(
+            request.user, 
+            session, 
+            validated_data['text']
+        )
         
         ChatMessage.objects.create(
             session=session,
@@ -92,17 +101,37 @@ class CreateChatMessageSerializer(serializers.ModelSerializer):
         
         return user_message
         
-    def _generate_ai_response(self, user_text):
-        """Заглушка для генерации AI ответа"""
-        # TODO: Интеграция с реальным AI API
-        responses = [
-            "Это интересный вопрос! Давайте разберем его подробнее.",
-            "Я понимаю вашу задачу. Вот что я могу предложить:",
-            "Отличная идея! Могу помочь вам с планированием.",
-            "Рассмотрим несколько вариантов решения:",
-            "Это важная тема. Позвольте мне поделиться некоторыми мыслями."
-        ]
-        
-        # Простая логика выбора ответа на основе длины текста
-        import random
-        return random.choice(responses)
+    def _generate_ai_response(self, user, session, user_text):
+        """Генерация AI ответа с использованием настроек пользователя"""
+        try:
+            # Получаем профиль пользователя
+            user_profile = getattr(user, 'profile', None)
+            if not user_profile:
+                return "❌ Не удалось найти настройки профиля пользователя."
+            
+            # Получаем историю сообщений для контекста (последние 10)
+            conversation_history = []
+            for msg in session.messages.all().order_by('created_at')[-10:]:
+                conversation_history.append({
+                    'sender': msg.sender,
+                    'text': msg.text
+                })
+            
+            # Генерируем ответ асинхронно
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                ai_response = loop.run_until_complete(
+                    ai_service.generate_response(
+                        user_profile=user_profile,
+                        message=user_text,
+                        conversation_history=conversation_history
+                    )
+                )
+                return ai_response
+            finally:
+                loop.close()
+                
+        except Exception as e:
+            logger.error(f"Ошибка генерации AI ответа: {e}")
+            return f"❌ Произошла ошибка при генерации ответа: {str(e)}"

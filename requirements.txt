@@ -6,3 +6,7 @@ djangorestframework==3.16.0
 psycopg2-binary==2.9.10
 python-decouple==3.8
 sqlparse==0.5.3
+openai==1.35.10
+anthropic==0.34.0
+httpx==0.25.0
+cryptography==41.0.7

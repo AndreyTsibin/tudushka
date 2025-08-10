@@ -30,6 +30,11 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(','
 
 TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN', default='')
 
+# AI API Keys (Admin keys for all users)
+ADMIN_OPENAI_API_KEY = config('ADMIN_OPENAI_API_KEY', default='')
+ADMIN_ANTHROPIC_API_KEY = config('ADMIN_ANTHROPIC_API_KEY', default='')
+ADMIN_PERPLEXITY_API_KEY = config('ADMIN_PERPLEXITY_API_KEY', default='')
+
 # Production environment validation
 if not DEBUG:
     # In production, these settings are required

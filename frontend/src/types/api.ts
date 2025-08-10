@@ -140,3 +140,18 @@ export interface TelegramInvoiceResponse {
     link: string;
   };
 }
+
+export interface TaskDescriptionGenerateRequest {
+  title: string;
+  language?: 'ru' | 'en';
+}
+
+export interface TaskDescriptionGenerateResponse {
+  description: string;
+  remaining_uses: number;
+}
+
+export interface APIKeyValidationResponse {
+  valid: boolean;
+  error?: string;
+}

@@ -746,55 +746,38 @@ export default function App() {
       return;
     }
 
-    // Простая AI-генерация описания на основе заголовка
-    const keywordMappings = userSettings.language === "ru" ? {
-      встреча: "meetingDescription",
-      звонок: "callDescription", 
-      покупки: "shoppingDescription",
-      работа: "workDescription",
-      учеба: "studyDescription",
-      спорт: "sportsDescription",
-      здоровье: "healthDescription"
-    } : {
-      meeting: "meetingDescription",
-      call: "callDescription",
-      shopping: "shoppingDescription", 
-      work: "workDescription",
-      study: "studyDescription",
-      sport: "sportsDescription",
-      health: "healthDescription"
-    };
+    try {
+      // Используем новый API для генерации описания
+      const { executeAPICall: executeTaskAPICall } = useAPICall();
+      const result = await executeTaskAPICall(() =>
+        tasksAPI.generateDescription({
+          title: newTask.title,
+          language: userSettings.language
+        })
+      );
 
-    const title = newTask.title.toLowerCase();
-    let generatedDescription: string = translations.defaultDescription;
+      if (result) {
+        setNewTask({
+          ...newTask,
+          description: result.description,
+        });
 
-    // Ищем ключевые слова в заголовке
-    for (const [keyword, descriptionKey] of Object.entries(keywordMappings)) {
-      if (title.includes(keyword)) {
-        generatedDescription = (translations as Record<string, string>)[descriptionKey];
-        break;
+        // Обновляем счетчик использования
+        setUserSettings((prev) => ({
+          ...prev,
+          aiUsage: {
+            ...prev.aiUsage,
+            descriptionsUsed: prev.aiUsage.descriptionsUsed + 1,
+          },
+        }));
+
+        setIsAIHelpDialogOpen(false);
+        toast.success(translations.aiDescriptionGenerated);
       }
+    } catch (error) {
+      console.error('Error generating AI description:', error);
+      toast.error("Ошибка генерации описания. Попробуйте позже.");
     }
-
-    setNewTask({
-      ...newTask,
-      description: generatedDescription,
-    });
-
-    const usage = await executeUserAPICall(() =>
-      usersAPI.incrementAIDescriptions(),
-    );
-    if (usage) {
-      setUserSettings((prev) => ({
-        ...prev,
-        aiUsage: {
-          ...prev.aiUsage,
-          descriptionsUsed: usage.ai_descriptions_used,
-        },
-      }));
-    }
-    setIsAIHelpDialogOpen(false);
-    toast.success(translations.aiDescriptionGenerated);
   };
 
   const generateEditTaskDescription = async () => {
@@ -808,54 +791,37 @@ export default function App() {
       return;
     }
 
-    // Простая AI-генерация описания на основе заголовка
-    const keywordMappings = userSettings.language === "ru" ? {
-      встреча: "meetingDescription",
-      звонок: "callDescription", 
-      покупки: "shoppingDescription",
-      работа: "workDescription",
-      учеба: "studyDescription",
-      спорт: "sportsDescription",
-      здоровье: "healthDescription"
-    } : {
-      meeting: "meetingDescription",
-      call: "callDescription",
-      shopping: "shoppingDescription", 
-      work: "workDescription",
-      study: "studyDescription",
-      sport: "sportsDescription",
-      health: "healthDescription"
-    };
+    try {
+      // Используем новый API для генерации описания
+      const { executeAPICall: executeTaskAPICall } = useAPICall();
+      const result = await executeTaskAPICall(() =>
+        tasksAPI.generateDescription({
+          title: editingTask.title,
+          language: userSettings.language
+        })
+      );
 
-    const title = editingTask.title.toLowerCase();
-    let generatedDescription: string = translations.defaultDescription;
+      if (result) {
+        setEditingTask({
+          ...editingTask,
+          description: result.description,
+        });
 
-    // Ищем ключевые слова в заголовке
-    for (const [keyword, descriptionKey] of Object.entries(keywordMappings)) {
-      if (title.includes(keyword)) {
-        generatedDescription = (translations as Record<string, string>)[descriptionKey];
-        break;
+        // Обновляем счетчик использования
+        setUserSettings((prev) => ({
+          ...prev,
+          aiUsage: {
+            ...prev.aiUsage,
+            descriptionsUsed: prev.aiUsage.descriptionsUsed + 1,
+          },
+        }));
+
+        toast.success(translations.aiDescriptionGenerated);
       }
+    } catch (error) {
+      console.error('Error generating AI description:', error);
+      toast.error("Ошибка генерации описания. Попробуйте позже.");
     }
-
-    setEditingTask({
-      ...editingTask,
-      description: generatedDescription,
-    });
-
-    const usage = await executeUserAPICall(() =>
-      usersAPI.incrementAIDescriptions(),
-    );
-    if (usage) {
-      setUserSettings((prev) => ({
-        ...prev,
-        aiUsage: {
-          ...prev.aiUsage,
-          descriptionsUsed: usage.ai_descriptions_used,
-        },
-      }));
-    }
-    toast.success(translations.aiDescriptionGenerated);
   };
 
   const sendAiMessage = async () => {
@@ -1351,6 +1317,7 @@ export default function App() {
                     />
                   </div>
                 </div>
+
 
                 {/* Использование AI */}
                 <div className="settings-card">

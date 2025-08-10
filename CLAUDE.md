@@ -71,6 +71,11 @@ DB_PASSWORD=your-db-password
 DB_HOST=localhost
 DB_PORT=5432
 TELEGRAM_BOT_TOKEN=your-bot-token  # For Telegram integration
+
+# AI API Keys (optional - users can set their own keys in settings)
+ADMIN_OPENAI_API_KEY=sk-your-openai-key
+ADMIN_ANTHROPIC_API_KEY=sk-ant-your-anthropic-key
+ADMIN_PERPLEXITY_API_KEY=pplx-your-perplexity-key
 ```
 
 ## Tech Stack
