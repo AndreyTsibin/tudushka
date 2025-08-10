@@ -100,7 +100,7 @@ export interface CreateCustomPriorityRequest {
   is_default?: boolean;
 }
 
-export interface UpdateUserProfileRequest extends Partial<APIUserProfile> {}
+export type UpdateUserProfileRequest = Partial<APIUserProfile>;
 
 export interface CreateChatSessionRequest {
   title: string;
