@@ -48,8 +48,14 @@ import {
 } from "lucide-react";
 import { useTranslations, formatDate, pluralize, getWeekdays, getMonths } from "./locales/translations";
 import { tasksAPI } from "./services/tasks";
-import { useTasksAPI } from "./hooks/useAPI";
-import { apiTaskToTask, taskToApiTaskRequest } from "./utils/apiTransforms";
+import { usersAPI } from "./services/users";
+import { useTasksAPI, useAPICall } from "./hooks/useAPI";
+import {
+  apiTaskToTask,
+  taskToApiTaskRequest,
+  apiProfileToUserSettings,
+  userSettingsToApiProfileRequest,
+} from "./utils/apiTransforms";
 
 interface CustomPriority {
   id: string;
@@ -139,6 +145,30 @@ export default function App() {
 
   // API хук для работы с задачами
   const tasksApiHook = useTasksAPI();
+
+  // API хук для настроек пользователя
+  const { executeAPICall: executeUserAPICall, loading: settingsLoading } =
+    useAPICall();
+
+  const loadUserSettings = useCallback(async () => {
+    const data = await executeUserAPICall(() => usersAPI.getProfileSettings());
+    if (data) {
+      setUserSettings(apiProfileToUserSettings(data));
+    }
+  }, [executeUserAPICall]);
+
+  const updateUserSettings = useCallback(
+    async (updates: Partial<UserSettings>) => {
+      const apiRequest = userSettingsToApiProfileRequest(updates);
+      const result = await executeUserAPICall(() =>
+        usersAPI.patchProfileSettings(apiRequest),
+      );
+      if (result) {
+        setUserSettings((prev) => ({ ...prev, ...updates }));
+      }
+    },
+    [executeUserAPICall],
+  );
 
   // Пользовательские приоритеты с дефолтными значениями
   const getDefaultPriorities = useCallback(() => [
@@ -306,16 +336,15 @@ export default function App() {
   useEffect(() => {
     const currentDate = new Date().toISOString().split("T")[0];
     if (userSettings.aiUsage.lastResetDate !== currentDate) {
-      setUserSettings((prev) => ({
-        ...prev,
+      updateUserSettings({
         aiUsage: {
           descriptionsUsed: 0,
           chatRequestsUsed: 0,
           lastResetDate: currentDate,
         },
-      }));
+      });
     }
-  }, [userSettings.aiUsage.lastResetDate]);
+  }, [userSettings.aiUsage.lastResetDate, updateUserSettings]);
 
   // Применяем тему
   useEffect(() => {
@@ -343,8 +372,9 @@ export default function App() {
       localStorage.setItem('auth_token', testToken);
     }
 
-    // Загружаем задачи при инициализации
+    // Загружаем задачи и настройки при инициализации
     loadTasksFromAPI();
+    loadUserSettings();
   }, []); // Выполняется только при первом рендере
 
   // Функция для загрузки задач с API
@@ -665,7 +695,7 @@ export default function App() {
     }
   };
 
-  const generateTaskDescription = () => {
+  const generateTaskDescription = async () => {
     if (!newTask.title.trim()) {
       toast.error(translations.enterTitleForAI);
       return;
@@ -711,18 +741,23 @@ export default function App() {
       description: generatedDescription,
     });
 
-    setUserSettings((prev) => ({
-      ...prev,
-      aiUsage: {
-        ...prev.aiUsage,
-        descriptionsUsed: prev.aiUsage.descriptionsUsed + 1,
-      },
-    }));
+    const usage = await executeUserAPICall(() =>
+      usersAPI.incrementAIDescriptions(),
+    );
+    if (usage) {
+      setUserSettings((prev) => ({
+        ...prev,
+        aiUsage: {
+          ...prev.aiUsage,
+          descriptionsUsed: usage.ai_descriptions_used,
+        },
+      }));
+    }
     setIsAIHelpDialogOpen(false);
     toast.success(translations.aiDescriptionGenerated);
   };
 
-  const generateEditTaskDescription = () => {
+  const generateEditTaskDescription = async () => {
     if (!editingTask || !editingTask.title.trim()) {
       toast.error(translations.enterTitleForAI);
       return;
@@ -768,17 +803,22 @@ export default function App() {
       description: generatedDescription,
     });
 
-    setUserSettings((prev) => ({
-      ...prev,
-      aiUsage: {
-        ...prev.aiUsage,
-        descriptionsUsed: prev.aiUsage.descriptionsUsed + 1,
-      },
-    }));
+    const usage = await executeUserAPICall(() =>
+      usersAPI.incrementAIDescriptions(),
+    );
+    if (usage) {
+      setUserSettings((prev) => ({
+        ...prev,
+        aiUsage: {
+          ...prev.aiUsage,
+          descriptionsUsed: usage.ai_descriptions_used,
+        },
+      }));
+    }
     toast.success(translations.aiDescriptionGenerated);
   };
 
-  const sendAiMessage = () => {
+  const sendAiMessage = async () => {
     if (!aiMessage.trim()) return;
 
     if (!canUseAIChat()) {
@@ -840,13 +880,18 @@ export default function App() {
       ),
     );
 
-    setUserSettings((prev) => ({
-      ...prev,
-      aiUsage: {
-        ...prev.aiUsage,
-        chatRequestsUsed: prev.aiUsage.chatRequestsUsed + 1,
-      },
-    }));
+    const usage = await executeUserAPICall(() =>
+      usersAPI.incrementAIChatRequests(),
+    );
+    if (usage && usage.ai_chat_requests_used !== undefined) {
+      setUserSettings((prev) => ({
+        ...prev,
+        aiUsage: {
+          ...prev.aiUsage,
+          chatRequestsUsed: usage.ai_chat_requests_used!,
+        },
+      }));
+    }
     setAiMessage("");
   };
 
@@ -1015,14 +1060,14 @@ export default function App() {
     setEditingChatTitle("");
   };
 
-  const purchasePlan = (plan: "free" | "plus" | "pro") => {
+  const purchasePlan = async (plan: "free" | "plus" | "pro") => {
     if (plan === "free") {
-      setUserSettings((prev) => ({ ...prev, plan: "free" }));
+      await updateUserSettings({ plan: "free" });
       toast.success(translations.switchedToFree);
     } else {
       // Имитация процесса оплаты
       toast.success(translations.paymentSuccess);
-      setUserSettings((prev) => ({ ...prev, plan }));
+      await updateUserSettings({ plan });
     }
   };
 
@@ -1079,12 +1124,10 @@ export default function App() {
                       </div>
                     </div>
                     <Select
+                      disabled={settingsLoading}
                       value={userSettings.language}
                       onValueChange={(value: "ru" | "en") =>
-                        setUserSettings((prev) => ({
-                          ...prev,
-                          language: value,
-                        }))
+                        updateUserSettings({ language: value })
                       }
                     >
                       <SelectTrigger className="w-32 select-trigger-themed">
@@ -1125,15 +1168,12 @@ export default function App() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() =>
-                        setUserSettings((prev) => ({
-                          ...prev,
-                          theme:
-                            prev.theme === "dark"
-                              ? "light"
-                              : "dark",
-                        }))
-                      }
+                      disabled={settingsLoading}
+                      onClick={() => {
+                        const newTheme =
+                          userSettings.theme === "dark" ? "light" : "dark";
+                        updateUserSettings({ theme: newTheme });
+                      }}
                       className="flex items-center gap-2 button-themed"
                     >
                       {userSettings.theme === "dark" ? (
@@ -1168,6 +1208,7 @@ export default function App() {
                       </div>
                     </div>
                     <Select
+                      disabled={settingsLoading}
                       value={userSettings.aiModel}
                       onValueChange={(
                         value:
@@ -1175,10 +1216,7 @@ export default function App() {
                           | "claude"
                           | "perplexity",
                       ) =>
-                        setUserSettings((prev) => ({
-                          ...prev,
-                          aiModel: value,
-                        }))
+                        updateUserSettings({ aiModel: value })
                       }
                     >
                       <SelectTrigger className="w-40 select-trigger-themed">
@@ -1216,6 +1254,7 @@ export default function App() {
                     <Textarea
                       placeholder={translations.personalityPlaceholder}
                       value={userSettings.aiPersonality}
+                      disabled={settingsLoading}
                       onChange={(e) => {
                         setUserSettings((prev) => ({
                           ...prev,
@@ -1226,6 +1265,9 @@ export default function App() {
                         target.style.height = 'auto';
                         target.style.height = target.scrollHeight + 'px';
                       }}
+                      onBlur={(e) =>
+                        updateUserSettings({ aiPersonality: e.target.value })
+                      }
                       rows={3}
                       className="textarea-themed"
                       style={{
