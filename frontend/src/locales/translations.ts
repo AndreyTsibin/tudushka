@@ -297,11 +297,13 @@ export function t(language: "ru" | "en", key: TranslationKey): string {
 
 // Функция для форматирования даты в зависимости от языка
 export function formatDate(dateString: string, language: "ru" | "en") {
-  const date = new Date(dateString);
+  // Создаем дату из компонентов, чтобы избежать смещения по таймзоне
+  const [year, month, day] = dateString.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
   const locale = language === "ru" ? "ru-RU" : "en-US";
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
-    day: "numeric", 
+    day: "numeric",
     month: "long",
     year: "numeric",
   };
@@ -311,7 +313,10 @@ export function formatDate(dateString: string, language: "ru" | "en") {
 
 // Функция для получения локализованного времени
 export function formatTime(timestamp: string, language: "ru" | "en") {
-  const date = new Date(timestamp);
+  // Поддержка формата времени HH:mm без смещения даты
+  const [hours, minutes] = timestamp.split(":").map(Number);
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
   const locale = language === "ru" ? "ru-RU" : "en-US";
   return date.toLocaleTimeString(locale, {
     hour: "2-digit",
