@@ -4,7 +4,9 @@ import type {
   APIUserProfile,
   APIUserWithProfile,
   UpdateUserProfileRequest,
-  AIUsageResponse
+  AIUsageResponse,
+  TelegramAuthResponse,
+  TelegramInvoiceResponse
 } from '../types/api';
 
 // API service для работы с пользователями и профилями
@@ -50,6 +52,16 @@ export const usersAPI = {
   // Увеличить счетчик использованных AI чат-запросов
   async incrementAIChatRequests(): Promise<AIUsageResponse> {
     return apiClient.post<AIUsageResponse>('/users/profile/ai-chat-requests/increment/');
+  },
+
+  // Авторизация через Telegram WebApp
+  async telegramAuth(initData: string): Promise<TelegramAuthResponse> {
+    return apiClient.post<TelegramAuthResponse>('/users/auth/telegram/', { init_data: initData });
+  },
+
+  // Создание платежа через Telegram Stars
+  async createStarInvoice(amount: number): Promise<TelegramInvoiceResponse> {
+    return apiClient.post<TelegramInvoiceResponse>('/users/payments/telegram/', { amount });
   }
 };
 
