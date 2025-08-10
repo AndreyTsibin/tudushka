@@ -93,7 +93,7 @@ interface UserSettings {
   language: "ru" | "en";
   theme: "light" | "dark";
   aiPersonality: string;
-  aiModel: "chatgpt" | "claude" | "perplexity";
+  aiModel: "chatgpt" | "perplexity";
   plan: "free" | "plus" | "pro";
   aiUsage: {
     descriptionsUsed: number;
@@ -1252,7 +1252,6 @@ export default function App() {
                       onValueChange={(
                         value:
                           | "chatgpt"
-                          | "claude"
                           | "perplexity",
                       ) =>
                         updateUserSettings({ aiModel: value })
@@ -1264,9 +1263,6 @@ export default function App() {
                       <SelectContent className="select-content">
                         <SelectItem value="chatgpt">
                           ChatGPT
-                        </SelectItem>
-                        <SelectItem value="claude">
-                          Claude
                         </SelectItem>
                         <SelectItem value="perplexity">
                           Perplexity AI

@@ -19,7 +19,6 @@ class UserProfile(models.Model):
     
     AI_MODEL_CHOICES = [
         ('chatgpt', 'ChatGPT'),
-        ('claude', 'Claude'),
         ('perplexity', 'Perplexity'),
     ]
     

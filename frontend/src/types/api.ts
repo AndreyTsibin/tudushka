@@ -27,7 +27,7 @@ export interface APIUserProfile {
   language: 'ru' | 'en';
   theme: 'light' | 'dark';
   ai_personality: string;
-  ai_model: 'chatgpt' | 'claude' | 'perplexity';
+  ai_model: 'chatgpt' | 'perplexity';
   plan: 'free' | 'plus' | 'pro';
   ai_descriptions_used: number;
   ai_chat_requests_used: number;

@@ -25,7 +25,7 @@ export interface UserSettings {
   language: "ru" | "en";
   theme: "light" | "dark";
   aiPersonality: string;
-  aiModel: "chatgpt" | "claude" | "perplexity";
+  aiModel: "chatgpt" | "perplexity";
   plan: "free" | "plus" | "pro";
   aiUsage: {
     descriptionsUsed: number;
@@ -117,7 +117,7 @@ export function userSettingsToApiProfileRequest(settings: Partial<UserSettings>)
   language?: "ru" | "en";
   theme?: "light" | "dark";
   ai_personality?: string;
-  ai_model?: "chatgpt" | "claude" | "perplexity";
+  ai_model?: "chatgpt" | "perplexity";
   plan?: "free" | "plus" | "pro";
   ai_descriptions_used?: number;
   ai_chat_requests_used?: number;

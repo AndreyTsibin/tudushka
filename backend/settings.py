@@ -26,13 +26,12 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-9d*9_333act+u!miic7lq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,tudushka.ru').split(',')
 
 TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN', default='')
 
 # AI API Keys (Admin keys for all users)
 ADMIN_OPENAI_API_KEY = config('ADMIN_OPENAI_API_KEY', default='')
-ADMIN_ANTHROPIC_API_KEY = config('ADMIN_ANTHROPIC_API_KEY', default='')
 ADMIN_PERPLEXITY_API_KEY = config('ADMIN_PERPLEXITY_API_KEY', default='')
 
 # Production environment validation
@@ -209,11 +208,10 @@ if DEBUG:
         "http://127.0.0.1:3000",
     ]
 else:
-    # Production CORS settings - add your domain here
+    # Production CORS settings
     CORS_ALLOWED_ORIGINS = [
-        # Add your production domain here, example:
-        # "https://your-domain.com",
-        # "https://www.your-domain.com",
+        "https://tudushka.ru",
+        "https://www.tudushka.ru",
     ]
     # You can also use environment variable for production domains
     PRODUCTION_DOMAINS = config('PRODUCTION_DOMAINS', default='').split(',')

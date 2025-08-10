@@ -16,10 +16,29 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    """
+    API Root endpoint providing overview of available endpoints
+    """
+    return Response({
+        'message': 'Tudushka API',
+        'version': '1.0',
+        'endpoints': {
+            'tasks': request.build_absolute_uri('/api/tasks/'),
+            'users': request.build_absolute_uri('/api/users/'),
+            'chat': request.build_absolute_uri('/api/chat/'),
+            'admin': request.build_absolute_uri('/admin/'),
+        }
+    })
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('tasks.urls')),
+    path('api/', api_root, name='api-root'),
+    path('api/tasks/', include('tasks.urls')),
     path('api/users/', include('users.urls')),
     path('api/chat/', include('chat.urls')),
 ]

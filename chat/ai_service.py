@@ -1,5 +1,4 @@
 import openai
-import anthropic
 import httpx
 import json
 from typing import Dict, Optional, Any
@@ -62,8 +61,6 @@ class AIService:
         
         if model_name == "chatgpt":
             user_profile.openai_api_key = encrypted_key
-        elif model_name == "claude":
-            user_profile.anthropic_api_key = encrypted_key
         elif model_name == "perplexity":
             user_profile.perplexity_api_key = encrypted_key
         
@@ -77,11 +74,6 @@ class AIService:
             key = getattr(settings, 'ADMIN_OPENAI_API_KEY', None)
             if not key:
                 raise APIKeyError("Административный OpenAI API ключ не настроен")
-            return key
-        elif model_name == "claude":
-            key = getattr(settings, 'ADMIN_ANTHROPIC_API_KEY', None)
-            if not key:
-                raise APIKeyError("Административный Anthropic API ключ не настроен")
             return key
         elif model_name == "perplexity":
             key = getattr(settings, 'ADMIN_PERPLEXITY_API_KEY', None)
@@ -104,10 +96,6 @@ class AIService:
         try:
             if model == "chatgpt":
                 return await self._generate_openai_response(
-                    user_profile, message, personality, conversation_history
-                )
-            elif model == "claude":
-                return await self._generate_anthropic_response(
                     user_profile, message, personality, conversation_history
                 )
             elif model == "perplexity":
@@ -163,46 +151,6 @@ class AIService:
         except Exception as e:
             logger.error(f"OpenAI API error: {e}")
             raise AIServiceError(f"Ошибка OpenAI API: {str(e)}")
-    
-    async def _generate_anthropic_response(
-        self, 
-        user_profile, 
-        message: str, 
-        personality: str, 
-        conversation_history: list = None
-    ) -> str:
-        """Генерация ответа через Anthropic Claude"""
-        api_key = self.get_admin_api_key("claude")
-        
-        client = anthropic.AsyncAnthropic(api_key=api_key)
-        
-        # Формируем историю для Claude
-        conversation = ""
-        if conversation_history:
-            for msg in conversation_history[-10:]:
-                role = "Human" if msg['sender'] == 'user' else "Assistant"
-                conversation += f"{role}: {msg['text']}\n\n"
-        
-        conversation += f"Human: {message}\n\nAssistant:"
-        
-        try:
-            response = await client.messages.create(
-                model="claude-3-sonnet-20240229",
-                max_tokens=1000,
-                system=personality,
-                messages=[
-                    {"role": "user", "content": conversation}
-                ]
-            )
-            return response.content[0].text
-            
-        except anthropic.AuthenticationError:
-            raise APIKeyError("Неверный Anthropic API ключ")
-        except anthropic.RateLimitError:
-            return "❌ Превышен лимит запросов Anthropic. Попробуйте позже."
-        except Exception as e:
-            logger.error(f"Anthropic API error: {e}")
-            raise AIServiceError(f"Ошибка Anthropic API: {str(e)}")
     
     async def _generate_perplexity_response(
         self, 
@@ -273,11 +221,6 @@ class AIService:
             return {
                 "valid": False,
                 "error": "OpenAI API ключ должен начинаться с 'sk-'"
-            }
-        elif model_name == "claude" and not api_key.startswith("sk-ant-"):
-            return {
-                "valid": False,
-                "error": "Anthropic API ключ должен начинаться с 'sk-ant-'"
             }
         elif model_name == "perplexity" and not api_key.startswith("pplx-"):
             return {
