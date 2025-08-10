@@ -129,3 +129,14 @@ export interface TaskFilters {
   priority?: string;
   date?: string;
 }
+
+export interface TelegramAuthResponse {
+  token: string;
+}
+
+export interface TelegramInvoiceResponse {
+  ok: boolean;
+  result?: {
+    link: string;
+  };
+}

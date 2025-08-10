@@ -1,8 +1,14 @@
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
+from django.conf import settings
+from urllib import request as urlrequest
+import json
+import time
+from .telegram import verify_telegram_init_data
 from .models import UserProfile
 from .serializers import UserWithProfileSerializer, UserProfileSerializer, AIUsageUpdateSerializer
 
@@ -84,8 +90,51 @@ def increment_ai_chat_requests(request):
     
     profile.ai_chat_requests_used += 1
     profile.save()
-    
+
     return Response({
         'ai_chat_requests_used': profile.ai_chat_requests_used,
         'ai_chat_requests_limit': profile.ai_chat_requests_limit
     })
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def telegram_auth(request):
+    """Authenticate user via Telegram WebApp init data."""
+    init_data = request.data.get('init_data')
+    data = verify_telegram_init_data(init_data or '', settings.TELEGRAM_BOT_TOKEN)
+    if not data or 'user' not in data:
+        return Response({'detail': 'Invalid auth data'}, status=status.HTTP_400_BAD_REQUEST)
+    tg_user = data['user']
+    username = tg_user.get('username') or f"tg_{tg_user['id']}"
+    user, _ = User.objects.get_or_create(
+        username=username,
+        defaults={'first_name': tg_user.get('first_name', ''), 'last_name': tg_user.get('last_name', '')}
+    )
+    token, _ = Token.objects.get_or_create(user=user)
+    return Response({'token': token.key})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_star_invoice(request):
+    """Create Telegram Stars invoice link."""
+    amount = request.data.get('amount')
+    if amount is None:
+        return Response({'detail': 'amount required'}, status=status.HTTP_400_BAD_REQUEST)
+    payload = f"stars_{request.user.id}_{int(time.time())}"
+    data = {
+        'title': 'Stars purchase',
+        'description': 'Purchase stars',
+        'payload': payload,
+        'currency': 'XTR',
+        'prices': [{'label': 'Stars', 'amount': int(amount)}],
+    }
+    req = urlrequest.Request(
+        f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/createInvoiceLink",
+        data=json.dumps(data).encode(),
+        headers={'Content-Type': 'application/json'},
+        method='POST'
+    )
+    with urlrequest.urlopen(req, timeout=10) as resp:
+        return Response(json.load(resp))
