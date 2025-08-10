@@ -101,8 +101,14 @@ def increment_ai_chat_requests(request):
 @permission_classes([AllowAny])
 def telegram_auth(request):
     """Authenticate user via Telegram WebApp init data."""
+    if not settings.TELEGRAM_BOT_TOKEN:
+        return Response({'detail': 'Telegram bot not configured'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
     init_data = request.data.get('init_data')
-    data = verify_telegram_init_data(init_data or '', settings.TELEGRAM_BOT_TOKEN)
+    if not init_data:
+        return Response({'detail': 'Init data is required'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    data = verify_telegram_init_data(init_data, settings.TELEGRAM_BOT_TOKEN)
     if not data or 'user' not in data:
         return Response({'detail': 'Invalid auth data'}, status=status.HTTP_400_BAD_REQUEST)
     tg_user = data['user']
@@ -119,9 +125,19 @@ def telegram_auth(request):
 @permission_classes([IsAuthenticated])
 def create_star_invoice(request):
     """Create Telegram Stars invoice link."""
+    if not settings.TELEGRAM_BOT_TOKEN:
+        return Response({'detail': 'Telegram bot not configured'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
     amount = request.data.get('amount')
     if amount is None:
         return Response({'detail': 'amount required'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        amount = int(amount)
+        if amount <= 0:
+            return Response({'detail': 'amount must be positive'}, status=status.HTTP_400_BAD_REQUEST)
+    except (ValueError, TypeError):
+        return Response({'detail': 'invalid amount'}, status=status.HTTP_400_BAD_REQUEST)
     payload = f"stars_{request.user.id}_{int(time.time())}"
     data = {
         'title': 'Stars purchase',

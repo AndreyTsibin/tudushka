@@ -44,7 +44,7 @@ class APIClient {
     };
 
     if (this.authToken) {
-      headers.Authorization = `Bearer ${this.authToken}`;
+      headers.Authorization = `Token ${this.authToken}`;
     }
 
     return headers;

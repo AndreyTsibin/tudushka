@@ -4,161 +4,64 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Тудушка** - A fully functional Todo application with AI assistant features built on React + Django architecture. The application includes task management, AI-powered task descriptions, chat functionality, themes, and subscription management.
+**Тудушка** - Full-stack Todo application with AI assistant features. React + TypeScript frontend, Django + Python backend, PostgreSQL database.
 
-**Key Technologies**: React + TypeScript frontend, Django + Python backend, PostgreSQL database.
+## Architecture
 
-## Project Architecture
+### Current State
+**Backend**: Complete Django REST API with three apps:
+- `tasks/`: Task CRUD operations with custom priorities and user relationships
+- `users/`: Authentication, profiles, Telegram WebApp integration  
+- `chat/`: AI conversation management and message persistence
 
-This is a full-stack application with separated frontend and backend:
+**Frontend**: React app with full backend integration:
+- Real-time task management via Django REST API
+- AI assistant with conversation history
+- Theme switching, subscription tiers, calendar integration
+- Custom API hooks and error handling
 
-- **Frontend**: React 19 + TypeScript + Vite with complete UI implementation
-- **Backend**: Django 5.2.4 + Django REST Framework + PostgreSQL (backend ready for API development)
-- **Development**: Concurrently runs both frontend and backend servers
-
-### Current Architecture State
-
-**Backend**: Minimal Django project setup with no custom apps created yet. Only default Django admin interface exists at `/admin/`. Ready for feature development with DRF configured for JSON-only API responses and CORS enabled for React frontend.
-
-**Frontend**: Complete todo application implementation with:
-- Task management (CRUD operations with local state)
-- AI assistant with chat functionality and usage limits
-- Multi-page navigation (Home, AI Assistant, Archive, Settings)
-- Theme switching (light/dark mode)
-- Subscription tiers (Free, Plus, Pro)
-- Calendar integration and task scheduling
-- Fully responsive UI with custom CSS and Radix UI components
-
-### Key Architecture Files
-
-**Frontend Core:**
-- `frontend/src/App.tsx`: Main application component with state management for tasks, chat sessions, user settings, and page routing
-- `frontend/src/components/ui/`: Complete Radix UI component library with custom CSS styling
-- `frontend/src/index.css`: CSS custom properties for light/dark themes using HSL color format
-- `frontend/src/index.css`: Custom CSS with color palette and dark mode support
-
-**Configuration Files:**
-- `backend/settings.py`: Django settings with PostgreSQL, CORS, and REST Framework configuration
-- `backend/urls.py`: Currently only routes to Django admin (no API endpoints yet)
-- `frontend/vite.config.ts`: Minimal Vite configuration with React plugin
-- `frontend/tsconfig.json`: Project references for separate app/node TypeScript configs
-- `frontend/eslint.config.js`: Modern ESLint flat configuration with React and TypeScript rules
+### Key Files
+- `frontend/src/App.tsx`: Main application component with API integration
+- `frontend/src/services/api.ts`: Base API client with auth and error handling
+- `frontend/src/hooks/useAPI.ts`: Custom React hooks for API state management
+- `tasks/models.py`: Task and CustomPriority models with UUID keys
+- `backend/settings.py`: Django config with PostgreSQL, CORS, token auth
+- `backend/urls.py`: API routing to tasks, users, and chat endpoints
 
 ## Development Commands
 
-### Full-Stack Development
+### Quick Start
 ```bash
-npm run install       # Install all dependencies (backend + frontend)
-npm run dev          # Start both backend and frontend concurrently
-```
+# Install all dependencies
+npm run install
 
-### Frontend Only (from root)
-```bash
-npm run frontend     # Start Vite dev server on http://localhost:5173
-```
-
-### Backend Only (from root)  
-```bash
-npm run backend      # Start Django server on http://localhost:8000
-```
-
-### Frontend Commands (from frontend/ directory)
-```bash
-npm run dev          # Start Vite dev server on http://localhost:5173
-npm run build        # TypeScript compilation + Vite build (CRITICAL: run before commits)
-npm run lint         # ESLint checking with modern flat config
-npm run preview      # Preview production build locally
-```
-
-**IMPORTANT**: Always run `npm run build` from the frontend directory before committing to ensure TypeScript compilation passes without errors.
-
-### Backend Commands (from root directory)
-```bash
-# All Django commands require virtual environment activation first
-source venv/bin/activate         # MUST run first
-python manage.py runserver       # Start Django server on http://localhost:8000
-python manage.py migrate         # Apply database migrations  
-python manage.py makemigrations  # Generate database migrations
-python manage.py test            # Run Django tests
-python manage.py createsuperuser # Create Django admin user (for /admin access)
-python manage.py shell           # Django interactive shell
-python manage.py startapp <name> # Create new Django application
-python manage.py check           # Validate Django configuration
-npm run test                     # Run Django tests (with venv activation)
-```
-
-### Testing Commands
-```bash
-# Frontend testing (from frontend/ directory)
-npm run build        # TypeScript compilation + Vite build (CRITICAL: run before commits)
-npm run lint         # ESLint checking with modern flat config
-
-# Backend testing (from root directory, requires venv activation)
-source venv/bin/activate
-python manage.py test            # Run Django tests
-python manage.py check           # Validate Django configuration
-npm run test                     # Run Django tests (with venv activation)
-```
-
-### Virtual Environment
-```bash
-source venv/bin/activate  # Activate virtual environment (required for Django commands)
-deactivate               # Deactivate virtual environment
-```
-
-### Development Workflow
-```bash
-# First time setup
-npm run install          # Install all dependencies
-source venv/bin/activate # Activate Python virtual environment
-python manage.py migrate # Initialize database
-
-# Daily development - ОБЯЗАТЕЛЬНО освобождать порты перед запуском!
-lsof -ti:5173 | xargs kill -9  # Освободить порт 5173 (frontend)
-lsof -ti:8000 | xargs kill -9  # Освободить порт 8000 (backend)
-npm run dev             # Start both servers concurrently
-# OR separately:
-npm run backend         # Django server (localhost:8000)  
-npm run frontend        # Vite dev server (localhost:5173)
-```
-
-### КРИТИЧЕСКИ ВАЖНОЕ ПРАВИЛО - Освобождение портов
-**ВСЕГДА** перед запуском проекта Claude Code должен освобождать порты:
-```bash
-# Обязательные команды перед каждым запуском:
-pkill -f "node\|vite\|python" 2>/dev/null || true  # Остановить все процессы
-lsof -ti:5173,8000 | xargs kill -9 2>/dev/null || true  # Освободить порты принудительно
-# Затем запускать проект
-npm run dev
-```
-
-**ВАЖНО**: Пользователь НЕ хочет чтобы Claude Code запускал сервер в фоновом режиме (`&`) или MCP Playwright, если сервер уже запущен. Всегда спрашивать пользователя перед запуском серверов.
-
-### Диагностика проблем запуска
-Если приложение не запускается или недоступно:
-```bash
-# 1. Проверить запущенные процессы
-ps aux | grep -E "(vite|runserver)" | grep -v grep
-
-# 2. Проверить доступность портов
-curl -I http://localhost:5173
-curl -I http://localhost:8000
-
-# 3. Принудительно очистить все и перезапустить
+# Start both servers (CRITICAL: clear ports first)
 pkill -f "node\|vite\|python" 2>/dev/null || true
-lsof -ti:5173,8000 | xargs kill -9 2>/dev/null || true  
-npm run dev
-
-# 4. Проверить доступность портов
-lsof -i :5173
-lsof -i :8000
+lsof -ti:5173,8000 | xargs kill -9 2>/dev/null || true
+npm run dev  # Runs frontend (5173) + backend (8000)
 ```
-Это гарантирует стабильную работу приложения на постоянных портах.
+
+### Individual Commands
+```bash
+# Backend (requires venv activation first)
+source venv/bin/activate
+python manage.py runserver        # Django server localhost:8000
+python manage.py migrate          # Apply database migrations
+python manage.py makemigrations   # Generate migrations
+
+# Frontend (from frontend/ directory)
+npm run dev                       # Vite dev server localhost:5173  
+npm run build                     # TypeScript compilation + build
+npm run lint                      # ESLint with modern flat config
+
+# Testing
+source venv/bin/activate && python manage.py check  # Django validation
+cd frontend && npm run build && npm run lint        # Frontend validation
+```
 
 ## Environment Setup
 
-### Required Environment Variables
-Create a `.env` file in the root directory with:
+Required `.env` file in root:
 ```
 SECRET_KEY=your-secret-key
 DEBUG=True
@@ -167,263 +70,51 @@ DB_USER=your-db-user
 DB_PASSWORD=your-db-password
 DB_HOST=localhost
 DB_PORT=5432
-ALLOWED_HOSTS=localhost,127.0.0.1
+TELEGRAM_BOT_TOKEN=your-bot-token  # For Telegram integration
 ```
 
-**Note**: Missing DB_NAME, DB_USER, and DB_PASSWORD will cause Django to fail. SECRET_KEY and DEBUG have defaults in settings.py.
+## Tech Stack
 
-### PostgreSQL Setup
-The application is configured to use PostgreSQL with connection parameters from environment variables.
+- **Frontend**: React 18.3.1, TypeScript 5.8.3, Vite 7.0.4, custom CSS system
+- **UI**: Complete Radix UI library, Lucide icons, Sonner toasts
+- **Backend**: Django 5.2.4, DRF 3.16.0, psycopg2, django-cors-headers
+- **Database**: PostgreSQL with UUID primary keys
+- **Auth**: Token-based authentication via DRF
+- **Localization**: Russian primary, English secondary, Moscow timezone
 
-## Tech Stack Details
+## Critical Rules
 
-- **Frontend**: React 19.1.0, TypeScript 5.8.3, Vite 7.0.4, custom CSS system, ESLint 9.x (flat config)
-- **UI Components**: Complete Radix UI library (@radix-ui/react-*), Lucide React icons, Sonner for toasts
-- **Additional Libraries**: date-fns 3.6.0, react-day-picker 8.10.1, react-hook-form 7.55.0, cmdk 1.1.1, embla-carousel-react 8.6.0, next-themes 0.4.6, input-otp 1.4.2, vaul 1.1.2, recharts 2.15.2, react-resizable-panels 2.1.7
-- **Styling**: Custom CSS with design system using CSS custom properties, no Tailwind CSS
-- **Backend**: Django 5.2.4, Django REST Framework 3.16.0, django-cors-headers 4.7.0, python-decouple 3.8
-- **Database**: PostgreSQL (psycopg2-binary 2.9.10)
-- **Development Tools**: Concurrently 8.2.2 for running multiple processes
-- **Localization**: Russian (ru-ru) primary, English secondary, Europe/Moscow timezone
-
-### Application State Architecture
-
-**Frontend State Management:**
-- Local React state management in App.tsx (no external state library)
-- Task management with local CRUD operations and animations
-- Chat sessions with message history
-- User settings (theme, language, AI model, subscription)
-- AI usage tracking with daily limits per subscription tier
-- Multi-page routing with conditional rendering
-
-**Core Data Models:**
-```typescript
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  time: string;
-  date: string;
-  priority: "urgent" | "normal" | "low";
-  completed: boolean;
-}
-
-interface ChatMessage {
-  id: string;
-  text: string;
-  sender: "user" | "ai";
-  timestamp: string;
-}
-
-interface UserSettings {
-  language: "ru" | "en";
-  theme: "light" | "dark";
-  aiPersonality: string;
-  aiModel: "chatgpt" | "claude" | "perplexity";
-  plan: "free" | "plus" | "pro";
-  aiUsage: {
-    descriptionsUsed: number;  
-    chatRequestsUsed: number;
-    lastResetDate: string;
-  };
-}
+### Port Management
+**ALWAYS** clear ports before starting development:
+```bash
+pkill -f "node\|vite\|python" 2>/dev/null || true
+lsof -ti:5173,8000 | xargs kill -9 2>/dev/null || true
 ```
 
-**Backend Architecture:**
-- JSON-only API design (DRF configured with JSONRenderer/JSONParser only)
-- Environment-based configuration using python-decouple
-- CORS-enabled for React frontend integration
-- Russian localization and Moscow timezone
-- No custom Django apps yet - ready for API integration
+### Pre-commit Requirements
+- Always run `npm run build` from frontend directory before committing
+- Always run `npm run lint` for frontend changes  
+- All Django apps use UUID primary keys, not auto-incrementing IDs
+- Development on `develop` branch, not main
 
-## Current Form Field Implementation
+### Styling Constraints
+- Custom CSS with CSS variables only (no Tailwind utility classes)
+- Dark mode via `[data-theme="dark"]` attribute selector
+- All colors use `var(--color-*)` format for theme compatibility
+- Modal form fields use `border: none` with focus box-shadow effects
+- All badges use `border: none` styling
 
-### Modal Dialog Styling
-All form fields in modal dialogs (add task, edit task) use a borderless design:
-- **Input Fields**: `border: none` with focus box-shadow effects only
-- **Textarea Fields**: Auto-resizing with `field-sizing: content` for modern browsers
-- **Select Fields**: Borderless dropdown with focus outline effects
-- **Custom DateTime Fields**: Split 80%/20% layout with blue icon sections
-
-### DateTime Field Architecture
-Custom implementation in `frontend/src/App.tsx` and `frontend/src/index.css`:
-```typescript
-// Custom datetime field structure
-<div className="custom-datetime-field">
-  <input className="custom-datetime-input" type="time|date" />
-  <div className="custom-datetime-icon" onClick={handleShowPicker}>
-    <ClockIcon|CalendarIcon />
-  </div>
-</div>
-```
-
-**CSS Classes:**
-- `.custom-datetime-field`: Flex container with borderless styling
-- `.custom-datetime-input`: 80% width input field, no native icons
-- `.custom-datetime-icon`: 20% width blue background using `var(--color-primary)` with hover effects
-
-## CORS Configuration
-
-Frontend development server (localhost:5173) is configured in Django CORS settings. Additional allowed origins include localhost:3000 for compatibility. CORS credentials are enabled for authentication support.
+### API Integration
+- Frontend uses real Django REST API (no local state for tasks)
+- Token authentication stored in localStorage
+- Custom React hooks for API state management and error handling
+- All API calls show toast notifications for user feedback
 
 ## Project Status
 
-**Current State**: The frontend is a complete, fully functional todo application with AI assistant features. All UI components, state management, and user interactions are implemented. The backend remains a minimal Django setup ready for API development to replace current local state with persistent data storage.
+**Fully Integrated**: Frontend and backend are completely integrated with real API calls, user authentication, and data persistence. The application supports Telegram WebApp integration and payment processing through Telegram Stars.
 
-**Git Branch**: Development occurs on `develop` branch, not main.
-
-### Frontend Implementation Status
-✅ **Complete Features:**
-- Task CRUD operations (create, read, update, delete, complete)
-- Task filtering by time periods (today, week, month)
-- Task priority system (urgent, normal, low) with color coding  
-- AI assistant with chat interface and conversation history
-- AI-powered task description generation with usage limits
-- Multi-page navigation (Home, AI Assistant, Archive, Settings)
-- Theme switching (light/dark mode) with CSS custom properties
-- User settings management (language, AI model, subscription)
-- Subscription tiers with usage limits (Free: 3/3, Plus: 10/20, Pro: 20/100)
-- Calendar integration with task visualization
-- Task completion animations and state transitions
-- Responsive design with mobile-first approach
-- Russian localization throughout the interface
-
-### Backend Integration Opportunities
-The frontend is ready for backend integration. Key areas for API development:
-
-1. **Authentication & User Management**:
-   - User registration, login, profile management
-   - Session management and JWT token handling
-   - Password reset and email verification
-
-2. **Task Management API**:
-   - Replace local task state with persistent database storage
-   - Task CRUD endpoints with filtering, sorting, pagination
-   - Task sharing and collaboration features
-
-3. **AI Integration**:
-   - Real AI model integration (currently simulated)
-   - Usage tracking and subscription enforcement
-   - Chat history persistence and AI conversation management
-
-4. **Subscription & Billing**:
-   - Payment processing integration  
-   - Subscription management and upgrade flows
-   - Usage analytics and reporting
-
-## Styling Architecture
-
-### Custom CSS Configuration
-- **Approach**: Custom CSS with CSS custom properties (no Tailwind CSS utility classes)
-- **Dark Mode**: Attribute-based dark mode using `[data-theme="dark"]` selector
-- **Color System**: CSS custom properties with consistent naming convention (`--color-*`)
-- **Component Styling**: Direct CSS classes with design system consistency
-- **Border Radius**: Standardized radius variables (`--radius-card: 12px`, `--radius-sm: 0.25rem`, etc.)
-- **Spacing**: Consistent spacing system using `--spacing-*` variables
-- **Plan Colors**: Dedicated color variables for subscription tiers (`--color-plan-free`, `--color-plan-plus`, `--color-plan-pro`, `--color-plan-active`)
-- **Badge Components**: All badges use `border: none` for clean appearance without borders
-
-### Theme Implementation
-- **CSS Custom Properties**: Defined in `frontend/src/index.css` with HSL values
-- **Theme Toggle**: Managed via React state, applies `data-theme="dark"` attribute to document root
-- **Color Variables**: All colors use `var(--color-name)` format for CSS custom property integration
-- **Theme Structure**: Light theme in `:root`, dark theme in `[data-theme="dark"]` selector
-- **Critical Rule**: NEVER use hardcoded colors like `#3b82f6` - always use CSS variables for theme compatibility
-- **Dark Theme Variables**: All color variables must be defined for both light and dark themes
-
-### UI Component System
-- **Base Library**: Complete Radix UI primitives for accessibility 
-- **Styling Approach**: Custom CSS classes with design system consistency
-- **Component Location**: `frontend/src/components/ui/` - pre-built, styled components
-- **No Utility Libraries**: Components use direct className strings, no `cn()` utility or class-variance-authority
-- **Form Fields**: All input fields in modals use borderless design (`border: none`) with focus box-shadow effects only
-- **Sticky Elements**: Header (`.header`) and tabs container (`.tabs-header-container`) use `position: sticky` for persistent navigation
-- **Badge Styling**: All `.badge` elements use `border: none` - never add borders to badges
-
-### Common Styling Patterns
-```typescript
-// Theme-aware conditional styling
-className={`${
-  userSettings.theme === "dark"
-    ? "dark-theme-class"
-    : "light-theme-class"
-}`}
-
-// Using design system colors through CSS custom properties
-className="card-background card-text card-border"
-
-// Custom CSS classes for component variants
-className="button-primary button-medium"
-```
-
-## Development Guidelines
-
-### Component Architecture
-- **Main Component**: `App.tsx` contains all application logic, state management, and page routing
-- **UI Components**: Complete Radix UI component library in `frontend/src/components/ui/`
-- **Component Styling**: Each component has custom CSS classes, no external styling utilities
-- **Custom Components**: Specialized components like `ImageWithFallback.tsx` for enhanced UX
-- **Single File Architecture**: All business logic consolidated in App.tsx (no separate components for features)
-
-### State Management Patterns
-- **No External State Library**: All state managed with React hooks in App.tsx
-- **State Organization**: Separate useState hooks for different domains (tasks, chat, settings)
-- **Data Flow**: Props drilling for component communication (consider Context if complexity grows)
-- **Local Storage Integration**: UserSettings and tasks persist to localStorage automatically
-
-### Animation & UX
-- **Task Completion**: Slide-out animation with opacity/transform transitions
-- **Loading States**: Toast notifications for user feedback (using Sonner)
-- **Form Handling**: Immediate validation with user-friendly error messages
-
-### Localization System
-- **Translation System**: Custom translations in `frontend/src/locales/translations.ts` with TypeScript support
-- **Languages**: Russian (primary) and English, with `useTranslations()` hook for switching
-- **Date Formatting**: Uses `Intl.DateTimeFormat` with 'ru-RU' locale and custom formatting functions
-- **Calendar**: Custom formatters for react-day-picker in Russian with `getWeekdays()` and `getMonths()` utilities
-- **Pluralization**: Smart pluralization system with `pluralize()` function for Russian grammar rules
-- **Text Content**: Complete interface localization through translation keys system
-
-## Critical Development Rules
-
-### Git Workflow
-- **ОБЯЗАТЕЛЬНОЕ ПРАВИЛО**: После выполнения каждой задачи Claude Code должен делать коммит в git с осмысленным сообщением, описывающим выполненную работу
-- Always run `npm run build` from frontend directory before committing to ensure TypeScript compilation passes
-- Development occurs on `develop` branch, not main
-- Use conventional commit format: `type: description`
-
-### Code Quality
-- All UI components use custom CSS with CSS custom properties (no Tailwind CSS)
-- Components are built on Radix UI primitives for accessibility
-- Always run `npm run build` before committing to ensure TypeScript compilation passes
-- Always run `npm run lint` before committing frontend changes
-- Maintain Russian localization throughout the interface
-- Modal form fields use borderless styling (`border: none`) with focus box-shadow effects
-- Custom datetime fields use 80%/20% split layout with icon backgrounds using `var(--color-primary)`
-- All plan badges use `border-radius: var(--radius-card)` (12px) for consistent design
-- **Theme Consistency**: Always use CSS variables instead of hardcoded colors for theme compatibility
-- **Badge Components**: All badges must use `border: none` - never add borders
-
-### Architecture Constraints
-- Frontend uses local React state management only (no external state libraries)
-- Backend is minimal Django setup - no custom apps exist yet
-- All styling uses CSS custom properties defined in `frontend/src/index.css`
-- Theme switching implemented via `data-theme` attribute on document root
-
-## Testing and Troubleshooting
-
-### Common Issues
-- **Build Failures**: Usually caused by unused imports or TypeScript errors
-- **Styling Problems**: Check CSS custom properties in `index.css`, ensure no Tailwind utility classes are used
-- **Component Issues**: All UI components expect direct className strings, not utility functions  
-- **Theme Issues**: Dark mode uses `[data-theme="dark"]` selector, not `.dark` class. Ensure all CSS variables are defined for both themes
-- **Form Field Issues**: All modal form fields should use `border: none` styling, not borders
-- **DateTime Fields**: Use custom div layout with 80%/20% split and icon backgrounds using `var(--color-primary)`
-- **Badge Issues**: All badges should use `border: none` - never add borders to badge components
-- **Color Variables**: Never use hardcoded hex colors - always use CSS variables for theme compatibility
-- **Sticky Navigation**: Header uses `z-index: 10`, tabs container uses `z-index: 9`
-
-### Server URLs
-- **Frontend Development**: http://localhost:5173 (Vite dev server)
-- **Backend Development**: http://localhost:8000 (Django dev server) 
-- **Django Admin**: http://localhost:8000/admin (requires superuser account)
+**Server URLs**:
+- Frontend: http://localhost:5173
+- Backend: http://localhost:8000  
+- Django Admin: http://localhost:8000/admin

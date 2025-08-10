@@ -30,6 +30,26 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(','
 
 TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN', default='')
 
+# Production environment validation
+if not DEBUG:
+    # In production, these settings are required
+    required_settings = {
+        'SECRET_KEY': SECRET_KEY,
+        'TELEGRAM_BOT_TOKEN': TELEGRAM_BOT_TOKEN,
+    }
+    
+    missing_settings = [key for key, value in required_settings.items() if not value or value == 'your-default-value']
+    
+    if missing_settings:
+        raise ValueError(f"Production environment missing required settings: {', '.join(missing_settings)}")
+    
+    # Additional production checks
+    if SECRET_KEY == 'django-insecure-9d*9_333act+u!miic7lqy!9d1c(v*t*(z9w3p10#0u@tul)1o':
+        raise ValueError("Production cannot use default SECRET_KEY")
+    
+    if not ALLOWED_HOSTS or ALLOWED_HOSTS == ['localhost', '127.0.0.1']:
+        raise ValueError("Production must have proper ALLOWED_HOSTS configured")
+
 USE_SQLITE = config('USE_SQLITE', default=False, cast=bool)
 
 
@@ -173,13 +193,26 @@ REST_FRAMEWORK = {
 }
 
 # CORS settings for React frontend
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:5174",
-    "http://127.0.0.1:5174",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+if DEBUG:
+    # Development CORS settings
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+else:
+    # Production CORS settings - add your domain here
+    CORS_ALLOWED_ORIGINS = [
+        # Add your production domain here, example:
+        # "https://your-domain.com",
+        # "https://www.your-domain.com",
+    ]
+    # You can also use environment variable for production domains
+    PRODUCTION_DOMAINS = config('PRODUCTION_DOMAINS', default='').split(',')
+    if PRODUCTION_DOMAINS and PRODUCTION_DOMAINS[0]:
+        CORS_ALLOWED_ORIGINS.extend(PRODUCTION_DOMAINS)
 
 CORS_ALLOW_CREDENTIALS = True

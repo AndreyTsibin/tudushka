@@ -364,18 +364,58 @@ export default function App() {
     }
   }, [userSettings.aiPersonality]);
 
-  // Инициализация токена для тестирования и загрузка задач при первом запуске
+  // Инициализация Telegram WebApp и загрузка задач при первом запуске
   useEffect(() => {
-    // Устанавливаем тестовый токен (в продакшене будет из аутентификации)
-    const testToken = import.meta.env.VITE_TEST_TOKEN;
-    if (testToken && !localStorage.getItem('auth_token')) {
-      localStorage.setItem('auth_token', testToken);
+    // Инициализация Telegram WebApp
+    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+      const tgWebApp = window.Telegram.WebApp;
+      
+      // Настройка WebApp
+      tgWebApp.ready();
+      tgWebApp.expand();
+      
+      // Авторизация через Telegram
+      if (tgWebApp.initData && !localStorage.getItem('auth_token')) {
+        executeUserAPICall(() => usersAPI.telegramAuth(tgWebApp.initData))
+          .then(response => {
+            if (response?.token) {
+              localStorage.setItem('auth_token', response.token);
+              // Загружаем данные после успешной авторизации
+              loadTasksFromAPI();
+              loadUserSettings();
+            }
+          })
+          .catch(error => {
+            console.error('Telegram auth failed:', error);
+            // Fallback для тестирования вне Telegram (только в development)
+            if (import.meta.env.DEV) {
+              const testToken = import.meta.env.VITE_TEST_TOKEN;
+              if (testToken) {
+                console.warn('Using test token in development mode');
+                localStorage.setItem('auth_token', testToken);
+                loadTasksFromAPI();
+                loadUserSettings();
+              }
+            }
+          });
+      } else {
+        // Если уже авторизованы, загружаем данные
+        loadTasksFromAPI();
+        loadUserSettings();
+      }
+    } else {
+      // Fallback для разработки вне Telegram (только в development)
+      if (import.meta.env.DEV) {
+        const testToken = import.meta.env.VITE_TEST_TOKEN;
+        if (testToken && !localStorage.getItem('auth_token')) {
+          console.warn('Using test token in development mode');
+          localStorage.setItem('auth_token', testToken);
+        }
+      }
+      loadTasksFromAPI();
+      loadUserSettings();
     }
-
-    // Загружаем задачи и настройки при инициализации
-    loadTasksFromAPI();
-    loadUserSettings();
-  }, []); // Выполняется только при первом рендере
+  }, []);
 
   // Функция для загрузки задач с API
   const loadTasksFromAPI = async () => {
@@ -1065,9 +1105,42 @@ export default function App() {
       await updateUserSettings({ plan: "free" });
       toast.success(translations.switchedToFree);
     } else {
-      // Имитация процесса оплаты
-      toast.success(translations.paymentSuccess);
-      await updateUserSettings({ plan });
+      try {
+        // Определяем количество звезд для планов
+        const starAmounts = { plus: 250, pro: 550 };
+        const amount = starAmounts[plan];
+        
+        // Проверяем, что Telegram WebApp доступен
+        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+          const response = await executeUserAPICall(() => 
+            usersAPI.createStarInvoice(amount)
+          );
+          
+          if (response?.ok && response?.result?.link) {
+            // Открываем ссылку для оплаты в Telegram
+            const invoiceUrl = response.result.link;
+            window.Telegram.WebApp.openInvoice(invoiceUrl, (status: 'paid' | 'cancelled' | 'failed' | 'pending') => {
+              if (status === 'paid') {
+                toast.success(translations.paymentSuccess);
+                updateUserSettings({ plan });
+              } else if (status === 'cancelled') {
+                toast.error(userSettings.language === 'ru' ? 'Оплата отменена' : 'Payment cancelled');
+              } else if (status === 'failed') {
+                toast.error(userSettings.language === 'ru' ? 'Ошибка оплаты' : 'Payment failed');
+              }
+            });
+          } else {
+            throw new Error('Failed to create invoice');
+          }
+        } else {
+          // Fallback для тестирования вне Telegram
+          toast.success(`${translations.paymentSuccess} (${amount} ⭐)`);
+          await updateUserSettings({ plan });
+        }
+      } catch (error) {
+        console.error('Payment error:', error);
+        toast.error(userSettings.language === 'ru' ? 'Ошибка при создании платежа' : 'Error creating payment');
+      }
     }
   };
 
