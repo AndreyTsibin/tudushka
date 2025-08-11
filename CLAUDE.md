@@ -128,69 +128,35 @@ lsof -ti:5173,8000 | xargs kill -9 2>/dev/null || true
 - Backend: http://localhost:8000  
 - Django Admin: http://localhost:8000/admin
 
-## Production Server (TimeWeb)
+## Production Deployment
 
-### Server Information
-- **Domain**: tudushka.ru
-- **IPv4**: 5.129.225.19
-- **IPv6**: 2a03:6f02::cedf
-- **Provider**: TimeWeb
-- **SSH Access**: ssh root@5.129.225.19
-- **Root Password**: See .env file or secure storage
+### Server Requirements
+- **OS**: Ubuntu 22.04 LTS or newer
+- **Python**: 3.10+ 
+- **Web Server**: Nginx with SSL certificates
+- **Database**: PostgreSQL
+- **Process Manager**: Gunicorn/uWSGI
 
-### DNS Configuration
-- **A Record**: tudushka.ru → 5.129.225.19
-- **AAAA Record**: tudushka.ru → 2a03:6f02::cedf
-- **CNAME**: www.tudushka.ru → tudushka.ru
-- **MX Records**: Configured with TimeWeb mail servers
-- **TXT Records**: SPF configured for email security
-
-### Server Ports
-**Open Ports**: 389, 465, 3389, 2525, 587, 53413, 25
-- Standard web ports (80, 443) should be configured for HTTP/HTTPS
-- SSH access available on standard port 22
-- Email ports configured (25, 465, 587)
-
-### Production URLs
-- **Production Site**: https://tudushka.ru (to be configured)
-- **Admin Panel**: https://tudushka.ru/admin (to be configured)
-- **API Endpoint**: https://tudushka.ru/api (to be configured)
-
-### SSH Access Commands
-```bash
-# Connect to server (requires ed25519 key)
-ssh -i ~/.ssh/id_ed25519_timeweb_new root@5.129.225.19
-
-# Or if key is in ssh-agent
-ssh root@5.129.225.19
-```
-
-### Server Environment
-- **OS**: Ubuntu 22.04 LTS (Linux 5.15.0-142-generic)
-- **Python**: 3.10.12 (/usr/bin/python3)
-- **Web Server**: Nginx (active and running)
-- **SSL**: Let's Encrypt certificates configured
-- **Database**: PostgreSQL not installed yet
-
-### Current Configuration Status
-- **Nginx**: ✅ Running with SSL certificates
-- **Application Directory**: `/var/www/tudushka.ru/html` (basic index.html only)
-- **SSL Certificates**: ✅ `/etc/letsencrypt/live/tudushka.ru/`
-- **Nginx Config**: `/etc/nginx/sites-available/tudushka.ru`
-
-### Nginx Configuration Issues
-Current config has proxy to port 3000 AND static files - needs to be unified for Django app:
-```bash
-# View current config
-ssh -i ~/.ssh/id_ed25519_timeweb_new root@5.129.225.19 "cat /etc/nginx/sites-available/tudushka.ru"
-```
-
-### Required Next Steps for Deployment
+### Deployment Steps
 1. **Install PostgreSQL**: `apt install postgresql postgresql-contrib`
-2. **Upload Django application** to `/var/www/tudushka.ru/`
+2. **Upload Django application** to web server directory
 3. **Install Python dependencies**: Create venv and pip install requirements
-4. **Configure database**: Create tudushka_db and user
+4. **Configure database**: Create database and user
 5. **Update Nginx config**: Point to Django app (Gunicorn/uWSGI)
 6. **Environment variables**: Create production .env file
 7. **Run migrations**: Set up database schema
 8. **Configure static files**: Django collectstatic for production
+
+### Production Environment Variables
+Create `.env` file with production values:
+```bash
+SECRET_KEY=your-production-secret-key
+DEBUG=False
+ALLOWED_HOSTS=your-domain.com,www.your-domain.com
+DB_NAME=production_db
+DB_USER=production_user
+DB_PASSWORD=secure-password
+DB_HOST=localhost
+DB_PORT=5432
+TELEGRAM_BOT_TOKEN=your-telegram-bot-token
+```

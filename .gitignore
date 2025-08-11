@@ -91,6 +91,25 @@ logs
 config/secrets.js
 config/production.js
 
+# SSH keys and server configuration
+id_*
+*.pub
+ssh_config
+known_hosts
+
+# Server/deployment configuration
+server_config/
+deployment/
+*.server.conf
+nginx.conf
+apache.conf
+
+# Production secrets and credentials
+production.env
+staging.env
+secrets.json
+credentials.json
+
 # Database files
 *.sqlite
 *.sqlite3
